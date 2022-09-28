@@ -1,0 +1,26 @@
+from flask import Flask
+from settings import Config
+
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    
+    extended_ext(app)
+    extended_admin()
+    return app 
+
+def extended_ext(app):
+    from app.extensions import db, admin, jwt_manager, migrate
+    
+    db.init_app(app)
+    migrate.init_app(app, db)
+    admin.init_app(app)
+    jwt_manager.init_app(app)
+
+def extended_admin():
+    from app.admin.admin_model import UserView
+    from app.admin.admin_register_views import user
+
+app = create_app()
+    
