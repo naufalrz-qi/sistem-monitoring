@@ -1,6 +1,6 @@
 from flask import Flask
 from settings import Config
-
+from app.register_blueprint import register_bp
 
 def create_app():
     app = Flask(__name__)
@@ -8,6 +8,8 @@ def create_app():
     
     extended_ext(app)
     extended_admin()
+    register_bp(app)
+    
     return app 
 
 def extended_ext(app):

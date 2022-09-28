@@ -1,20 +1,26 @@
+from app.extensions import db
+
 class BaseModel:
     def __init__(self, model) -> None:
         self.model = model
-        self.db = None
+        
+    def create(self):
+        query = self.model
+        db.session.add(query)
+        db.session.commit()
         
     def get(self):
         query = self.model.qouery.all()
         return query
     
-    def get_one(self, id):
-        query = self.model.query.filter_by(id=id).first()
+    def get_one(self, **kwargs):
+        query = self.model.query.filter_by(**kwargs).first()
         return query
     
     def edit(self):
-        return self.db.session.commit()
+        return db.session.commit()
     
     def delete(self, *args):
-        self.db.delete(*args)
-        self.db.session.commit()
+        db.delete(*args)
+        db.session.commit()
     

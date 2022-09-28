@@ -4,7 +4,7 @@ from app.models.user_model import UserModel
 from wtforms import fields
 
 class UserView(ModelView):
-    column_exclude_list = ['user_login_now','user_logout', 'tb_siswa_detail']
+    column_exclude_list = ['id','user_login_now','user_logout', 'tb_siswa_detail', 'password']
     form_excluded_columns = ['join_date','update_date','user_login_now','user_logout']
     form_choices = {'is_active': [
                     ('0', 'False'),
@@ -18,6 +18,7 @@ class UserView(ModelView):
     can_create = False
     can_view_details = True
     can_edit = True
+    column_display_pk = True
     form_extra_fields = {
         'password' : fields.PasswordField('Password'),
         'tb_siswa_detail' : fields.StringField('ID Siswa')
