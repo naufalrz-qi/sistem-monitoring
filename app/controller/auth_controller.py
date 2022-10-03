@@ -46,12 +46,13 @@ def login():
                  }
                 
                 access_token = create_access_token(identity=user_identity)
-               
+                refresh_token = create_refresh_token(identity=user_identity)
                 sql_user.user_login_now = utc_makassar()
                 user.edit()      
                 return jsonify({
                     'id' : sql_user.id,
-                    'access_token' : access_token
+                    'access_token' : access_token,
+                    'refresh_token' : refresh_token,
                 }), HTTP_200_OK
                 
             elif sql_user.group == 'guru' and sql_user.is_active == '1':
@@ -65,11 +66,13 @@ def login():
                     'group' : sql_user.group
                 }
                 access_token = create_access_token(identity=user_identity)
+                refresh_token  = create_refresh_token(identity=user_identity)
                 user.edit()
                 return jsonify({
                     'id' : sql_user.id,
                     'first_name' : sql_user.first_name,
-                    'acces_token' : access_token
+                    'acces_token' : access_token,
+                    'refresh_token' : refresh_token,
                 }), HTTP_200_OK
             else:
                 return jsonify({
@@ -88,25 +91,30 @@ def logout():
     now = utc_makassar()
     db.session.add(TokenBlockList(jti=jti, created_at=now))
     db.session.commit()
+    
+    model = BaseModel(UserModel)
+    id = get_jwt_identity()['id']
+    user = model.get_one_or_none(id=id)
+    user.user_logout = utc_makassar()
+    model.edit()
+    
     return jsonify(msg="JWT revoked")
     
  
-@auth.route('/test')
-@jwt_required()
-def test_user():
-    current_user = get_jwt_identity()
+# @auth.route('/test')
+# @jwt_required()
+# def test_user():
+#     current_user = get_jwt_identity()
     
-    model = BaseModel(GuruModel)
-    guru = model.get_one_or_none(user_id=current_user.get('id'))
-    print(guru.gender)
+#     model = BaseModel(GuruModel)
+#     guru = model.get_one_or_none(user_id=current_user.get('id'))
+#     print(guru.gender)
     
-
-    return jsonify(
-        # current_user,
-        current_user,
-        gender=guru.gender,
+#     return jsonify(
+#         # current_user,
+#         current_user,
        
-    ),HTTP_200_OK
+#     ),HTTP_200_OK
     
 @auth.route('/create', methods=['POST','GET'])
 def create():
@@ -177,6 +185,8 @@ def get():
     current_user = get_jwt_identity()
     user_id = current_user.get('id')
     
+    jjwt = get_jwt()['exp']
+    print(jjwt)
     if current_user.get('group') == 'siswa':
         model = BaseModel(SiswaModel)
         user = model.get_one_or_none(user_id=user_id)        

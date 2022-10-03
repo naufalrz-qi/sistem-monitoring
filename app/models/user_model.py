@@ -6,7 +6,7 @@ from app.lib.date_time import utc_makassar
 from werkzeug.security import check_password_hash
 
 class UserModel(db.Model):
-    __tablename__ = 'tb_user'
+    __tablename__ = 'auth_user'
     id = sa.Column(sa.Integer, primary_key=True)
     username = sa.Column(sa.String(128), nullable=False)    
     first_name = sa.Column(sa.String(128), nullable=False, default='')
@@ -41,3 +41,4 @@ class TokenBlockList(db.Model):
     id = sa.Column(sa.Integer, primary_key=True)
     jti = sa.Column(sa.String(36), nullable=False, index=True)
     created_at = sa.Column(sa.DateTime, nullable=False)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE', onupdate='CASCADE'))

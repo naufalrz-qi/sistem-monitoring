@@ -12,7 +12,7 @@ class SiswaModel(db.Model):
     tgl_lahir = sa.Column(sa.Date(), nullable=True)
     agama = sa.Column(sa.String(128), nullable=False, default=None)
     alamat = sa.Column(sa.String(250), nullable=True)
-    user_id = sa.Column(sa.Integer, sa.ForeignKey('tb_user.id'))
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE', onupdate='CASCADE'))
     users = sql.relationship('UserModel', backref='detail_siswa')
     
     def __init__(self, gender, agama=None, user_id=None) -> None:
@@ -31,7 +31,7 @@ class GuruModel(db.Model):
     gender = sa.Column(sa.String(32), nullable=False)
     alamat = sa.Column(sa.String(256), nullable=True)
     agama = sa.Column(sa.String(32), nullable=True)
-    user_id = sa.Column(sa.Integer, sa.ForeignKey('tb_user.id'))
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE', onupdate='CASCADE'))
     users = sql.relationship('UserModel', backref='detail_guru')
     
     def __init__(self, gender=None, alamat=None, agama=None, user_id=None) -> None:
