@@ -10,6 +10,8 @@ def create_app():
     extended_admin()
     register_bp(app)
     
+    
+    
     return app 
 
 def extended_ext(app):

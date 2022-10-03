@@ -14,6 +14,6 @@ admin = Admin(
         # endpoint='admins'
     ),
     name='SUPER ADMIN',
-    template_mode='bootstrap3',
+    template_mode='bootstrap4',
 )
 migrate = Migrate()
