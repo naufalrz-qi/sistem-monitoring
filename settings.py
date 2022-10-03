@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 from dotenv import load_dotenv
 
@@ -21,10 +22,12 @@ class Config(object):
     SQLALCHEMY_QUERIES_RECORD= str(os.getenv('SQLALCHEMY_QUERIES_RECORD'))
     
     # MODIFY DEFAULT CONFIG
-    JSON_SORT_KEY = False
+    JSON_SORT_KEYS = False
     PREFERRED_URL_SCHEME = 'https'
     
-    # FLASK JWT EXTENDED
+    # JSON
     JWT_SECRET_KEY = str(os.getenv('JWT_SECRET_KEY'))
-    JWT_ACCESS_TOKEN_EXPIRES = str(os.getenv('JWT_ACCESS_TOKEN_EXPIRES'))
+    ACCESS_EXPIRE = timedelta(hours=1)
+    JWT_ACCESS_TOKEN_EXPIRES = ACCESS_EXPIRE
+    
     

@@ -5,8 +5,7 @@ from flask_migrate import Migrate
 
 
 db = SQLAlchemy()
-jwt_manager = JWTManager()
-# admin = Admin(template_mode='bootstrap3', name='SUPER ADMIN', endpoint='admins')
+jwt = JWTManager()
 admin = Admin(
     index_view=AdminIndexView(
         

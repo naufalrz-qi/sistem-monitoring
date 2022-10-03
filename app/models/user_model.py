@@ -1,7 +1,9 @@
+from datetime import datetime
 from email.policy import default
 from app.extensions import db
 import sqlalchemy as sa 
 from app.lib.date_time import utc_makassar
+from werkzeug.security import check_password_hash
 
 class UserModel(db.Model):
     __tablename__ = 'tb_user'
@@ -14,8 +16,8 @@ class UserModel(db.Model):
     join_date = sa.Column(sa.DateTime, default=utc_makassar())
     update_date = sa.Column(sa.DateTime, onupdate=utc_makassar())
     is_active = sa.Column(sa.String(2), nullable=False)
-    user_login_now = sa.Column(sa.DateTime, onupdate=utc_makassar())
-    user_logout = sa.Column(sa.DateTime, onupdate=utc_makassar())
+    user_login_now = sa.Column(sa.DateTime)
+    user_logout = sa.Column(sa.DateTime)
     
     def __init__(self, username=None, first_name=None, last_name=None, password=None, group=None) -> None:
         super().__init__()
@@ -30,3 +32,12 @@ class UserModel(db.Model):
     def __repr__(self) -> str:
         return self.first_name
     
+    
+    def check_pswd(*args, **kwargs):
+        return check_password_hash(*args, **kwargs)
+    
+class TokenBlockList(db.Model):
+    __tablename__ = 'auth_token_block'
+    id = sa.Column(sa.Integer, primary_key=True)
+    jti = sa.Column(sa.String(36), nullable=False, index=True)
+    created_at = sa.Column(sa.DateTime, nullable=False)

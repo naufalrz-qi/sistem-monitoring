@@ -4,6 +4,7 @@ from app.models.user_details_model import *
 from app.models.user_model import UserModel
 from wtforms import fields
 from wtforms import Form
+from werkzeug.security import generate_password_hash
 
 class UserForm(Form):
     username = fields.StringField('username')
@@ -31,6 +32,9 @@ class UserView(ModelView):
     }
     inline_models = [GuruModel, SiswaModel]
     # form = UserForm
+    
+    def on_model_change(self, form, model, is_created):
+        model.password = generate_password_hash(model.password)
     
     
         

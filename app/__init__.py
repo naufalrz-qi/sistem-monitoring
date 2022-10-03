@@ -15,12 +15,12 @@ def create_app():
     return app 
 
 def extended_ext(app):
-    from app.extensions import db, admin, jwt_manager, migrate
+    from app.extensions import db, admin, jwt, migrate
     
     db.init_app(app)
     migrate.init_app(app, db)
     admin.init_app(app)
-    jwt_manager.init_app(app)
+    jwt.init_app(app)
 
 def extended_admin():
     from app.admin.admin_model import UserView
