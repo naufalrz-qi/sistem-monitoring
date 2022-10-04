@@ -1,8 +1,21 @@
-from email.policy import default
 from app.extensions import db
 import sqlalchemy as sa
 from .user_model import UserModel
 import sqlalchemy.orm as sql
+
+class AdminDetailModel(db.Model):
+    __tablename__ = 'admin_detail'
+    id = sa.Column(sa.Integer, primary_key=True)
+    gender = sa.Column(sa.String(32), nullable=True)
+    alamat = sa.Column(sa.String(128), nullable=True)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id'))
+    
+    def __repr__(self, gender=None, alamat=None, user_id=None) -> str:
+        self.gender = gender
+        self.alamat = alamat
+        self.user_id = user_id
+            
+
 
 class SiswaModel(db.Model):
     __tablename__ = 'tb_siswa_detail'
@@ -29,8 +42,8 @@ class GuruModel(db.Model):
     __tablename__ = 'tb_guru_detail'
     id = sa.Column(sa.Integer, primary_key=True)
     gender = sa.Column(sa.String(32), nullable=False)
-    alamat = sa.Column(sa.String(256), nullable=True)
     agama = sa.Column(sa.String(32), nullable=True)
+    alamat = sa.Column(sa.String(256), nullable=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE', onupdate='CASCADE'))
     users = sql.relationship('UserModel', backref='detail_guru')
     

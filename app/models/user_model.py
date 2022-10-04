@@ -26,13 +26,11 @@ class UserModel(db.Model):
         self.last_name = last_name
         self.password = password
         self.group = group
-        self.is_active = 1
-    
+        self.is_active = 1    
     
     def __repr__(self) -> str:
         return self.first_name
-    
-    
+        
     def check_pswd(*args, **kwargs):
         return check_password_hash(*args, **kwargs)
     

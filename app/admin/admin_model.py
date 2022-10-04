@@ -35,9 +35,9 @@ class UserView(ModelView):
     
     def on_model_change(self, form, model, is_created):
         model.password = generate_password_hash(model.password)
-    
-    
-        
+   
+class AdminDetailView(ModelView):
+    column_exclude_list= ()       
             
 class SiswaView(ModelView):
     column_exclude_list = []

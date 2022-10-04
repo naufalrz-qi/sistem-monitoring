@@ -4,7 +4,7 @@ from app.extensions import jwt
 from sqlalchemy.exc import IntegrityError
 from app.lib.base_model import BaseModel
 from app.lib.date_time import utc_makassar
-from app.models.user_details_model import GuruModel, SiswaModel
+from app.models.user_details_model import *
 from app.models.user_model import TokenBlockList, UserModel
 from app.extensions import db
 from app.lib.status_code import *
@@ -173,7 +173,27 @@ def create():
                                        agama,
                                        user.model.id))
             guru.create()
-
+            return jsonify({
+                'msg' : f'add user {user.model.first_name}'
+            }), HTTP_201_CREATED
+            
+    elif group == 'admin':
+        gender = request.json.get('gender')
+        alamat = request.json.get('alamat')
+        
+        usrnm = BaseModel(UserModel) 
+        check_username = usrnm.get_one(username=username)
+                
+        if check_username is not None:
+            return jsonify({
+                'msg' : 'Username is already exists'
+            }), HTTP_409_CONFLICT
+        else:
+            user.create()
+            user_detail = BaseModel(AdminDetailModel(gender,
+                                       alamat,
+                                       user.model.id))
+            user_detail.create()
             return jsonify({
                 'msg' : f'add user {user.model.first_name}'
             }), HTTP_201_CREATED
