@@ -11,8 +11,7 @@ guru = Blueprint('guru', __name__, url_prefix='/api/v2/guru')
 def get():
     model = db.session.query(UserModel, GuruModel)\
                       .join(GuruModel)\
-                      .filter(UserModel.id==GuruModel.user_id).all()
-    
+                      .filter(UserModel.id==GuruModel.user_id).all()   
     data = []
     for user,_ in model:
         data.append({

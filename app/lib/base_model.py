@@ -12,8 +12,8 @@ class BaseModel:
     def get(self):
         query = self.model.query.all()
         return query
-    def get_join(self, **kwargs):
-        return db.session.query(self.model, **kwargs).join(**kwargs).all()
+    def get_join(**kwargs):
+        return db.session.query(**kwargs)
     
     def get_one(self, **kwargs):
         query = self.model.query.filter_by(**kwargs).first()
@@ -27,6 +27,6 @@ class BaseModel:
         return db.session.commit()
     
     def delete(self, *args):
-        db.delete(*args)
+        db.session.delete(*args)
         db.session.commit()
     

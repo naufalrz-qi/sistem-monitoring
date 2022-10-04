@@ -2,9 +2,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
+from app.lib.custom_model_class import IdModel
 
-
-db = SQLAlchemy()
+db = SQLAlchemy(model_class=IdModel)
 jwt = JWTManager()
 admin = Admin(
     index_view=AdminIndexView(
