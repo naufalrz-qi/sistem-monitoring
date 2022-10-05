@@ -50,3 +50,16 @@ class TahunAjaranModel(db.Model):
     
     def __repr__(self) -> str:
         return self.th_ajaran
+
+class SemesterModel(db.Model):
+    __tablename__ = 'master_semester'
+    semester = sql.Column(sql.String(32), nullable=False)
+    is_active = sql.Column(sql.String(1), nullable=False)
+    
+    def __init__(self, semester=None, active=None) -> None:
+        self.semester = semester
+        self.is_active = active
+        
+    def __repr__(self) -> str:
+        return self.semester
+    
