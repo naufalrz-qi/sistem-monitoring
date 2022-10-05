@@ -39,9 +39,12 @@ def get_single(id):
     base_user = BaseModel(UserModel)
     user = base_user.get_one_or_none(id=id)
     base = BaseModel(SiswaModel)
-    model = base.get_one_or_none(user_id=user.id)
+    model = base.get_one_or_none(user_id=id)
        
     if request.method == 'GET':
+        if not model:
+            return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
+        
         return jsonify(id= user.id,
                        nisn=model.user.username,
                        first_name= model.user.first_name.title(),
@@ -55,7 +58,7 @@ def get_single(id):
                        ), HTTP_200_OK
         
     elif request.method == 'PUT':
-        if model is None:
+        if not model:
             return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
         else:        
             first_name = request.json.get('first_name')
@@ -80,7 +83,7 @@ def get_single(id):
             return jsonify(msg=f'Update data {model.user.first_name} uccessfull.'), HTTP_200_OK
     
     elif request.method == 'DELETE':        
-        if model is None:
+        if not model:
             return jsonify(msg='Data Not Found.'), HTTP_404_NOT_FOUND
         else:
             base.delete(model)
