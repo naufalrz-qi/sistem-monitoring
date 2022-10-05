@@ -12,9 +12,7 @@ class BaseModel:
     def get(self):
         query = self.model.query.all()
         return query
-    def get_join(**kwargs):
-        return db.session.query(**kwargs)
-    
+   
     def get_one(self, **kwargs):
         query = self.model.query.filter_by(**kwargs).first()
         return query

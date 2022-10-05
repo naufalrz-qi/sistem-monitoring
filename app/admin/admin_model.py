@@ -26,6 +26,7 @@ class UserView(ModelView):
     can_view_details = True
     can_edit = True
     # column_display_pk = True
+    
     form_extra_fields = {
         'password' : fields.PasswordField('Password'),
         # 'tb_siswa_detail' : fields.StringField('ID Siswa')
@@ -65,7 +66,9 @@ class SiswaView(ModelView):
     #         ]
     #     }
     #     ))]
-    
+    form_extra_fields = {
+        'tgl_lahir' : fields.DateField('Tanggal Lahir', format='%Y-%m-%d')
+    }
     
     form_choices = {
          'agama' : [

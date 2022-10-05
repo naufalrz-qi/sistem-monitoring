@@ -18,7 +18,6 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     token = db.session.query(TokenBlockList.id).filter_by(jti=jti).scalar()
     return token is not None
 
-
 @auth.route('/login', methods=['POST','GET', 'PUT'])
 def login():
     username = request.json.get('username')
@@ -30,8 +29,7 @@ def login():
     if not sql_user:
         return jsonify({
             'msg' : 'username not found.'
-        }), HTTP_401_UNAUTHORIZED
-    
+        }), HTTP_401_UNAUTHORIZED    
     else:
         chk_pswd = UserModel.check_pswd(sql_user.password, password)
         if chk_pswd:
@@ -83,7 +81,6 @@ def login():
                 'msg' : 'Password not valid.'
             }), HTTP_401_UNAUTHORIZED
 
-
 @auth.route('/logout', methods=['DELETE'])
 @jwt_required(verify_type=False)
 def logout():
@@ -96,25 +93,8 @@ def logout():
     id = get_jwt_identity()['id']
     user = model.get_one_or_none(id=id)
     user.user_logout = utc_makassar()
-    model.edit()
-    
+    model.edit()    
     return jsonify(msg="JWT revoked")
-    
- 
-# @auth.route('/test')
-# @jwt_required()
-# def test_user():
-#     current_user = get_jwt_identity()
-    
-#     model = BaseModel(GuruModel)
-#     guru = model.get_one_or_none(user_id=current_user.get('id'))
-#     print(guru.gender)
-    
-#     return jsonify(
-#         # current_user,
-#         current_user,
-       
-#     ),HTTP_200_OK
     
 @auth.route('/create', methods=['POST','GET'])
 def create():
@@ -203,10 +183,8 @@ def create():
 @jwt_required()
 def get():
     current_user = get_jwt_identity()
-    user_id = current_user.get('id')
-    
-    jjwt = get_jwt()['exp']
-    print(jjwt)
+    user_id = current_user.get('id') 
+    # jjwt = get_jwt()['exp']
     if current_user.get('group') == 'siswa':
         model = BaseModel(SiswaModel)
         user = model.get_one_or_none(user_id=user_id)        
@@ -220,6 +198,17 @@ def get():
             }), HTTP_200_OK
     elif current_user.get('group') == 'guru':
         model = BaseModel(GuruModel)
+        user = model.get_one_or_none(user_id=user_id)        
+        return jsonify({
+            'id' : user_id,
+            'first_name' : current_user.get('first_name'),
+            'last_name' : current_user.get('last_name'),
+            'group' : current_user.get('group'),
+            'is_active': current_user.get('is_active'),
+            'gender' : user.gender,
+            }), HTTP_200_OK
+    elif current_user.get('group') == 'admin':
+        model = BaseModel(AdminDetailModel)
         user = model.get_one_or_none(user_id=user_id)        
         return jsonify({
             'id' : user_id,

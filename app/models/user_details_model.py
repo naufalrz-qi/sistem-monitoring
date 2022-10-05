@@ -1,3 +1,5 @@
+from datetime import datetime
+from email.policy import default
 from app.extensions import db
 import sqlalchemy as sa
 from .user_model import UserModel
@@ -9,7 +11,7 @@ class AdminDetailModel(db.Model):
     # id = sa.Column(sa.Integer, primary_key=True)
     gender = sa.Column(sa.String(32), nullable=True)
     alamat = sa.Column(sa.String(128), nullable=True)
-    user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id'))
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE'))
     
     def __repr__(self, gender=None, alamat=None, user_id=None) -> str:
         self.gender = gender
@@ -34,7 +36,7 @@ class SiswaModel(db.Model):
         self.user_id = user_id
       
     def __repr__(self) -> str:
-        return 'detail : {}'.format(self.first_name)
+        return 'username : {}'.format(self.user.username)
 
 class GuruModel(db.Model):
     __tablename__ = 'detail_guru'
@@ -44,9 +46,9 @@ class GuruModel(db.Model):
     alamat = sa.Column(sa.String(256), nullable=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE', onupdate='CASCADE'))
     users = sql.relationship('UserModel', backref='detail_guru')
-    mapel_id = sa.Column(sa.Integer, sa.ForeignKey('master_mapel.id'))
+    mapel_id = sa.Column(sa.Integer, sa.ForeignKey('master_mapel.id', ondelete='CASCADE'))
     mapel = sql.relationship('MapelModel', backref='mapels')
-    kelas_id = sa.Column(sa.Integer, sa.ForeignKey('master_kelas.id'))
+    kelas_id = sa.Column(sa.Integer, sa.ForeignKey('master_kelas.id', ondelete='CASCADE'))
     kelas = sql.relationship('KelasModel', backref='class')
     
     def __init__(self, gender=None, alamat=None, agama=None, user_id=None) -> None:

@@ -33,3 +33,25 @@ def day_now_indo():
     tahun = now.tm_year
     format_indo = hari, tgl, bulan, tahun
     return format_indo
+
+def format_indo(date):
+    WEEKDAYSLIST = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
+    MONTHLIST= ('Januari', 'Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember')
+    
+    hari = WEEKDAYSLIST[date.weekday()]
+    tgl = date.day
+    bulan = MONTHLIST[date.month -1]
+    tahun = date.year
+    format_indo = hari +','+ str(tgl)+'-'+ bulan +'-'+ str(tahun)
+    return format_indo
+    
+def string_format(date_string):
+    # mengambil nilai dari string 05-09-1992
+    # konvert ke 1992-09-05 
+    # utk input ke database
+    date = date_string.split('-')[0]
+    month = date_string.split('-')[1]
+    year= date_string.split('-')[2]
+    
+    format = year+'-'+month+'-'+date
+    return format
