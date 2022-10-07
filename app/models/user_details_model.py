@@ -26,6 +26,7 @@ class SiswaModel(db.Model):
     tgl_lahir = sa.Column(sa.Date(), nullable=True)
     agama = sa.Column(sa.String(128), nullable=False, default=None)
     alamat = sa.Column(sa.String(250), nullable=True)
+    qr_code = sa.Column(sa.Text(), nullable=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE', onupdate='CASCADE'))
     user = sql.relationship('UserModel', backref='users')
     
