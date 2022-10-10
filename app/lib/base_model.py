@@ -9,7 +9,7 @@ class BaseModel:
         db.session.add(query)
         db.session.commit()
         
-    def get(self):
+    def get_all(self):
         query = self.model.query.all()
         return query
    

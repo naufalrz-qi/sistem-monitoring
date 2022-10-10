@@ -1,7 +1,7 @@
 import time
 from flask import Blueprint, jsonify, request
 from app.lib.base_model import BaseModel
-from app.lib.date_time import format_indo, string_format
+from app.lib.date_time import format_datetime_id, format_indo, string_format
 from app.lib.status_code import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 from app.models.user_details_model import SiswaModel
 from app.models.user_model import UserModel
@@ -14,7 +14,7 @@ def get():
     # model = db.session.query(UserModel, SiswaModel)\
     #                   .join(SiswaModel).all()
     base = BaseModel(SiswaModel)
-    model = base.get()
+    model = base.get_all()
     data = []
     for user in model:
         data.append({
@@ -29,7 +29,7 @@ def get():
             'alamat': user.alamat.title() if user.alamat else '-',
             'active' : True if user.user.is_active == '1' else False,
             'join' : user.user.join_date,
-            'login' : user.user.user_login_now if user.user.user_login_now else '-',
+            'last_login' : format_datetime_id(user.user.user_last_login) if user.user.user_last_login else '-',
             "logout" : user.user.user_logout if user.user.user_logout else '-'
         })   
     return jsonify(data), HTTP_200_OK
@@ -80,7 +80,7 @@ def get_single(id):
             model.user.is_active = active
         
             base.edit()        
-            return jsonify(msg=f'Update data {model.user.first_name} uccessfull.'), HTTP_200_OK
+            return jsonify(msg=f'Update data {model.user.first_name} successfull.'), HTTP_200_OK
     
     elif request.method == 'DELETE':        
         if not model:

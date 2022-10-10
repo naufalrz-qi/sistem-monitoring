@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from app.lib.custom_model_class import IdModel
 
 db = SQLAlchemy(model_class=IdModel)
+# db = SQLAlchemy()
 jwt = JWTManager()
 admin = Admin(
     index_view=AdminIndexView(

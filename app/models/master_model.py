@@ -1,5 +1,7 @@
 import sqlalchemy as sql
 from app.extensions import db
+import sqlalchemy.orm as rs
+from .user_details_model import *
 
 class KelasModel(db.Model):
     __tablename__ = 'master_kelas'
@@ -53,6 +55,7 @@ class TahunAjaranModel(db.Model):
 
 class SemesterModel(db.Model):
     __tablename__ = 'master_semester'
+    # id = sql.Column(sql.Integer, primary_key=True)
     semester = sql.Column(sql.String(32), nullable=False)
     is_active = sql.Column(sql.String(1), nullable=False)
     
@@ -62,4 +65,28 @@ class SemesterModel(db.Model):
         
     def __repr__(self) -> str:
         return self.semester
+
+class WaliKelasModel(db.Model):
+    __tablename__ = 'master_wali_kelas'
+    # id = sql.Column(sql.Integer, primary_key=True)
+    guru_id = sql.Column(sql.Integer, sql.ForeignKey('detail_guru.id', ondelete='CASCADE', onupdate='CASCADE'))
+    guru = rs.relationship('GuruModel', backref='wali_kelas')
+    kelas_id = sql.Column(sql.Integer, sql.ForeignKey('master_kelas.id', ondelete='CASCADE', onupdate='CASCADE'))
+    kelas = rs.relationship('KelasModel', backref='kelas_didik')
+    
+    def __repr__(self) -> str:
+        return '{}'.format(self.kelas)
+    
+class MengajarModel(db.Model):
+    __tablename__ = 'master_mengjar'
+
+class JamMengajarModel(db.Model):
+    __tablename__ = 'master_jam_mengajar'
+    jam = sql.Column(sql.String(32), nullable=False)
+    
+    def __init__(self, jam=None) -> None:
+        self.jam = jam
+        
+    def __repr__(self) -> str:
+        return 'jam : {}'.format(self.jam)
     

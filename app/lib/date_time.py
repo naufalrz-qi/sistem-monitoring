@@ -42,9 +42,24 @@ def format_indo(date):
     tgl = date.day
     bulan = MONTHLIST[date.month -1]
     tahun = date.year
-    format_indo = hari +','+ str(tgl)+'-'+ bulan +'-'+ str(tahun)
+    format_indo = hari +', '+ str(tgl)+'-'+ bulan +'-'+ str(tahun)
     return format_indo
     
+def format_datetime_id(datetime):
+    WEEKDAYSLIST = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
+    MONTHLIST= ('Januari', 'Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember')
+    
+    hari = WEEKDAYSLIST[datetime.weekday()]
+    tgl = datetime.day
+    bulan = MONTHLIST[datetime.month -1]
+    tahun = datetime.year
+    hour = datetime.hour
+    minute = datetime.minute
+    second = datetime.second
+    
+    format_indo = hari +', '+ str(tgl)+'-'+ bulan +'-'+ str(tahun) + ' | ' + f'{hour}:{minute}:{second}' 
+    return format_indo
+
 def string_format(date_string):
     # mengambil nilai dari string 05-09-1992
     # konvert ke 1992-09-05 

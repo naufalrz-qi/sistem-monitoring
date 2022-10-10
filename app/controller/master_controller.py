@@ -21,7 +21,7 @@ class Kelas:
     @master.route('/kelas/get-all', methods=['GET'])
     def get_all():
         base = BaseModel(KelasModel)
-        model = base.get()
+        model = base.get_all()
         
         data = []
         for kelas in model:
@@ -82,7 +82,7 @@ class Mapel(object):
     @master.route('/mapel/get-all', endpoint='mapel-all', methods=['GET'])
     def get_all():
         base = BaseModel(MapelModel)
-        model = base.get()
+        model = base.get_all()
         
         data = []
         for mapel in model:
@@ -137,7 +137,7 @@ class Hari(object):
     @master.route('/hari/get-all', endpoint='hari-all', methods=['GET'])
     def get_all():
         base = BaseModel(HariModel)
-        model = base.get()
+        model = base.get_all()
         
         data = []
         for hari in model:
@@ -192,7 +192,7 @@ class TahunAjaran(object):
     @master.route('/ajaran/get-all', endpoint='ajaran-all', methods=['GET'])
     def get_all():
         base = BaseModel(TahunAjaranModel)
-        model = base.get()
+        model = base.get_all()
         
         data = []
         for ajaran in model:
@@ -251,7 +251,7 @@ class Semester(object):
     @master.route('/semester/get-all', endpoint='semester-all', methods=['GET'])
     def get_all():
         base = BaseModel(SemesterModel)
-        model = base.get()
+        model = base.get_all()
         
         data = []
         for sms in model:
@@ -290,6 +290,137 @@ class Semester(object):
                 model.is_active = active
                 base.edit()            
                 return jsonify(id=model.id, semester=semester), HTTP_200_OK
+        
+        elif request.method == 'DELETE':
+            base.delete(model)            
+            return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
+        
+class Jam(object):
+    @master.route('/jam/create', endpoint='jam', methods=['POST','GET'])
+    def create():
+        jam = request.json.get('jam')
+        
+        base = BaseModel(JamMengajarModel(jam=jam))
+        jam_check = base.get_one_or_none(jam=jam)
+        if jam_check:
+            return jsonify(msg='Data has been already exists.'), HTTP_409_CONFLICT
+        else:
+            base.create()        
+            return jsonify(jam=base.model.jam), HTTP_201_CREATED
+        
+    @master.route('/jam/get-all', endpoint='jam-all', methods=['GET'])
+    def get_all():
+        base = BaseModel(JamMengajarModel)
+        model = base.get_all()
+        
+        data = []
+        for jam in model:
+            data.append({
+                'id' : jam.id,
+                'jam' : jam.jam
+            })
+            
+        return jsonify({
+            'data' : data
+        }), HTTP_200_OK
+        
+    @master.route('/jam/get-one/<int:id>', endpoint='jam-single', methods=['GET', 'PUT', 'DELETE'])
+    def get_one(id):
+        base = BaseModel(JamMengajarModel)
+        model = base.get_one_or_none(id=id)
+        
+        if request.method == 'GET':
+            if model is not None:
+                return jsonify(id=model.id, jam= model.jam)
+            else:
+                return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
+                
+        elif request.method == 'PUT':
+            jam = request.json.get('jam')
+            
+            jam_check = base.get_one_or_none(jam=jam)
+            if jam_check:
+                return jsonify(msg=f'Data dengan {jam} sudah ada.')      
+            else:
+                model.jam = jam
+                base.edit()            
+                return jsonify(id=model.id, jam=model.jam), HTTP_200_OK
+        
+        elif request.method == 'DELETE':
+            base.delete(model)            
+            return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
+        
+class WaliKelas(object):
+    @master.route('/wali-kelas/create', endpoint='wali-kelas', methods=['POST','GET'])
+    def create():
+        guru_id = request.json.get('guru_id')
+        kelas_id = request.json.get('kelas_id')
+        
+        base = BaseModel(WaliKelasModel(guru_id=guru_id, kelas_id=kelas_id))
+        guru_check = base.get_one_or_none(guru_id=guru_id)
+        kelas_check = base.get_one_or_none(kelas_id=kelas_id)
+        
+        if guru_check:
+            return jsonify(msg='Data has been already exists.'), HTTP_409_CONFLICT
+        
+        elif guru_check and kelas_check:
+            return jsonify(msg='Data has been already exists.'), HTTP_409_CONFLICT
+        
+        elif guru_check or kelas_check:
+            return jsonify(msg='Data has been already exists.'), HTTP_409_CONFLICT
+        
+        else:
+            base.create()        
+            return jsonify(
+                id=base.model.id,
+                wali_kelas=base.model.guru.users.first_name,
+                kelas = base.model.kelas.kelas
+                           
+                           ), HTTP_201_CREATED
+        
+    @master.route('/wali-kelas/get-all', endpoint='wali-kelas-all', methods=['GET'])
+    def get_all():
+        base = BaseModel(WaliKelasModel)
+        model = base.get_all()
+        
+        data = []
+        for wali in model:
+            data.append({
+                'id' : wali.id,
+                'first_name' : wali.guru.users.first_name,
+                'last_name' : wali.guru.users.last_name,
+                'kelas' : wali.kelas.kelas
+            })
+            
+        return jsonify(data=data), HTTP_200_OK
+        
+    @master.route('/wali-kelas/get-one/<int:id>', endpoint='wali-kelas-single', methods=['GET', 'PUT', 'DELETE'])
+    def get_one(id):
+        base = BaseModel(WaliKelasModel)
+        model = base.get_one_or_none(id=id)
+        
+        if request.method == 'GET':
+            if model is not None:
+                return jsonify(id=model.id,
+                               first_name=model.guru.users.first_name,
+                               last_name=model.guru.users.last_name,
+                               kelas=model.kelas.kelas
+                               ), HTTP_200_OK
+            else:
+                return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
+                
+        elif request.method == 'PUT':
+            kelas_id = request.json.get('kelas_id')
+            
+            kelas_check = base.get_one_or_none(kelas_id=kelas_id)            
+            if kelas_check:
+                return jsonify(msg='Data has been already exists.'), HTTP_409_CONFLICT   
+            else:
+                model.kelas_id = kelas_id
+                base.edit()            
+                return jsonify(id=model.id,
+                               jam=model.guru.users.first_name +' '+ model.guru.users.last_name,
+                               kelas=model.kelas.kelas), HTTP_200_OK
         
         elif request.method == 'DELETE':
             base.delete(model)            

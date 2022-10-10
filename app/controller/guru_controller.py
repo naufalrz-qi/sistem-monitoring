@@ -1,6 +1,8 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from app.lib.base_model import BaseModel
-from app.lib.status_code import HTTP_200_OK
+from app.lib.date_time import format_datetime_id, format_indo
+from app.lib.status_code import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
+from app.models.master_model import KelasModel, WaliKelasModel
 from app.models.user_details_model import GuruModel
 from app.models.user_model import UserModel
 from app.extensions import db
@@ -9,25 +11,55 @@ guru = Blueprint('guru', __name__, url_prefix='/api/v2/guru')
 
 @guru.route('/get-all')
 def get():
-    model = db.session.query(UserModel, GuruModel)\
-                      .join(GuruModel)\
-                      .filter(UserModel.id==GuruModel.user_id).all()   
+    base_model = BaseModel(GuruModel)      
     data = []
-    for user,_ in model:
+    for user in base_model.get_all():    
         data.append({
-            'id':user.id,
-            'username':user.username,
-            'first_name' : user.first_name.capitalize(),
-            'last_name' : user.last_name.capitalize(),
-            'gender' : _.gender.capitalize(),
-            'agama': _.agama.capitalize() if _.agama else '-',
-            'alamat': _.alamat.capitalize() if _.alamat else '-',
-            'active' : True if user.is_active == '1' else False,
-            'join' : user.join_date,
-            'login' : user.user_login_now if user.user_login_now else '-',
-            "logout" : user.user_logout if user.user_logout else '-'
-            
+            'id':user.users.id,
+            'username':user.users.username.title(),
+            'first_name' : user.users.first_name.title(),
+            'last_name' : user.users.last_name.title(),
+            'gender' : user.gender.title(),
+            'agama': user.agama.title() if user.agama else '-',
+            'alamat': user.alamat.title() if user.alamat else '-',
+            'mapel' : user.mapel.mapel if user.mapel_id else '-', 
+            'active' : True if user.users.is_active == '1' else False,
+            'join' : format_indo(user.users.join_date),
+            'login' : format_datetime_id(user.users.user_last_login) if user.users.user_last_login else '-',
         })        
     return jsonify(data), HTTP_200_OK
+
+@guru.route('single/<int:id>', methods=['GET','PUT','DELETE'])
+def get_single_object(id):
+    model_user = BaseModel(UserModel)
+    user = model_user.get_one(id=id)
     
+    model_guru = BaseModel(GuruModel)
+    guru = model_guru.get_one(user_id=id)
     
+    if request.method == 'GET':    
+        if not model_guru:
+            return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
+        else:
+            return jsonify(
+                id=user.id,
+                nip=user.username,
+                first_name= user.first_name.title(),
+                last_name= user.last_name.title(),
+                
+            ), HTTP_200_OK
+
+@guru.route('/wali-kelas')
+def get_wali_kelas():
+    model = BaseModel(WaliKelasModel)
+    wali_kelas = model.get_all()
+    
+    data = []
+    for _ in wali_kelas:
+        data.append({
+            'first_name' : _.guru.users.first_name,
+            'last_name' : _.guru.users.last_name,
+            'kelas' : _.kelas.kelas
+        })
+    
+    return jsonify(data=data), HTTP_200_OK

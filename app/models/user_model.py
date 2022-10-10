@@ -1,5 +1,4 @@
 from datetime import datetime
-from email.policy import default
 from app.extensions import db
 import sqlalchemy as sa 
 from app.lib.date_time import utc_makassar
@@ -16,7 +15,7 @@ class UserModel(db.Model):
     join_date = sa.Column(sa.DateTime, default=utc_makassar())
     update_date = sa.Column(sa.DateTime, onupdate=utc_makassar())
     is_active = sa.Column(sa.String(2), nullable=False)
-    user_login_now = sa.Column(sa.DateTime)
+    user_last_login = sa.Column(sa.DateTime)
     user_logout = sa.Column(sa.DateTime)
     
     def __init__(self, username=None, first_name=None, last_name=None, password=None, group=None) -> None:
@@ -26,10 +25,10 @@ class UserModel(db.Model):
         self.last_name = last_name
         self.password = password
         self.group = group
-        self.is_active = 1    
+        # self.is_active = 1    
     
     def __repr__(self) -> str:
-        return self.first_name
+        return '{} {}'.format(self.username, self.first_name)
         
     def check_pswd(*args, **kwargs):
         return check_password_hash(*args, **kwargs)
