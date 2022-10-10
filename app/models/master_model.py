@@ -97,6 +97,10 @@ class MengajarModel(db.Model):
     kelas_id = sa.Column(sa.Integer, sa.ForeignKey('master_kelas.id', ondelete='CASCADE', onupdate='CASCADE'))
     semester_id = sa.Column(sa.Integer, sa.ForeignKey('master_semester.id', ondelete='CASCADE', onupdate='CASCADE'))
     tahun_ajaran_id = sa.Column(sa.Integer, sa.ForeignKey('master_tahun_ajaran.id', ondelete='CASCADE', onupdate='CASCADE'))
-
     
+    def __init__(self) -> None:
+        pass
+
+    def __repr__(self) -> str:
+        return self.kode_mengajar
     
