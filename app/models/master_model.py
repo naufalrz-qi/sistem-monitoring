@@ -1,15 +1,15 @@
-import sqlalchemy as sql
+import sqlalchemy as sa
 from app.extensions import db
 import sqlalchemy.orm as rs
 from .user_details_model import *
 
 class KelasModel(db.Model):
     __tablename__ = 'master_kelas'
-    # id = sql.Column(sql.Integer, primary_key=True)
-    kelas = sql.Column(sql.String(16), nullable=False)
-    jml_laki = sql.Column(sql.Integer, nullable=True)
-    jml_perempuan = sql.Column(sql.Integer, nullable=True)
-    jml_seluruh = sql.Column(sql.Integer, nullable=True)
+    # id = sa.Column(sa.Integer, primary_key=True)
+    kelas = sa.Column(sa.String(16), nullable=False)
+    jml_laki = sa.Column(sa.Integer, nullable=True)
+    jml_perempuan = sa.Column(sa.Integer, nullable=True)
+    jml_seluruh = sa.Column(sa.Integer, nullable=True)
     
     def __init__(self, kelas) -> None:
         self.kelas = kelas
@@ -22,8 +22,8 @@ class KelasModel(db.Model):
 
 class MapelModel(db.Model):
     __tablename__ = 'master_mapel'
-    # id = sql.Column(sql.Integer, primary_key=True)
-    mapel = sql.Column(sql.String(32), nullable=False)
+    # id = sa.Column(sa.Integer, primary_key=True)
+    mapel = sa.Column(sa.String(32), nullable=False)
     
     
     def __repr__(self) -> str:
@@ -31,8 +31,8 @@ class MapelModel(db.Model):
     
 class HariModel(db.Model):
     __tablename__ = 'master_hari'
-    # id = sql.Column(sql.Integer, primary_key=True)
-    hari = sql.Column(sql.String(32), nullable=False)
+    # id = sa.Column(sa.Integer, primary_key=True)
+    hari = sa.Column(sa.String(32), nullable=False)
     
     def __init__(self, hari):
         self.hari = hari
@@ -42,9 +42,9 @@ class HariModel(db.Model):
     
 class TahunAjaranModel(db.Model):
     __tablename__ = 'master_tahun_ajaran'
-    # id = sql.Column(sql.Integer, primary_key=True)
-    th_ajaran = sql.Column(sql.String(32), nullable=False)
-    is_active = sql.Column(sql.String(1), nullable=False)
+    # id = sa.Column(sa.Integer, primary_key=True)
+    th_ajaran = sa.Column(sa.String(32), nullable=False)
+    is_active = sa.Column(sa.String(1), nullable=False)
     
     def __init__(self, ajaran):
         self.th_ajaran = ajaran
@@ -55,9 +55,9 @@ class TahunAjaranModel(db.Model):
 
 class SemesterModel(db.Model):
     __tablename__ = 'master_semester'
-    # id = sql.Column(sql.Integer, primary_key=True)
-    semester = sql.Column(sql.String(32), nullable=False)
-    is_active = sql.Column(sql.String(1), nullable=False)
+    # id = sa.Column(sa.Integer, primary_key=True)
+    semester = sa.Column(sa.String(32), nullable=False)
+    is_active = sa.Column(sa.String(1), nullable=False)
     
     def __init__(self, semester=None, active=None) -> None:
         self.semester = semester
@@ -68,25 +68,35 @@ class SemesterModel(db.Model):
 
 class WaliKelasModel(db.Model):
     __tablename__ = 'master_wali_kelas'
-    # id = sql.Column(sql.Integer, primary_key=True)
-    guru_id = sql.Column(sql.Integer, sql.ForeignKey('detail_guru.id', ondelete='CASCADE', onupdate='CASCADE'))
+    # id = sa.Column(sa.Integer, primary_key=True)
+    guru_id = sa.Column(sa.Integer, sa.ForeignKey('detail_guru.id', ondelete='CASCADE', onupdate='CASCADE'))
     guru = rs.relationship('GuruModel', backref='wali_kelas')
-    kelas_id = sql.Column(sql.Integer, sql.ForeignKey('master_kelas.id', ondelete='CASCADE', onupdate='CASCADE'))
+    kelas_id = sa.Column(sa.Integer, sa.ForeignKey('master_kelas.id', ondelete='CASCADE', onupdate='CASCADE'))
     kelas = rs.relationship('KelasModel', backref='kelas_didik')
     
     def __repr__(self) -> str:
-        return '{}'.format(self.kelas)
-    
-class MengajarModel(db.Model):
-    __tablename__ = 'master_mengjar'
+        return '{}'.format(self.kelas)  
 
 class JamMengajarModel(db.Model):
     __tablename__ = 'master_jam_mengajar'
-    jam = sql.Column(sql.String(32), nullable=False)
+    jam = sa.Column(sa.String(32), nullable=False)
     
     def __init__(self, jam=None) -> None:
         self.jam = jam
         
     def __repr__(self) -> str:
         return 'jam : {}'.format(self.jam)
+    
+class MengajarModel(db.Model):
+    __tablename__ = 'master_mengjar'
+    kode_mengajar = sa.Column(sa.String(32), nullable=False)
+    guru_id = sa.Column(sa.Integer, sa.ForeignKey('detail_guru.id', ondelete='CASCADE', onupdate='CASCADE'))
+    hari_id = sa.Column(sa.Integer, sa.ForeignKey('master_hari.id', ondelete='CASCADE', onupdate='CASCADE'))
+    jam_id_selesai = sa.Column(sa.Integer, sa.ForeignKey('master_jam_mengajar.id', ondelete='CASCADE', onupdate='CASCADE'))
+    jam_id_mulai = sa.Column(sa.Integer, sa.ForeignKey('master_jam_mengajar.id', ondelete='CASCADE', onupdate='CASCADE'))
+    kelas_id = sa.Column(sa.Integer, sa.ForeignKey('master_kelas.id', ondelete='CASCADE', onupdate='CASCADE'))
+    semester_id = sa.Column(sa.Integer, sa.ForeignKey('master_semester.id', ondelete='CASCADE', onupdate='CASCADE'))
+    tahun_ajaran_id = sa.Column(sa.Integer, sa.ForeignKey('master_tahun_ajaran.id', ondelete='CASCADE', onupdate='CASCADE'))
+
+    
     
