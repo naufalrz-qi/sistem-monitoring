@@ -1,6 +1,6 @@
 from flask_admin.contrib.sqla import ModelView
 from sqlalchemy import true
-from app.models.master_model import WaliKelasModel
+from app.models.master_model import *
 from app.models.user_details_model import *
 from app.models.user_model import UserModel
 from wtforms import fields
@@ -86,8 +86,7 @@ class SiswaView(ModelView):
         ]       
     }
 
-
 class GuruDetailView(ModelView):
-    column_exclude_list = []
+    column_exclude_list = ['wali_kelas']
     can_view_details = true
-    inline_models = [WaliKelasModel]
+    

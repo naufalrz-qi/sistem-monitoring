@@ -88,9 +88,10 @@ class JamMengajarModel(db.Model):
         return 'jam : {}'.format(self.jam)
     
 class MengajarModel(db.Model):
-    __tablename__ = 'master_mengjar'
+    __tablename__ = 'master_mengajar'
     kode_mengajar = sa.Column(sa.String(32), nullable=False)
     guru_id = sa.Column(sa.Integer, sa.ForeignKey('detail_guru.id', ondelete='CASCADE', onupdate='CASCADE'))
+    guru = rs.relationship('GuruModel', backref='guru_mapel')
     hari_id = sa.Column(sa.Integer, sa.ForeignKey('master_hari.id', ondelete='CASCADE', onupdate='CASCADE'))
     jam_id_selesai = sa.Column(sa.Integer, sa.ForeignKey('master_jam_mengajar.id', ondelete='CASCADE', onupdate='CASCADE'))
     jam_id_mulai = sa.Column(sa.Integer, sa.ForeignKey('master_jam_mengajar.id', ondelete='CASCADE', onupdate='CASCADE'))
@@ -103,4 +104,6 @@ class MengajarModel(db.Model):
 
     def __repr__(self) -> str:
         return self.kode_mengajar
+    
+
     

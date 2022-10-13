@@ -25,6 +25,8 @@ class SiswaModel(db.Model):
     tempat_lahir = sa.Column(sa.String(128), nullable=True)
     tgl_lahir = sa.Column(sa.Date(), nullable=True)
     agama = sa.Column(sa.String(128), nullable=False, default=None)
+    nama_ortu_or_wali = sa.Column(sa.String(128), nullable=True)
+    no_telp = sa.Column(sa.String(16), nullable=True)
     alamat = sa.Column(sa.String(250), nullable=True)
     qr_code = sa.Column(sa.Text(), nullable=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE', onupdate='CASCADE'))
