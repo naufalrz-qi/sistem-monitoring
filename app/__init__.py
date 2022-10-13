@@ -8,10 +8,7 @@ def create_app():
     
     extended_ext(app)
     extended_admin()
-    register_bp(app)
-    
-    
-    
+    register_bp(app)   
     return app 
 
 def extended_ext(app):
@@ -23,8 +20,8 @@ def extended_ext(app):
     jwt.init_app(app)
 
 def extended_admin():
-    from app.admin.admin_model import UserView
-    from app.admin.admin_register_views import user
+    from app.super_admin.admin_model import UserView
+    from app.super_admin.admin_register_views import user
 
 app = create_app()
     

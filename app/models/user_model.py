@@ -1,6 +1,6 @@
-from datetime import datetime
 from app.extensions import db
 import sqlalchemy as sa 
+import sqlalchemy.orm as sql 
 from app.lib.date_time import utc_makassar
 from werkzeug.security import check_password_hash
 
