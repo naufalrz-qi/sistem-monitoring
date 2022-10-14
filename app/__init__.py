@@ -2,6 +2,7 @@ from flask import Flask
 from settings import Config
 from app.register_blueprint import register_bp
 
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)

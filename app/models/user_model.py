@@ -7,9 +7,7 @@ from werkzeug.security import check_password_hash
 class UserModel(db.Model):
     __tablename__ = 'auth_user'
     # id = sa.Column(sa.Integer, primary_key=True)
-    username = sa.Column(sa.String(128), nullable=False)    
-    first_name = sa.Column(sa.String(128), nullable=False, default='')
-    last_name = sa.Column(sa.String(128), nullable=False, default='')
+    username = sa.Column(sa.String(128), nullable=False)   
     password = sa.Column(sa.String(256), nullable=False, default='password123')
     group = sa.Column(sa.String(128), nullable=False) 
     join_date = sa.Column(sa.DateTime, default=utc_makassar())
@@ -18,14 +16,12 @@ class UserModel(db.Model):
     user_last_login = sa.Column(sa.DateTime)
     user_logout = sa.Column(sa.DateTime)
     
-    def __init__(self, username=None, first_name=None, last_name=None, password=None, group=None) -> None:
+    def __init__(self, username=None, password=None, group=None) -> None:
         super().__init__()
         self.username = username
-        self.first_name = first_name
-        self.last_name = last_name
         self.password = password
         self.group = group
-        # self.is_active = 1    
+        self.is_active = 1    
     
     def __repr__(self) -> str:
         return '{} {}'.format(self.username, self.first_name)

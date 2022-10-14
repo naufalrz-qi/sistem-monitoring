@@ -9,11 +9,15 @@ import sqlalchemy.orm as sql
 class AdminDetailModel(db.Model):
     __tablename__ = 'detail_admin'
     # id = sa.Column(sa.Integer, primary_key=True)
+    first_name = sa.Column(sa.String(128), nullable=False, default='')
+    last_name = sa.Column(sa.String(128), nullable=False, default='')
     gender = sa.Column(sa.String(32), nullable=True)
     alamat = sa.Column(sa.String(128), nullable=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE'))
     
-    def __init__(self, gender=None, alamat=None, user_id=None) -> str:
+    def __init__(self,first_name=None, last_name=None, gender=None, alamat=None, user_id=None) -> str:
+        self.first_name = first_name
+        self.last_name = last_name
         self.gender = gender
         self.alamat = alamat
         self.user_id = user_id
@@ -21,6 +25,8 @@ class AdminDetailModel(db.Model):
 class SiswaModel(db.Model):
     __tablename__ = 'detail_siswa'
     # id = sa.Column(sa.Integer, primary_key=True)    
+    first_name = sa.Column(sa.String(128), nullable=False, default='')
+    last_name = sa.Column(sa.String(128), nullable=False, default='')
     gender = sa.Column(sa.String(32), nullable=False)
     tempat_lahir = sa.Column(sa.String(128), nullable=True)
     tgl_lahir = sa.Column(sa.Date(), nullable=True)
@@ -34,18 +40,23 @@ class SiswaModel(db.Model):
     kelas_id = sa.Column(sa.Integer, sa.ForeignKey('master_kelas.id', ondelete='CASCADE', onupdate='CASCADE'))
     kelas = sql.relationship('KelasModel', backref='class_siswa')
 
-    def __init__(self, gender, agama=None, user_id=None) -> None:
+    def __init__(self,first_name=None, last_name=None, gender=None, agama=None, user_id=None, kelas=None) -> None:
         super().__init__()
+        self.first_name = first_name
+        self.last_name = last_name
         self.gender = gender
         self.agama = agama
         self.user_id = user_id
-      
+        self.kelas_id = kelas
+        
     def __repr__(self):
         return self.gender
 
 class GuruModel(db.Model):
     __tablename__ = 'detail_guru'
     id = sa.Column(sa.Integer, primary_key=True)
+    first_name = sa.Column(sa.String(128), nullable=False, default='')
+    last_name = sa.Column(sa.String(128), nullable=False, default='')
     gender = sa.Column(sa.String(32), nullable=False)
     agama = sa.Column(sa.String(32), nullable=True)
     alamat = sa.Column(sa.String(256), nullable=True)
@@ -54,7 +65,9 @@ class GuruModel(db.Model):
     mapel_id = sa.Column(sa.Integer, sa.ForeignKey('master_mapel.id', ondelete='CASCADE'))
     mapel = sql.relationship('MapelModel', backref='mapels')
     
-    def __init__(self, gender=None, alamat=None, agama=None, user_id=None) -> None:
+    def __init__(self,first_name=None, last_name=None, gender=None, alamat=None, agama=None, user_id=None) -> None:
+        self.first_name = first_name
+        self.last_name = last_name
         self.gender = gender
         self.alamat = alamat
         self.agama = agama

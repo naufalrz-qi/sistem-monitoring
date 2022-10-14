@@ -1,6 +1,5 @@
 from app import app
-from settings import Config
+from app.lib.template_filter import format_date_indo    
 
-# print(app.config)
 if __name__ == '__main__':
     app.run()

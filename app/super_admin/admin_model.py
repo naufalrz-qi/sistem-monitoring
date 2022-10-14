@@ -2,7 +2,6 @@ from flask_admin.contrib.sqla import ModelView
 from sqlalchemy import true
 from app.models.master_model import *
 from app.models.user_details_model import *
-from app.models.user_model import UserModel
 from wtforms import fields
 from wtforms import Form
 from werkzeug.security import generate_password_hash

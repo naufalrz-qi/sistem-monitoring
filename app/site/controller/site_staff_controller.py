@@ -10,9 +10,12 @@ def index():
     
     return render_template('staff/index_staff.html')
 
-class  Siswa:
+class Siswa:
     @staff.route('/pengguna-siswa')
     def pengguna_siswa():
         base = BaseModel(SiswaModel)
-        model = base.get_all()    
+        model = base.get_all()
         return render_template('staff/data_pengguna/data_siswa.html', model=model)
+    
+    
+    # @staff.route()

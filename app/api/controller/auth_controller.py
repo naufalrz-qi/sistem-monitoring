@@ -33,11 +33,16 @@ def login():
         chk_pswd = UserModel.check_pswd(sql_user.password, password)
         if chk_pswd:
             if sql_user.group == 'siswa' and sql_user.is_active == '1':
+                base_siswa = BaseModel(SiswaModel)
+                sql_siswa = base_siswa.get_one_or_none(user_id=sql_user.id)
+                base_kelas = BaseModel(KelasModel)
+                sql_kelas = base_kelas.get_one(id=sql_siswa.kelas_id)
                 user_identity = {
                     'id' : sql_user.id,
                     'username' : sql_user.username,
-                    'first_name' :sql_user.first_name,
-                    'last_name' : sql_user.last_name,
+                    'first_name' :sql_siswa.first_name,
+                    'last_name' : sql_siswa.last_name,
+                    'kelas' : sql_kelas.kelas if sql_siswa.kelas_id else '-',
                     'is_active' : sql_user.is_active,
                     'group' : sql_user.group
                  }
@@ -48,17 +53,21 @@ def login():
                 user.edit()      
                 return jsonify({
                     'id' : sql_user.id,
+                    'username' : sql_user.username,
+                    'first_name' : sql_siswa.first_name,
                     'access_token' : access_token,
                     'refresh_token' : refresh_token,
                 }), HTTP_200_OK
                 
             elif sql_user.group == 'guru' and sql_user.is_active == '1':
                 sql_user.user_last_login = utc_makassar()
+                base_guru = BaseModel(GuruModel)
+                sql_guru = base_guru.get_one_or_none(user_id=sql_user.id)
                 user_identity = {
                     'id' : sql_user.id,
                     'username' : sql_user.username,
-                    'first_name' :sql_user.first_name,
-                    'last_name' : sql_user.last_name,
+                    'first_name' :sql_guru.first_name,
+                    'last_name' : sql_guru.last_name,
                     'is_active' : sql_user.is_active,
                     'group' : sql_user.group
                 }
@@ -67,7 +76,8 @@ def login():
                 user.edit()
                 return jsonify({
                     'id' : sql_user.id,
-                    'first_name' : sql_user.first_name,
+                    'username': sql_user.username,
+                     'first_name' :sql_guru.first_name,
                     'acces_token' : access_token,
                     'refresh_token' : refresh_token,
                 }), HTTP_200_OK
@@ -107,21 +117,20 @@ def refresh_toke():
 @auth.route('/create', methods=['POST','GET'])
 def create():
     username = request.json.get('username')
-    first_name = request.json.get('first_name')
-    last_name = request.json.get('last_name')
     password = request.json.get('password')
     group = request.json.get('group')
     
     hash_pswd = generate_password_hash(password=password)    
-    user = BaseModel(UserModel(username,
-                                    first_name,
-                                    last_name, 
-                                    hash_pswd, 
-                                    group,                                     
-                                    ))
+    user = BaseModel(UserModel(username,                             
+                               hash_pswd, 
+                               group,                                     
+                               ))
     if group == 'siswa':
+        first_name = request.json.get('first_name')
+        last_name = request.json.get('last_name')
         gender = request.json.get('gender')
-        agama = request.json.get('agama')        
+        agama = request.json.get('agama')
+        kelas = request.json.get('kelas_id')        
          
         usrnm = BaseModel(UserModel) 
         check_username = usrnm.get_one(username=username)
@@ -132,16 +141,21 @@ def create():
             }), HTTP_409_CONFLICT
         else:            
             user.create()
-            siswa = BaseModel(SiswaModel(gender,
-                                     agama,
-                                     user.model.id))
+            siswa = BaseModel(SiswaModel(first_name, 
+                                         last_name, 
+                                         gender,
+                                         agama,
+                                         user.model.id,
+                                         kelas))
             siswa.create()         
             return jsonify({
-                'msg' : f'Add user {user.model.first_name} succesful.',
+                'msg' : f'Add user {user.model.username} succesful.',
                 'id' : siswa.model.id
             }), HTTP_201_CREATED
     
     elif group == 'guru':
+        first_name = request.json.get('first_name')
+        last_name = request.json.get('last_name')
         gender = request.json.get('gender')
         alamat = request.json.get('alamat')
         agama = request.json.get('agama')
@@ -155,16 +169,20 @@ def create():
             }), HTTP_409_CONFLICT
         else:
             user.create()
-            guru = BaseModel(GuruModel(gender,
+            guru = BaseModel(GuruModel(first_name, 
+                                       last_name,
+                                       gender,
                                        alamat,
                                        agama,
                                        user.model.id))  
             guru.create()    
             return jsonify({
-                'msg' : f'add user {user.model.first_name}'
+                'msg' : f'add user {user.model.username}'
             }), HTTP_201_CREATED
             
     elif group == 'admin':
+        first_name = request.json.get('first_name')
+        last_name = request.json.get('last_name')
         gender = request.json.get('gender')
         alamat = request.json.get('alamat')
         
@@ -177,12 +195,14 @@ def create():
             }), HTTP_409_CONFLICT
         else:
             user.create()
-            user_detail = BaseModel(AdminDetailModel(gender,
-                                       alamat,
-                                       user.model.id))
+            user_detail = BaseModel(AdminDetailModel(first_name, 
+                                                     last_name, 
+                                                     gender,
+                                                     alamat,
+                                                     user.model.id))
             user_detail.create()
             return jsonify({
-                'msg' : f'add user {user.model.first_name}'
+                'msg' : f'add user {user.model.username}'
             }), HTTP_201_CREATED
     
 
@@ -199,9 +219,10 @@ def get_one():
             'id' : user_id,
             'first_name' : current_user.get('first_name'),
             'last_name' : current_user.get('last_name'),
+            'kelas' : current_user.get('kelas'),
             'group' : current_user.get('group'),
             'is_active': current_user.get('is_active'),
-            'gender' : user.gender,
+            'gender' : user.gender.title(),
             }       
         return jsonify(
             json_object
@@ -215,7 +236,7 @@ def get_one():
             'last_name' : current_user.get('last_name'),
             'group' : current_user.get('group'),
             'is_active': current_user.get('is_active'),
-            'gender' : user.gender,
+            'gender' : user.gender.title(),
             }), HTTP_200_OK
     elif current_user.get('group') == 'admin':
         model = BaseModel(AdminDetailModel)

@@ -12,7 +12,11 @@ class BaseModel:
     def get_all(self):
         query = self.model.query.all()
         return query
-   
+    
+    def get_all_filter(self, **kwargs):
+        query =self.model.query.filter_by(**kwargs).all()
+        return query
+    
     def get_one(self, **kwargs):
         query = self.model.query.filter_by(**kwargs).first()
         return query

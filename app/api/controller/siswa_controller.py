@@ -20,8 +20,8 @@ def get():
         data.append({
             'id':user.user.id,
             'nisn':user.user.username,
-            'first_name' : user.user.first_name.title(),
-            'last_name' : user.user.last_name.title(),
+            'first_name' : user.first_name.title(),
+            'last_name' : user.last_name.title(),
             'gender' : user.gender.title(),
             'tempat_lahir': user.tempat_lahir.title() if user.tempat_lahir else '-',
             'tgl_lahir': user.tgl_lahir if user.tgl_lahir else '-',
@@ -47,8 +47,8 @@ def get_single(id):
         
         return jsonify(id= user.id,
                        nisn=model.user.username,
-                       first_name= model.user.first_name.title(),
-                       last_name=model.user.last_name.title(),
+                       first_name= model.first_name.title(),
+                       last_name=model.last_name.title(),
                        gender=model.gender.title() if model.gender else '-'  ,
                        tempat_l= model.tempat_lahir.title() if model.tempat_lahir else '-',
                        tgl_l= format_indo(model.tgl_lahir) if model.tgl_lahir else '-',
@@ -70,8 +70,8 @@ def get_single(id):
             agama = request.json.get('agama')
             active = request.json.get('active')      
             
-            model.user.firs_name = first_name
-            model.user.last_name = last_name
+            model.firs_name = first_name
+            model.last_name = last_name
             model.gender = gender
             model.tgl_lahir = tmpt_lahir
             model.tgl_lahir = string_format(tgl_lahir)

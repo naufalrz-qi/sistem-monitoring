@@ -1,6 +1,6 @@
 {% extends "index.html" %}
-
-{% set filename = 'data-siswa' %}
+{% set filename = 'pengguna-siswa' %}
+{% block title %}Pengguna Siswa{% endblock %}
 
 {% block css %}
   <!-- DataTables -->
@@ -22,41 +22,34 @@
         <thead>
         <tr align="center">
           <th>NO</th>
-          <th>NISN</th>
+          <th>Username</th>
           <th>Nama</th>
-          <th>Gender</th>
-          <th>Agama</th>
-          <th>Tempat Lahir</th>
-          <th>Tgl Lahir</th>
-          <th>Alamat</th>
           <th>Status</th>
           <th>Aksi</th>
         </tr>
         </thead>
         <tbody>
           {% for _ in model %}
-          <tr>
-            <td align="center">{{loop.index}}</td>
+          <tr align="center">
+            <td>{{loop.index}}</td>
             <td>{{_.user.username}}</td>
             <td>{{_.user.first_name | title}} {{_.user.last_name | title}}</td>
-            <td>{{_.gender | title}}</td>
-            <td>{{_.agama | title}}</td>
-            <td>{{_.tempat_lahir | title}}</td>
-            <td>{{_.tgl_lahir}}</td>
-            <td>{{_.alamat | title}}</td>
-            <td align="center">{{'Aktif' if _.user.is_active else '-'}}</td>
-            <td align="center">
-              <a href="#" class="btn btn-outline-warning btn-sm">
-                <i class="fas fa-pencil-alt"></i>
-              </a>
-              <a href="#" class="btn btn-outline-info btn-sm">
+            <td>
+              <span class="badge {{'bg-success' if _.user.is_active == '1' else 'bg-danger'}}">{{'Aktif' if _.user.is_active == '1'}} {{'Non-Aktif' if _.user.is_active == '0'}}</span>
+            </td>
+            <td>
+              <a href="#" class="btn btn-outline-info btn-xs" data-toggle="modal" data-target="#modal-detail{{_.id}}">
                 <i class="fas fa-eye"></i>
               </a>
-              <a href="#" class="btn btn-outline-danger btn-sm">
+              <a href="#" class="btn btn-outline-warning btn-xs">
+                <i class="fas fa-pencil-alt"></i>
+              </a>
+              <a href="#" class="btn btn-outline-danger btn-xs">
                 <i class="fas fa-trash-alt"></i>
               </a>
             </td>
           </tr>
+          {% include 'staff/modal/siswa/modal_detail_siswa.html' %}
           {% endfor %}
         </tbody>
         

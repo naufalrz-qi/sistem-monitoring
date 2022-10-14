@@ -17,8 +17,8 @@ def get():
         data.append({
             'id':user.users.id,
             'username':user.users.username.title(),
-            'first_name' : user.users.first_name.title(),
-            'last_name' : user.users.last_name.title(),
+            'first_name' : user.first_name.title(),
+            'last_name' : user.last_name.title(),
             'gender' : user.gender.title(),
             'agama': user.agama.title() if user.agama else '-',
             'alamat': user.alamat.title() if user.alamat else '-',
@@ -44,8 +44,8 @@ def get_single_object(id):
             return jsonify(
                 id=user.id,
                 nip=user.username,
-                first_name= user.first_name.title(),
-                last_name= user.last_name.title(),
+                first_name= guru.first_name.title(),
+                last_name= guru.last_name.title(),
                 
             ), HTTP_200_OK
 
@@ -57,8 +57,8 @@ def get_wali_kelas():
     data = []
     for _ in wali_kelas:
         data.append({
-            'first_name' : _.guru.users.first_name,
-            'last_name' : _.guru.users.last_name,
+            'first_name' : _.guru.first_name,
+            'last_name' : _.guru.last_name,
             'kelas' : _.kelas.kelas
         })
     
