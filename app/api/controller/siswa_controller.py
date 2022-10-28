@@ -18,7 +18,6 @@ import app
 siswa = Blueprint('siswa', __name__, url_prefix='/api/v2/student')
 qc_folder = os.getcwd() + '/app/static/img/siswa/qr_code/'
 
-
 @siswa.route('/get-all')
 def get():
     # model = db.session.query(UserModel, SiswaModel)\
@@ -39,10 +38,14 @@ def get():
             'agama': user.agama.title() if user.agama else '-',
             'alamat': user.alamat.title() if user.alamat else '-',
             'nama_ortu': user.nama_ortu_or_wali if user.nama_ortu_or_wali else '-',
-            'picture': url_for('static', filename='img/siswa/photos/'+ user.pic) if user.pic else '-',
+            'picture': url_for('static', filename='img/siswa/photos/'+ user.pic) if user.pic else '#',
+            'pic_name': user.pic if user.pic else '-',
+            'telp': user.no_telp if user.no_telp else '-',
             'qr_code': url_for('static', filename='img/siswa/qr_code/' + user.qr_code) if user.qr_code else '-',
             'active' : 'Aktif' if user.user.is_active == '1' else 'Non-Aktif',
             'join' : user.user.join_date,
+            'type': user.user.group.upper(),
+            'last_update': format_indo(user.user.update_date) if user.user.update_date else '-',
             'last_login' : format_datetime_id(user.user.user_last_login) if user.user.user_last_login else '-',
             "logout" : user.user.user_logout if user.user.user_logout else '-'
         })           

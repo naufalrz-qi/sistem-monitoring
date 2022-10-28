@@ -50,12 +50,25 @@
           <td class="align-middle">{{ _.kelas }}</td>
           <td class="align-middle">{{ _.tempat_lahir }}</td>
           {% if _.qr_code != '-' %}
-          <td class="align-middle text-center"><img src="{{ _.qr_code}}" height="50px" alt=""></td>
+          <td class="align-middle text-center">
+            <img src="{{ _.qr_code}}" height="50px" alt=""> <br>
+            <a href="#" title="View QR Code" class="btn btn-outline-primary btn-xs" data-toggle="modal" data-target="#modal-qr{{_.id}}">
+              <i class="fas fa-qrcode"></i>
+            </a>
+          </td>
           {% else %}
           <td class="align-middle text-center"><a href="{{ url_for('staff.generate_qc', id=_.id) }}" class="btn btn-sm btn-primary">Generate</a></td>
           {% endif %}
           {% if _.picture != '-' %}
-          <td class="align-middle text-center"><img src="{{ _.picture }}" height="50px" alt=""></td>
+          <td class="align-middle text-center">
+            <img src="{{ _.picture }}" height="50px" alt=""> <br>
+            <a href="#" title="View Image" class="btn btn-outline-primary btn-xs" data-toggle="modal" data-target="#modal-image{{_.id}}">
+              <i class="fas fa-file-image"></i>
+            </a>
+            <a href="{{ url_for('download.image', name=_.pic_name) }}" title="Download Image" class="btn btn-outline-success btn-xs">
+              <i class="fas fa-download"></i>
+            </a>
+          </td>
           {% else %}
           <td class="align-middle text-center">
             <a href="#" class="btn btn-outline-info btn-xs" data-toggle="modal" data-target="#modal-upload{{_.id}}">
@@ -64,7 +77,7 @@
           </td>
           {% endif %}
           <td class="align-middle" align="center">
-            <a href="#" class="btn btn-outline-info btn-xs" data-toggle="modal" data-target="#modal-user{{_.id}}">
+            <a href="#" class="btn btn-outline-info btn-xs" data-toggle="modal" data-target="#modal-detail{{_.id}}">
               <i class="fas fa-eye"></i>
             </a>
             <a href="#" class="btn btn-outline-warning btn-xs">
@@ -75,7 +88,10 @@
             </a>
           </td>
         </tr>
+        {% include 'staff/modal/siswa/view_qr.html' %}
         {% include 'staff/modal/siswa/modal_upload.html' %}
+        {% include 'staff/modal/siswa/modal_detail_siswa.html' %}
+        {% include 'staff/modal/siswa/view_image.html' %}
         {% endfor %}
       </tbody>
     </table>
