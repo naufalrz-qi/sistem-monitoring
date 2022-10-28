@@ -1,7 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- block head -->
+  {% block head %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Halaman | {% block title %}{% endblock %}</title>
@@ -14,9 +15,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.min.css') }}">
-
-  <!-- block css -->
-  {% block css %}
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/icon/favicon.ico') }}">
   {% endblock %}
   <!-- end block -->
 </head>
@@ -54,11 +54,10 @@
 
     <!-- Main content -->
     <section class="content">
-
       <div class="container-fluid">
-        {% block body %}
+        {% block content %}
           
-        {% endblock body %}
+        {% endblock  %}
       </div>
     </section>
     <!-- /.content -->

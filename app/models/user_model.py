@@ -11,7 +11,7 @@ class UserModel(db.Model):
     password = sa.Column(sa.String(256), nullable=False, default='password123')
     group = sa.Column(sa.String(128), nullable=False) 
     join_date = sa.Column(sa.DateTime, default=utc_makassar())
-    update_date = sa.Column(sa.DateTime, onupdate=utc_makassar())
+    update_date = sa.Column(sa.DateTime, nullable=True)
     is_active = sa.Column(sa.String(2), nullable=False)
     user_last_login = sa.Column(sa.DateTime)
     user_logout = sa.Column(sa.DateTime)
@@ -24,7 +24,7 @@ class UserModel(db.Model):
         self.is_active = 1    
     
     def __repr__(self) -> str:
-        return '{} {}'.format(self.username, self.first_name)
+        return '{}'.format(self.username)
         
     def check_pswd(*args, **kwargs):
         return check_password_hash(*args, **kwargs)

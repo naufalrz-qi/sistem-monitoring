@@ -1,12 +1,12 @@
-from datetime import datetime
+# name = "John Jacob Jingleheimer Schmidt"
+# first, *last = name.split()
+# print("First = {first}".format(first=first))
+# #First = John
+# print("Last = {last}".format(last=last))
+# #Last = Jacob Jingleheimer Schmidt
 
-dt = datetime.now()
-hr = str(dt.hour)
-print(dt)
-print(dt.date())
-print(dt.date().weekday())
-print(dt.year)
-print(dt.month)
-print(hr)
-print(dt.minute)
-print(dt.second)
+name = 'Ari Efendi Saja'
+first_name, *last_name = name.split()
+
+print(first_name)
+print(" ".join(last_name))

@@ -1,0 +1,107 @@
+{% extends "index.html" %}
+{% set filename = 'data-siswa' %}
+{% block title %}Data Siswa{% endblock %}
+
+{% block css %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+{% endblock %}
+
+
+{% block body %}
+<div class="card">
+    <div class="card-header">
+      <h3 class="card-title fa fa-users font-weight-bold text-lg"> Data Siswa</h3>
+    </div>
+    <!-- /.card-header -->
+        
+    <div class="card-body">
+      <a href="#" class="btn btn-sm btn-primary mb-3">
+        <i class="fas fa-plus"></i>
+        Tambah Data Siswa
+      </a>
+      <table id="example1" class="table table-bordered table-striped table-sm">
+        <thead>
+        <tr>
+          <th>NO</th>
+          <th>NISN</th>
+          <th>Nama</th>  
+          <th>Jenis Kelamin</th>       
+          <th>Kelas</th>       
+          <th>Tempat Lahir</th>
+          <th>Tgl Lahir</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+          {% for _ in model %}
+          <tr>
+            <td>{{loop.index}}</td>
+            <td>{{_.user.username}}</td>
+            <td>{{_.first_name | title}} {{_.last_name | title }}</td>
+            <td>{{_.gender | title }}</td>
+            <td>{{_.kelas.kelas if _.kelas_id else '-' }}</td>
+            <td>{{_.tempat_lahir | title if _.tempat_lahir else '-' }}</td>
+            <td>{{_.tgl_lahir | fdate_indo if _.tgl_lahir else '-'}}</td>
+            <td align="center">
+              <a href="#" class="btn btn-outline-info btn-xs" data-toggle="modal" data-target="#modal-user{{_.id}}">
+                <i class="fas fa-eye"></i>
+              </a>
+              <a href="#" class="btn btn-outline-warning btn-xs">
+                <i class="fas fa-pencil-alt"></i>
+              </a>
+              <a href="#" class="btn btn-outline-danger btn-xs">
+                <i class="fas fa-trash-alt"></i>
+              </a>
+            </td>
+          </tr>
+          {#{% include 'staff/modal/user/modal_user.html' %}#}
+          {% endfor %}
+        </tbody>
+        
+      </table>
+    </div>
+    <!-- /.card-body -->
+  </div>
+  <!-- /.card -->
+</div>
+{% endblock body %}
+
+
+{% block js %}
+ <!-- DataTables  & Plugins -->
+<script src="{{ url_for('static', filename='plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+<!-- Page specific script -->
+<script>
+  $(function () {
+    $("#example2").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    $('#example1').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": true,
+      "responsive": true,
+
+    });
+  });
+
+   
+</script>
+{% endblock js %}
+

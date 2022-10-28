@@ -1,8 +1,9 @@
-{% extends "index.html" %}
-{% set filename = 'pengguna-siswa' %}
-{% block title %}Pengguna Siswa{% endblock %}
+{% extends "base.html" %}
+{% set filename = 'data-user' %}
+{% block title %}Data User{% endblock %}
 
-{% block css %}
+{% block head %}
+{{ super() }}
   <!-- DataTables -->
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
@@ -10,35 +11,42 @@
 {% endblock %}
 
 
-{% block body %}
+{% block content %}
 <div class="card">
     <div class="card-header">
-      <h3 class="card-title fa fa-users font-weight-bold text-lg"> Data Pegguna Siswa</h3>
+      <h3 class="card-title fa fa-users font-weight-bold text-lg"> Data User</h3>
     </div>
     <!-- /.card-header -->
         
     <div class="card-body">
-      <table id="example1" class="table table-bordered table-striped">
+      <a href="#" class="btn btn-sm btn-primary mb-3">
+        <i class="fas fa-plus"></i>
+        Tambah Pengguna
+      </a>
+      <table id="example1" class="table table-bordered table-striped table-sm">
         <thead>
-        <tr align="center">
+        <tr>
           <th>NO</th>
           <th>Username</th>
-          <th>Nama</th>
+          <th>Group</th>  
+          <th>Taggal Buat</th>       
+          <th>Las Login</th>
           <th>Status</th>
-          <th>Aksi</th>
         </tr>
         </thead>
         <tbody>
-          {% for _ in model %}
-          <tr align="center">
+          {% for _ in user %}
+          <tr>
             <td>{{loop.index}}</td>
-            <td>{{_.user.username}}</td>
-            <td>{{_.user.first_name | title}} {{_.user.last_name | title}}</td>
+            <td>{{_.username}}</td>
+            <td>{{_.group | title}}</td>
+            <td>{{_.join_date | fdate_indo}}</td>
+            <td>{{_.user_last_login | fdate_indo if _.user_last_login else '-'}}</td>
             <td>
-              <span class="badge {{'bg-success' if _.user.is_active == '1' else 'bg-danger'}}">{{'Aktif' if _.user.is_active == '1'}} {{'Non-Aktif' if _.user.is_active == '0'}}</span>
+              <span class="badge {{'bg-success' if _.is_active == '1' else 'bg-danger'}}">{{'Aktif' if _.is_active == '1'}} {{'Non-Aktif' if _.is_active == '0'}}</span>
             </td>
-            <td>
-              <a href="#" class="btn btn-outline-info btn-xs" data-toggle="modal" data-target="#modal-detail{{_.id}}">
+            <!-- <td align="center">
+              <a href="#" class="btn btn-outline-info btn-xs" data-toggle="modal" data-target="#modal-user{{_.id}}">
                 <i class="fas fa-eye"></i>
               </a>
               <a href="#" class="btn btn-outline-warning btn-xs">
@@ -47,9 +55,9 @@
               <a href="#" class="btn btn-outline-danger btn-xs">
                 <i class="fas fa-trash-alt"></i>
               </a>
-            </td>
+            </td> -->
           </tr>
-          {% include 'staff/modal/siswa/modal_detail_siswa.html' %}
+          {% include 'staff/modal/user/modal_user.html' %}
           {% endfor %}
         </tbody>
         
@@ -59,7 +67,7 @@
   </div>
   <!-- /.card -->
 </div>
-{% endblock body %}
+{% endblock %}
 
 
 {% block js %}

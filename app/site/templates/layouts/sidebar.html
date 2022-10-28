@@ -6,6 +6,7 @@
     </a>
 
     <!-- Sidebar -->
+    {% block sideBar %}
     <div class="sidebar">
       <!-- Sidebar user (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
@@ -27,7 +28,7 @@
               <p>Beranda</p>
             </a>
           </li>
-          <li class="nav-header">Pengguna</li>
+          <li class="nav-header">Data</li>
           <li class="nav-item {{'menu-open' if filename=='data-siswa' else None}}">
             <a href="#" class="nav-link {{'active' if filename=='data-siswa' else None}}" >
               <i class="nav-icon fas fa-users-cog"></i>
@@ -50,16 +51,41 @@
                 </a>
               </li>         
               <li class="nav-item">
-                <a href="{{ url_for('staff.pengguna_siswa')}}" class="nav-link {{'active' if filename=='data-siswa' else None}}">
-                  <i class="far fa-circle nav-icon"></i>
+                <a href="{{ url_for('staff.get_siswa')}}" class="nav-link {{'active' if filename=='data-siswa' else None}}">
+                  <i class="far nav-icon {{ 'fa-dot-circle' if filename=='data-siswa' else 'fa-circle' }}"></i>
                   <p>Siswa</p>
                 </a>
               </li>         
             </ul>
-          </li>          
+          </li>     
+          <li class="nav-header">Authentication</li>
+          <li class="nav-item {{ 'menu-open' if filename=='data-user' else None }}">
+            <a href="#" class="nav-link {{ 'active' if filename=='data-user' else None }}">
+              <i class="nav-icon fas fa-user-secret"> </i>
+              <p>
+                Auth User
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{url_for('staff.get')}}" class="nav-link {{ 'active' if filename=='data-user' else None }}">
+                  <i class="far nav-icon {{ 'fa-dot-circle' if filename=='data-user' else 'fa-circle' }}"></i>
+                  <p>Data User</p>
+                </a>
+                <a href="#" class="nav-link ">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Ubah Password</p>
+                </a>
+              </li>
+            </ul>
+            
+          </li>
+          
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->
+    {% endblock %}
   </aside>
