@@ -1,8 +1,8 @@
 from app.super_admin.admin_model import *
-from app.extensions import db
-from app.models.user_details_model import *
-from app.models.user_model import UserModel
-from app.extensions import admin
+from app.backend.extensions import db
+from app.backend.models.user_details_model import *
+from app.backend.models.user_model import UserModel
+from app.backend.extensions import admin
 
  
 admin_detail = admin.add_view(AdminDetailView(AdminDetailModel, db.session, name='Admin'))

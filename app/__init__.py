@@ -1,5 +1,6 @@
 from flask import Flask
-from app.register_blueprint import register_bp
+from app.backend.register_app import register_app
+from app.frontend.register_app import register_app_site
 from settings import Config
 
 def create_app():
@@ -8,13 +9,14 @@ def create_app():
     
     extended_ext(app)
     extended_admin()
-    register_bp(app)   
+    register_app(app)   
+    register_app_site(app)
     return app 
 
 
 
 def extended_ext(app):
-    from app.extensions import db, admin, jwt, migrate
+    from app.backend.extensions import db, admin, jwt, migrate
     
     db.init_app(app)
     migrate.init_app(app, db)
