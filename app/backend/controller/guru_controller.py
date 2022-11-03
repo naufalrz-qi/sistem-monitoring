@@ -13,10 +13,10 @@ guru = Blueprint('guru', __name__, url_prefix='/api/v2/guru')
 def get():
     base_model = BaseModel(GuruModel)      
     data = []
-    for user in base_model.get_all():    
+    for user in base_model.get_all():  
         data.append({
             'id':user.users.id,
-            'username':user.users.username.title(),
+            'nip':user.users.username,
             'first_name' : user.first_name.title(),
             'last_name' : user.last_name.title(),
             'gender' : user.gender.title(),
@@ -25,7 +25,9 @@ def get():
             'mapel' : user.mapel.mapel if user.mapel_id else '-', 
             'active' : True if user.users.is_active == '1' else False,
             'join' : format_indo(user.users.join_date),
-            'login' : format_datetime_id(user.users.user_last_login) if user.users.user_last_login else '-',
+            'last_update': format_indo(user.users.update_date) if user.users.update_date else '-',
+            'last_login' : format_datetime_id(user.users.user_last_login) if user.users.user_last_login else '-',
+            'type' : user.users.group.upper(),
         })        
     return jsonify(data), HTTP_200_OK
 

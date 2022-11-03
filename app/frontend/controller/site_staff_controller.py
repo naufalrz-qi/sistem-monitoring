@@ -171,11 +171,11 @@ class Siswa:
         # GET KELAS
         url_kelas = base + f"/api/v2/master/kelas/get-all"
         get_kelas = req.get(url_kelas)
-        list_kelas = get_kelas.json()['data']
-        choices=[("", "..:: SELECT ::..")]
+        list_kelas = get_kelas.json()["data"]
+        choices = [("", "..:: SELECT ::..")]
         for _ in list_kelas:
             # form.kelas.choices.append((_["id"], _["kelas"]))
-            choices.append((_['id'], _['kelas']))
+            choices.append((_["id"], _["kelas"]))
         form.kelas.choices = choices
         baseModel = BaseModel(SiswaModel)
         getOne = baseModel.get_one_or_none(user_id=id)
@@ -186,24 +186,26 @@ class Siswa:
         json_resp = resp_obj.json()
         form.nisn.default = json_resp["nisn"]
         form.fullname.default = json_resp["first_name"] + " " + json_resp["last_name"]
-        form.kelas.default = next(obj['id'] for obj in list_kelas if json_resp['kelas'] in obj['kelas'])
-        form.jenisKelamin.default = json_resp['gender'].lower()
-        form.tempatLahir.default = json_resp['tempat_lahir']
-        '''
+        form.kelas.default = next(
+            obj["id"] for obj in list_kelas if json_resp["kelas"] in obj["kelas"]
+        )
+        form.jenisKelamin.default = json_resp["gender"].lower()
+        form.tempatLahir.default = json_resp["tempat_lahir"]
+        """
         NOTE: Convert str to datetime.date
         buat logika jika string tgl ada maka convert ke datetime.strptime(str_date, format).date
         jika tidak maka tetapkan string tgl default '2000-10-10' agar tidak terjadi error
-        '''
-        from_date = json_resp['tgl_lahir'] if json_resp['tgl_lahir'] else '2000-10-10'
-        to_date = datetime.strptime(from_date, '%Y-%m-%d').date()
-        ''''''
-        form.tanggalLahir.default = to_date if json_resp['tgl_lahir'] else None
-        form.agama.default = json_resp['agama'].lower()
-        form.alamat.default = json_resp['alamat']
-        form.namaOrtu.default = json_resp['nama_ortu']
-        form.telp.default = json_resp['telp']
+        """
+        from_date = json_resp["tgl_lahir"] if json_resp["tgl_lahir"] else "2000-10-10"
+        to_date = datetime.strptime(from_date, "%Y-%m-%d").date()
+        """"""
+        form.tanggalLahir.default = to_date if json_resp["tgl_lahir"] else None
+        form.agama.default = json_resp["agama"].lower()
+        form.alamat.default = json_resp["alamat"]
+        form.namaOrtu.default = json_resp["nama_ortu"]
+        form.telp.default = json_resp["telp"]
         form.process()
-        '''
+        """
         Cara for and if dari umum sampai tracky
         ## cara umum
         # nilai = None
@@ -214,51 +216,60 @@ class Siswa:
         # item = next((item['id'] for item in list_kelas if json_resp['kelas'] in item['kelas']), None)
         ## cara 2
         # item = next(item['id'] for item in list_kelas if json_resp['kelas'] in item['kelas'])    
-        '''
-        if request.method == 'POST':
-            nisn = request.form.get('nisn')
-            fullname = request.form.get('fullname')
+        """
+        if request.method == "POST":
+            nisn = request.form.get("nisn")
+            fullname = request.form.get("fullname")
             first_name = ""
             last_name = ""
-            first_name, *last_name = fullname.split() if fullname else 'None'
+            first_name, *last_name = fullname.split() if fullname else "None"
             if len(last_name) == 0:
                 last_name = first_name
             elif len(last_name) != 0:
                 last_name = " ".join(last_name)
-            kelas = request.form.get('kelas')
-            gender = request.form.get('jenisKelamin')
-            tempat_lahir = request.form.get('tempatLahir')
-            tgl_lahir = request.form.get('tanggalLahir')
-            agama = request.form.get('agama')
-            alamat = request.form.get('alamat')
-            nama_ortu = request.form.get('namaOrtu')
-            telp = request.form.get('telp')
+            kelas = request.form.get("kelas")
+            gender = request.form.get("jenisKelamin")
+            tempat_lahir = request.form.get("tempatLahir")
+            tgl_lahir = request.form.get("tanggalLahir")
+            agama = request.form.get("agama")
+            alamat = request.form.get("alamat")
+            nama_ortu = request.form.get("namaOrtu")
+            telp = request.form.get("telp")
             headers = {"Content-Type": "application/json"}
             payload = json.dumps(
                 {
-                    'nisn': nisn,
-                    'first_name': first_name,
-                    'last_name': last_name,
-                    'kelas': kelas,
-                    'gender': gender,
-                    'tempat': tempat_lahir,
-                    'tgl': tgl_lahir,
-                    'agama': agama,
-                    'alamat': alamat,
-                    'nama_ortu': nama_ortu,
-                    'telp': telp
+                    "nisn": nisn,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "kelas": kelas,
+                    "gender": gender,
+                    "tempat": tempat_lahir,
+                    "tgl": tgl_lahir,
+                    "agama": agama,
+                    "alamat": alamat,
+                    "nama_ortu": nama_ortu,
+                    "telp": telp,
                 }
             )
-            print(f'payload = {payload}')
-            response_update = req.put(url_obj, headers=headers, data=payload) 
-            
+            print(f"payload = {payload}")
+            response_update = req.put(url_obj, headers=headers, data=payload)
+
             if response_update.status_code == 200:
-                flash(f'Data dari {first_name} telah berhasil diperbaharui.', 'success')
-                return redirect(url_for('staff.get_siswa'))
+                flash(f"Data dari {first_name} telah berhasil diperbaharui.", "success")
+                return redirect(url_for("staff.get_siswa"))
             else:
-                flash(f'Terjadi kesalahan dalam memuat data. statu : {response_update.status_code}', 'error')
-                return render_template("staff/data_pengguna/siswa/edit_siswa.html", form=form, obj=json_resp)
-        return render_template("staff/data_pengguna/siswa/edit_siswa.html", form=form, obj=json_resp)
+                flash(
+                    f"Terjadi kesalahan dalam memuat data. statu : {response_update.status_code}",
+                    "error",
+                )
+                return render_template(
+                    "staff/data_pengguna/siswa/edit_siswa.html",
+                    form=form,
+                    obj=json_resp,
+                )
+        return render_template(
+            "staff/data_pengguna/siswa/edit_siswa.html", form=form, obj=json_resp
+        )
 
     # NOTE:  DELETE DATA SISWA
     @staff.route("/delete-siswa/<int:id>", methods=["GET", "POST", "DELETE"])
@@ -339,10 +350,21 @@ class Siswa:
         )
 
 
-class User:
-    base = BaseModel(UserModel)
-  
+# """NOTE: DATA GURU"""
+class Guru:
+    @staff.route("data-guru")
+    def get_guru():
+        base = request.url_root
+        url = base + "api/v2/guru/get-all"
+        response = req.get(url)
+        json_resp = response.json()
 
+        return render_template(
+            "staff/data_pengguna/guru/data_guru.html", model=json_resp
+        )
+
+
+class User:
     @staff.route("/data-user")
     def get_user():
         base = request.url_root
@@ -350,7 +372,10 @@ class User:
         form = FormEditStatus()
         formUpdatePassword = FormEditPassword()
         return render_template(
-            "staff/data_pengguna/data_user.html", user=model_user, form=form, formPassword=formUpdatePassword
+            "staff/data_pengguna/data_user.html",
+            user=model_user,
+            form=form,
+            formPassword=formUpdatePassword,
         )
 
     @staff.post("/edit-status/<int:id>")
@@ -375,32 +400,36 @@ class User:
                 return redirect(url_for("staff.get_user"))
             else:
                 return redirect(url_for("staff.get_user"))
-    
-    @staff.post('edit-pswd/<int:id>')
+
+    @staff.post("edit-pswd/<int:id>")
     def update_password(id):
         base = request.url_root
-        url = base + f'api/v2/auth/edit-password?id={id}'
-        
-        if request.method == 'POST':
-            password = request.form.get('kataSandi')
-            
+        url = base + f"api/v2/auth/edit-password?id={id}"
+
+        if request.method == "POST":
+            password = request.form.get("kataSandi")
+
             headers = {"Content-Type": "application/json"}
-            payload = json.dumps({
-                'password': password
-            })
-            
+            payload = json.dumps({"password": password})
+
             response = req.put(url=url, data=payload, headers=headers)
             msg = response.json()
             if response.status_code == 200:
-                flash(message=f'{msg["msg"]}, status : {response.status_code}', category='success')
+                flash(
+                    message=f'{msg["msg"]}, status : {response.status_code}',
+                    category="success",
+                )
                 return redirect(url_for("staff.get_user"))
             elif response.status_code == 400:
-                flash(f'Error: {msg["msg"]}, status : {response.status_code}', 'error')
+                flash(f'Error: {msg["msg"]}, status : {response.status_code}', "error")
                 return redirect(url_for("staff.get_user"))
             else:
-                flash(f'Error: Terjadi kesalahan dalam memuat data, status : {response.status_code}', 'error')
+                flash(
+                    f"Error: Terjadi kesalahan dalam memuat data, status : {response.status_code}",
+                    "error",
+                )
                 return redirect(url_for("staff.get_user"))
-    
+
 
 class TestPage:
     @staff.get("test-page")

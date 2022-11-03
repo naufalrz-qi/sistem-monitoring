@@ -88,4 +88,4 @@ class SiswaView(ModelView):
 class GuruDetailView(ModelView):
     column_exclude_list = ['wali_kelas']
     can_view_details = true
-    
+    inline_models = [WaliKelasModel]
