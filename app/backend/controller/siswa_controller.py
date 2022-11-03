@@ -13,6 +13,7 @@ from app.backend.models.user_details_model import SiswaModel
 from app.backend.models.user_model import UserModel
 from app.backend.extensions import db
 from app.backend.lib.uploader import uploads
+from datetime import datetime
 import app
 
 siswa = Blueprint('siswa', __name__, url_prefix='/api/v2/student')
@@ -41,6 +42,7 @@ def get():
             'gender' : user.gender.title(),
             'kelas' : user.kelas.kelas if user.kelas_id else '-',
             'tempat_lahir': user.tempat_lahir.title() if user.tempat_lahir else '-',
+            # 'tgl_lahir': user.tgl_lahir if user.tgl_lahir else '-',
             'tgl_lahir': format_indo(user.tgl_lahir) if user.tgl_lahir else '-',
             'agama': user.agama.title() if user.agama else '-',
             'alamat': user.alamat.title() if user.alamat else '-',
@@ -50,7 +52,7 @@ def get():
             'telp': user.no_telp if user.no_telp else '-',
             'qr_code': url_for('.static', filename='img/siswa/qr_code/' + user.qr_code) if user.qr_code else None,
             'active' : 'Aktif' if user.user.is_active == '1' else 'Non-Aktif',
-            'join' : user.user.join_date,
+            'join' : format_datetime_id(user.user.join_date) if user.user.join_date else '-',
             'type': user.user.group.upper(),
             'last_update': format_indo(user.user.update_date) if user.user.update_date else '-',
             'last_login' : format_datetime_id(user.user.user_last_login) if user.user.user_last_login else '-',
@@ -68,17 +70,19 @@ def get_single(id):
     if request.method == 'GET':
         if not model:
             return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
-        
+        print(model.tgl_lahir)
         return jsonify(id= model.user.id,
                        nisn=model.user.username,
                        first_name= model.first_name.title(),
                        last_name=model.last_name.title(),
-                       gender=model.gender.title() if model.gender else '-'  ,
-                       tempat_l= model.tempat_lahir.title() if model.tempat_lahir else '-',
-                       tgl_l= format_indo(model.tgl_lahir) if model.tgl_lahir else '-',
-                       agama=model.agama.title() if model.agama else '-',
-                       alamat=model.alamat.title() if model.alamat else '-',
-                       active=True if model.user.is_active == "1" else False,
+                       kelas = model.kelas.kelas if model.kelas.kelas else None,
+                       gender=model.gender.title() if model.gender else None  ,
+                       tempat_lahir= model.tempat_lahir.title() if model.tempat_lahir else None,
+                       tgl_lahir=str(model.tgl_lahir) if model.tgl_lahir else None,
+                       agama=model.agama.title() if model.agama else None,
+                       alamat=model.alamat.title() if model.alamat else None,
+                       nama_ortu=model.nama_ortu_or_wali.title() if  model.nama_ortu_or_wali else None,
+                       telp = model.no_telp if model.no_telp else None
                        ), HTTP_200_OK
         
     elif request.method == 'PUT':
@@ -96,15 +100,15 @@ def get_single(id):
             telp = request.json.get('telp')
             kelas = request.json.get('kelas')
             nama_ortu = request.json.get('nama_ortu')
-            # active = request.json.get('active') 
-                 
+            # active = request.json.get('active')                  
             
             model.user.username = nisn
             model.firs_name = first_name
             model.last_name = last_name
             model.gender = gender
-            model.tgl_lahir = tmpt_lahir
-            model.tgl_lahir = string_format(tgl_lahir)
+            model.tempat_lahir = tmpt_lahir
+            model.tgl_lahir = tgl_lahir
+            # model.tgl_lahir = string_format(tgl_lahir)
             model.alamat = alamat
             model.agama = agama
             model.no_telp = telp
@@ -114,7 +118,7 @@ def get_single(id):
             # model.user.is_active = active
         
             base.edit()        
-            return jsonify(msg=f'Update data {model.user.first_name} successfull.'), HTTP_200_OK
+            return jsonify(msg=f'Update data {model.first_name} successfull.'), HTTP_200_OK
     
     elif request.method == 'DELETE':        
         if not model:

@@ -15,24 +15,27 @@ from app.backend.models.user_model import *
 from app.backend.models.user_details_model import *
 from app.backend.lib.base_model import BaseModel
 from werkzeug.utils import secure_filename
-from app.frontend.forms.form_user import FormAddSiswa, FormStatus
+from app.frontend.forms.form_auth import FormEditStatus
+from app.frontend.forms.form_siswa import FormAddSiswa, FormEditSiswa
+from ..forms.form_auth import *
 import os
 import requests as req
 import io
 import xlwt
 
-staff = Blueprint(
-    "staff", __name__, template_folder="../templates/", url_prefix="/"
-)
+staff = Blueprint("staff", __name__, template_folder="../templates/", url_prefix="/")
 
-@staff.route('/staff/<path:filename>')
+
+@staff.route("/staff/<path:filename>")
 def static(filename):
-    dir = send_from_directory('frontend/static', filename)
+    dir = send_from_directory("frontend/static", filename)
     return dir
+
 
 @staff.route("/")
 def index():
     return render_template("staff/index_staff.html")
+
 
 class Siswa:
     @staff.route("/data-siswa")
@@ -43,10 +46,14 @@ class Siswa:
         data = r.json()
         # NOTE: GET KELAS
         base_kelas = request.url_root
-        url_kelas = base_kelas + url_for('master.kelas_all')
+        url_kelas = base_kelas + url_for("master.kelas_all")
         resp_kelas = req.get(url_kelas)
         json_kelas = resp_kelas.json()
-        return render_template("staff/data_pengguna/siswa/data_siswa.html", model=data, jsonKelas = json_kelas)
+        return render_template(
+            "staff/data_pengguna/siswa/data_siswa.html",
+            model=data,
+            jsonKelas=json_kelas,
+        )
 
     @staff.route("/generate-qc", methods=["GET", "PUT"])
     def generate_qc():
@@ -56,10 +63,16 @@ class Siswa:
         headers = {"Content-Type": "application/json"}
         r = req.put(url, headers=headers)
         if r.status_code == 200:
-            flash(message=f'Generate QR kode berhasil. Status : {r.status_code}', category='success')
+            flash(
+                message=f"Generate QR kode berhasil. Status : {r.status_code}",
+                category="success",
+            )
             return redirect(url_for("staff.get_siswa"))
         else:
-            flash(message=f'Maaf terjadi kesalahan dalam generate QR CODE. Status : {r.status_code}', category='error')
+            flash(
+                message=f"Maaf terjadi kesalahan dalam generate QR CODE. Status : {r.status_code}",
+                category="error",
+            )
             return redirect(url_for("staff.get_siswa"))
 
     # NOTE:  UPLOAD FOTO
@@ -95,6 +108,7 @@ class Siswa:
     @staff.route("/add-siswa", methods=["GET", "POST"])
     def add_siswa():
         base = request.url_root
+        # get kelas
         url_kelas = base + f"/api/v2/master/kelas/get-all"
         get_kelas = req.get(url_kelas)
         data = get_kelas.json()
@@ -150,26 +164,104 @@ class Siswa:
         return render_template("staff/data_pengguna/siswa/tambah_siswa.html", form=form)
 
     # NOTE:  UPDATE DATA SISWA
-    @staff.route("/update-siswa/<int:id>", methods=['GET','POST','PUT'])
-    def update_siswa():
-        nisn = request.form.get('nisn')
-        fullname = request.form.get('fullname')
-        first_name = ""
-        last_name = ""
-        first_name, *last_name = fullname.split()
-        if len(last_name) == 0:
-            last_name = first_name
-        elif len(last_name) != 0:
-            last_name = " ".join(last_name)
-        kelas = request.form.get('kelas')
-        gender = request.form.get('jenisKelamin')
-        tempat_lahir = request.form.get('tempatLahir')
-        
-        return render_template('staff/data_pengguna/siswa/edit_siswa.html')
-        
-    
+    @staff.route("/update-siswa/<int:id>", methods=["GET", "POST", "PUT"])
+    def update_siswa(id):
+        form = FormEditSiswa()
+        base = request.url_root
+        # GET KELAS
+        url_kelas = base + f"/api/v2/master/kelas/get-all"
+        get_kelas = req.get(url_kelas)
+        list_kelas = get_kelas.json()['data']
+        choices=[("", "..:: SELECT ::..")]
+        for _ in list_kelas:
+            # form.kelas.choices.append((_["id"], _["kelas"]))
+            choices.append((_['id'], _['kelas']))
+        form.kelas.choices = choices
+        baseModel = BaseModel(SiswaModel)
+        getOne = baseModel.get_one_or_none(user_id=id)
+        # print(type(getOne.tgl_lahir))
+        # GET SINGLE DATA
+        url_obj = base + f"api/v2/student/single/{id}"
+        resp_obj = req.get(url=url_obj)
+        json_resp = resp_obj.json()
+        form.nisn.default = json_resp["nisn"]
+        form.fullname.default = json_resp["first_name"] + " " + json_resp["last_name"]
+        form.kelas.default = next(obj['id'] for obj in list_kelas if json_resp['kelas'] in obj['kelas'])
+        form.jenisKelamin.default = json_resp['gender'].lower()
+        form.tempatLahir.default = json_resp['tempat_lahir']
+        '''
+        NOTE: Convert str to datetime.date
+        buat logika jika string tgl ada maka convert ke datetime.strptime(str_date, format).date
+        jika tidak maka tetapkan string tgl default '2000-10-10' agar tidak terjadi error
+        '''
+        from_date = json_resp['tgl_lahir'] if json_resp['tgl_lahir'] else '2000-10-10'
+        to_date = datetime.strptime(from_date, '%Y-%m-%d').date()
+        ''''''
+        form.tanggalLahir.default = to_date if json_resp['tgl_lahir'] else None
+        form.agama.default = json_resp['agama'].lower()
+        form.alamat.default = json_resp['alamat']
+        form.namaOrtu.default = json_resp['nama_ortu']
+        form.telp.default = json_resp['telp']
+        form.process()
+        '''
+        Cara for and if dari umum sampai tracky
+        ## cara umum
+        # nilai = None
+        # for item in list_kelas:
+        #     if json_resp['kelas'] in item['kelas']:
+        #         nilai = item['id']
+        ## cara 1
+        # item = next((item['id'] for item in list_kelas if json_resp['kelas'] in item['kelas']), None)
+        ## cara 2
+        # item = next(item['id'] for item in list_kelas if json_resp['kelas'] in item['kelas'])    
+        '''
+        if request.method == 'POST':
+            nisn = request.form.get('nisn')
+            fullname = request.form.get('fullname')
+            first_name = ""
+            last_name = ""
+            first_name, *last_name = fullname.split() if fullname else 'None'
+            if len(last_name) == 0:
+                last_name = first_name
+            elif len(last_name) != 0:
+                last_name = " ".join(last_name)
+            kelas = request.form.get('kelas')
+            gender = request.form.get('jenisKelamin')
+            tempat_lahir = request.form.get('tempatLahir')
+            tgl_lahir = request.form.get('tanggalLahir')
+            agama = request.form.get('agama')
+            alamat = request.form.get('alamat')
+            nama_ortu = request.form.get('namaOrtu')
+            telp = request.form.get('telp')
+            headers = {"Content-Type": "application/json"}
+            payload = json.dumps(
+                {
+                    'nisn': nisn,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'kelas': kelas,
+                    'gender': gender,
+                    'tempat': tempat_lahir,
+                    'tgl': tgl_lahir,
+                    'agama': agama,
+                    'alamat': alamat,
+                    'nama_ortu': nama_ortu,
+                    'telp': telp
+                }
+            )
+            print(f'payload = {payload}')
+            response_update = req.put(url_obj, headers=headers, data=payload) 
+            
+            if response_update.status_code == 200:
+                flash(f'Data dari {first_name} telah berhasil diperbaharui.', 'success')
+                return redirect(url_for('staff.get_siswa'))
+            else:
+                flash(f'Terjadi kesalahan dalam memuat data. statu : {response_update.status_code}', 'error')
+                return render_template("staff/data_pengguna/siswa/edit_siswa.html", form=form, obj=json_resp)
+        return render_template("staff/data_pengguna/siswa/edit_siswa.html", form=form, obj=json_resp)
+
     # NOTE:  DELETE DATA SISWA
-    @staff.route("/delete-siswa/<int:id>", methods=['GET','POST','DELETE'])
+    @staff.route("/delete-siswa/<int:id>", methods=["GET", "POST", "DELETE"])
     def delete_siswa(id):
         base = request.url_root
         url = base + f"/api/v2/student/single/{id}"
@@ -181,7 +273,6 @@ class Siswa:
         else:
             flash("Ada tejadi kesalahan dalam menghapus data.", "error")
             return redirect(url_for("staff.get_siswa"))
-            
 
     # eksport data
     @staff.route("/export-siswa")
@@ -249,17 +340,17 @@ class Siswa:
 
 
 class User:
-    base_user = BaseModel(UserModel)
-    base_staff = BaseModel(AdminDetailModel)
-    base_guru = BaseModel(GuruModel)
-    base_siswa = BaseModel(SiswaModel)
+    base = BaseModel(UserModel)
+  
 
     @staff.route("/data-user")
     def get_user():
-        model_user = User.base_user.get_all()
-        form = FormStatus()
+        base = request.url_root
+        model_user = User.base.get_all()
+        form = FormEditStatus()
+        formUpdatePassword = FormEditPassword()
         return render_template(
-            "staff/data_pengguna/data_user.html", user=model_user, form=form
+            "staff/data_pengguna/data_user.html", user=model_user, form=form, formPassword=formUpdatePassword
         )
 
     @staff.post("/edit-status/<int:id>")
@@ -267,7 +358,6 @@ class User:
         base = request.url_root
         url = base + f"api/v2/auth/edit-status?id={id}"
 
-        print(f"url status == {url}")
         status_form = request.form.get("status")
 
         status = ""
@@ -285,9 +375,34 @@ class User:
                 return redirect(url_for("staff.get_user"))
             else:
                 return redirect(url_for("staff.get_user"))
-
+    
+    @staff.post('edit-pswd/<int:id>')
+    def update_password(id):
+        base = request.url_root
+        url = base + f'api/v2/auth/edit-password?id={id}'
+        
+        if request.method == 'POST':
+            password = request.form.get('kataSandi')
+            
+            headers = {"Content-Type": "application/json"}
+            payload = json.dumps({
+                'password': password
+            })
+            
+            response = req.put(url=url, data=payload, headers=headers)
+            msg = response.json()
+            if response.status_code == 200:
+                flash(message=f'{msg["msg"]}, status : {response.status_code}', category='success')
+                return redirect(url_for("staff.get_user"))
+            elif response.status_code == 400:
+                flash(f'Error: {msg["msg"]}, status : {response.status_code}', 'error')
+                return redirect(url_for("staff.get_user"))
+            else:
+                flash(f'Error: Terjadi kesalahan dalam memuat data, status : {response.status_code}', 'error')
+                return redirect(url_for("staff.get_user"))
+    
 
 class TestPage:
-    @staff.get('test-page')
+    @staff.get("test-page")
     def test_page():
-        return render_template('test_page.html')
+        return render_template("test_page.html")

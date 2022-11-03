@@ -70,3 +70,6 @@ def string_format(date_string):
     
     format = year+'-'+month+'-'+date
     return format
+
+def standart_date_format(date):
+    pass

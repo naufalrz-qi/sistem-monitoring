@@ -1,65 +1,36 @@
-<div class="modal fade" id="modal-user{{_.id}}">
-    <div class="modal-dialog overlay">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title fas fa-user-alt">&nbsp;Detail User</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
+<div class="modal fade" id="modal-user-{{_.id}}">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title fas fa-user-edit">&nbsp;Update Password</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="post" action="{{ url_for('staff.update_password', id=_.id) }}">
         <div class="modal-body">
-          
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="font-weight-normal">Username</label>
-                <input type="text" class="form-control form-control-sm" value="{{ _.username}}" disabled>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="font-weight-normal">Tipe Akun</label>
-                <input type="text" class="form-control form-control-sm" value="{{ _.group | title}}" disabled>
-              </div>
-            </div>           
+          <div class="form-group">
+            <label for="" class="font-weight-normal">Password :</label>
+            <input type="password" class="form-control form-control-sm" name="kataSandi">
+            {#{% if formPassword.kataSandi.errors %}
+            {{ formPassword.kataSandi(class="form-control form-control-sm is-invalid", aria_invalid=true)}}
+            {% for msg in formPassword.kataSandi.errors %}
+            <span class="error invalid-feedback">{{ msg }}</span>
+            {% endfor %}
+            {% elif formPassword.kataSandi.data %}
+            {{ formPassword.kataSandi(class="form-control form-control-sm", aria_invalid=false)}}
+            {% else %}
+            {{ formPassword.kataSandi(class="form-control form-control-sm")}}
+            {% endif %}#}
           </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="" class="font-weight-normal">Status Akun</label>
-                <!-- <input type="text" class="form-control form-control-border border-width-1" id="exampleInputBorder"> -->
-                <input type="text" class="form-control form-control-sm" value="{{'Aktif' if _.is_active == '1' else 'Non-Aktif'}}" disabled>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label class="font-weight-normal">Tgl Join</label>
-                <input type="text" class="form-control form-control-sm" value="{{ _.join_date | fdate_indo}}" disabled>
-              </div>
-            </div>            
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label class="font-weight-normal">Terakhir Update</label>
-                <input type="text" class="form-control form-control-sm" value="{{ _.update_date | fdate_indo if _.update_date else '-'}}" disabled>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label class="font-weight-normal">Terakhir Login</label>
-                <input type="text" class="form-control form-control-sm" value="{{ _.user_last_login | fdate_indo if  _.user_last_login else '-' }}" disabled>
-              </div>
-            </div>            
-          </div>
-          
         </div>
         <div class="modal-footer justify-content-end">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-          <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
-      </div>
-      <!-- /.modal-content -->
+      </form>
     </div>
-    <!-- /.modal-dialog -->
+    <!-- /.modal-content -->
   </div>
+  <!-- /.modal-dialog -->
+</div>

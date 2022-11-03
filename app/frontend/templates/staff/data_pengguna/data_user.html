@@ -35,6 +35,7 @@
           <th>Taggal Buat</th>
           <th>Las Login</th>
           <th>Status</th>
+          <th>Aksi</th>
         </tr>
       </thead>
       <tbody>
@@ -45,12 +46,19 @@
           <td>{{_.group | title}}</td>
           <td>{{_.join_date | fdate_indo}}</td>
           <td>{{_.user_last_login | fdate_indo if _.user_last_login else '-'}}</td>
-          <td class="">
+          <td>
             <form action="{{url_for('staff.update_status',id=_.id)}}" method="post">
-              {{ form.hidden_tag() }}
+              {#{ form.csrf_token}#}
               <input type="text" hidden="true" name="status" value="{{'Aktif' if _.is_active == '1' else 'Non-Aktif'}}">
-              {{form.state(class="btn btn-success btn-xs", title="Non-Aktifkan") if _.is_active == '1' else form.state(class="btn btn-danger btn-xs", value='Non-Aktif', title="Aktifkan") }}
+              <!-- {{form.state(class="btn btn-success btn-xs", title="Non-Aktifkan") if _.is_active == '1' else form.state(class="btn btn-danger btn-xs", value='Non-Aktif', title="Aktifkan") }} -->
+              <input type="submit" class="btn {{'btn-success' if _.is_active == '1' else 'btn-danger'}} btn-xs" title="{{'Non-Aktifkan' if _.is_active == '1' else 'Aktifkan'}}" value="{{'Non-Aktifkan' if _.is_active == '1' else 'Aktifkan'}}">
             </form>
+          </td>
+          <td>
+            <button class="btn btn-info btn-xs" title="Delete data." data-toggle="modal"
+            data-target="#modal-user-{{_.id}}">
+            <i class="fas fa-user-edit"></i> Ubah Password
+          </button>
           </td>
           <!-- <td>
               <span class="badge {{'bg-success' if _.is_active == '1' else 'bg-danger'}}">{{'Aktif' if _.is_active == '1'}} {{'Non-Aktif' if _.is_active == '0'}}</span>

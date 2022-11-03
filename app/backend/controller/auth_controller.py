@@ -301,6 +301,20 @@ def edit_status():
     return jsonify(msg="Upadated Success."), HTTP_200_OK
 
 
-@auth.route("/delete")
-def delete():
-    pass
+@auth.put("/edit-password")
+def edit_password():
+    base = BaseModel(UserModel)
+    id = request.args.get('id')
+    model = base.get_one_or_none(id=id)
+    password = request.json.get('password')
+    
+    if not model:
+        return jsonify(msg='User not found.'),HTTP_404_NOT_FOUND 
+    elif len(password) < 6:
+        return jsonify(msg='Password minimal 6 karakter'), HTTP_400_BAD_REQUEST
+    else:
+        hash_pswd = generate_password_hash(password=password)
+        model.password = hash_pswd
+        base.edit()
+        return jsonify(msg='Upadated Password Succsess.'), HTTP_200_OK
+

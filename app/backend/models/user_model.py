@@ -9,7 +9,7 @@ class UserModel(db.Model):
     __tablename__ = 'auth_user'
     # id = sa.Column(sa.Integer, primary_key=True)
     username = sa.Column(sa.String(128), nullable=False)   
-    password = sa.Column(sa.String(256), nullable=False, default='password123')
+    password = sa.Column(sa.String(256), nullable=False)
     group = sa.Column(sa.String(128), nullable=False) 
     join_date = sa.Column(sa.DateTime, default=utc_makassar())
     update_date = sa.Column(sa.DateTime, nullable=True)
