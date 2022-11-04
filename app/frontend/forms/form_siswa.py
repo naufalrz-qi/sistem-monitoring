@@ -7,7 +7,7 @@ class FormAddSiswa(FlaskForm):
     username = StringField(label="Username :")
     password = PasswordField(label="Password :")
     tipe = StringField(label="Group :")
-    fullname = StringField(label="Nama Lengkap")
+    fullname = StringField(label="Nama Lengkap :")
     jenisKelamin = SelectField(
         label="Jenis Kelamin",
         choices=[
@@ -17,7 +17,7 @@ class FormAddSiswa(FlaskForm):
         ],
     )
     agama = SelectField(
-        label="Agama",
+        label="Agama :",
         choices=[
             ("", "..::Select::.."),
             ("islam", "Islam"),
@@ -27,7 +27,7 @@ class FormAddSiswa(FlaskForm):
             ("budha", "Budha"),
         ],
     )
-    kelas = SelectField(label="Kelas")
+    kelas = SelectField(label="Kelas :")
     submit = SubmitField(label="Submit Data")
 
     def validate_username(self, field):

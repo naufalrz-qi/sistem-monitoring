@@ -30,8 +30,8 @@
           </a>
         </li>
         <li class="nav-header">Data</li>
-        <li class="nav-item {{'menu-open' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' else None}}">
-          <a href="#" class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' else None}}">
+        <li class="nav-item {{'menu-open' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' or filename == 'edit-guru' or filename == 'edit-siswa' else None}}">
+          <a href="#" class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' or filename == 'edit-guru' or filename == 'edit-siswa' else None}}">
             <i class="nav-icon fas fa-users-cog"></i>
             <p>
               Data Pengguna
@@ -46,17 +46,16 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ url_for('staff.get_guru')}}" class="nav-link {{'active' if filename == 'data-guru' else ''}}">
-                <i class="far fa-circle {{ 'fa-dot-circle' if filename == 'data-guru' else ''}}  nav-icon"></i>
-
+              <a href="{{ url_for('staff.get_guru')}}" class="nav-link {{'active' if filename == 'data-guru' or filename == 'edit-guru' else ''}}">
+                <i class="far fa-circle {{ 'fa-dot-circle' if filename == 'data-guru' or filename == 'edit-guru' else ''}}  nav-icon"></i>
                 <p>Guru</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="{{ url_for('staff.get_siswa')}}"
-                class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' else None}}">
+                class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'edit-siswa' else None}}">
                 <i
-                  class="far nav-icon {{ 'fa-dot-circle' if filename=='data-siswa' or filename=='tambah-siswa' else 'fa-circle' }}"></i>
+                  class="far nav-icon {{ 'fa-dot-circle' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'edit-siswa' else 'fa-circle' }}"></i>
                 <p>Siswa</p>
               </a>
             </li>

@@ -34,6 +34,7 @@
           <th>Username</th>
           <th>Group</th>
           <th>Taggal Buat</th>
+          <th>Last Update</th>
           <th>Las Login</th>
           <th>Status</th>
           <th>Aksi</th>
@@ -44,9 +45,10 @@
         <tr>
           <td>{{loop.index}}</td>
           <td>{{_.username}}</td>
-          <td>{{_.group | title}}</td>
-          <td>{{_.join_date | fdate_indo}}</td>
-          <td>{{_.user_last_login | fdate_indo if _.user_last_login else '-'}}</td>
+          <td>{{_.group}}</td>
+          <td>{{_.join}}</td>
+          <td>{{_.last_update}}</td>
+          <td>{{_.user_last_login}}</td>
           <td>
             <form action="{{url_for('staff.update_status',id=_.id)}}" method="post">
               {#{ form.csrf_token}#}
@@ -56,9 +58,9 @@
             </form>
           </td>
           <td>
-            <button class="btn btn-info btn-xs" title="Delete data." data-toggle="modal"
+            <button class="btn btn-info btn-xs" title="Ubah Password" data-toggle="modal"
             data-target="#modal-user-{{_.id}}">
-            <i class="fas fa-user-edit"></i> Ubah Password
+            <i class="fas fa-user-edit"></i> Ubah Pswd
           </button>
           </td>
           <!-- <td>
@@ -76,7 +78,7 @@
               </a>
             </td> -->
         </tr>
-        {% include 'staff/modal/user/modal_user.html' %}
+        {% include 'modal/staff/user/modal_user.html' %}
         {% endfor %}
       </tbody>
 

@@ -36,7 +36,7 @@ href="{{ url_for('.static', filename='plugins/datatables-buttons/css/buttons.boo
           <th>NIP</th>
           <th>Nama</th>
           <th>Gender</th>
-          <th>Mapel</th>
+          <th>Guru Mapel</th>
           <th>Agama</th>
           <th>Aksi</th>
         </tr>
@@ -55,7 +55,7 @@ href="{{ url_for('.static', filename='plugins/datatables-buttons/css/buttons.boo
             <button class="btn btn-outline-info btn-xs" data-toggle="modal" data-target="#modal-detail{{_.id}}">
               <i class="fas fa-eye"></i>
             </button>
-            <a href="{{ url_for('staff.update_siswa', id=_.id)}}" class="btn btn-outline-warning btn-xs">
+            <a href="{{ url_for('staff.update_guru', id=_.id)}}" class="btn btn-outline-warning btn-xs">
               <i class="fas fa-pencil-alt"></i>
             </a>
             <button class="btn btn-outline-danger btn-xs" title="Delete data." data-toggle="modal"
@@ -64,7 +64,8 @@ href="{{ url_for('.static', filename='plugins/datatables-buttons/css/buttons.boo
             </button>
           </td>
         </tr>
-
+        {% include 'modal/staff/guru/detail_guru.html' %}
+        {% include 'modal/staff/guru/delete_guru.html' %}
         {% endfor %}
       </tbody>
     </table>

@@ -18,6 +18,7 @@ from werkzeug.utils import secure_filename
 from app.frontend.forms.form_auth import FormEditStatus
 from app.frontend.forms.form_siswa import FormAddSiswa, FormEditSiswa
 from ..forms.form_auth import *
+from ..forms.form_guru import *
 import os
 import requests as req
 import io
@@ -179,7 +180,6 @@ class Siswa:
         form.kelas.choices = choices
         baseModel = BaseModel(SiswaModel)
         getOne = baseModel.get_one_or_none(user_id=id)
-        # print(type(getOne.tgl_lahir))
         # GET SINGLE DATA
         url_obj = base + f"api/v2/student/single/{id}"
         resp_obj = req.get(url=url_obj)
@@ -362,18 +362,105 @@ class Guru:
         return render_template(
             "staff/data_pengguna/guru/data_guru.html", model=json_resp
         )
+    
+    @staff.route('update-guru/<int:id>', methods=['POST','GET'])
+    def update_guru(id):
+        form = FormEditGuru(request.form)
+        base = request.url_root
+        # NOTE: GET SINGLE OBJECT
+        url_obj = base + f'api/v2/guru/single/{id}'
+        resp_obj = req.get(url=url_obj)
+        jsonObj = resp_obj.json()
+        
+        # NOTE : GET ALL MAPEL
+        url_mapel = base + f'api/v2/master/mapel/get-all'
+        resp_mapel = req.get(url=url_mapel)
+        jsonMapel = resp_mapel.json()['data']
+        # FORM SET CHOICES
+        for _ in jsonMapel:
+            form.mapel.choices.append((_['id'], _['mapel']))
+        # FORM DEFAULT VALUE
+        form.nip.default = jsonObj['nip']
+        form.fullname.default = jsonObj['first_name'] + ' ' + jsonObj['last_name']
+        form.mapel.default = jsonObj['mapel_id']
+        form.jenisKelamin.default = jsonObj['gender'].lower()
+        form.agama.default = jsonObj['agama'].lower()
+        form.alamat.default = jsonObj['alamat']
+        form.telp.default = jsonObj['telp']
+        form.process()
+        
+        # NOTE: REQUEST FORM TO SAVE CHANGES
+        if request.method == 'POST':
+            nip = request.form.get('nip')
+            fullname = request.form.get("fullname")
+            # NOTE : SPLIT FULLNAME TO FIRST_NAME and LAST_NAME
+            first_name = ""
+            last_name = ""
+            first_name, *last_name = fullname.split() if fullname else "None"
+            if len(last_name) == 0:
+                last_name = first_name
+            elif len(last_name) != 0:
+                last_name = " ".join(last_name)
+            # END
+            mapel = request.form.get('mapel')
+            gender = request.form.get('jenisKelamin')
+            agama = request.form.get('agama')
+            alamat = request.form.get('alamat')
+            telp = request.form.get('telp')
+            
+            # HEADERS, DATA TO RESPONSE
+            payload = json.dumps(
+                {
+                    'nip': nip,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'mapel': mapel,
+                    'gender': gender,
+                    'agama': agama,
+                    'alamat': alamat,
+                    'telp': telp
+                }
+            )
+            headers = {"Content-Type": "application/json"}
+            
+            resp_obj = req.put(url=url_obj, data=payload, headers=headers)
+            msg = resp_obj.json()
+            if resp_obj.status_code == 200:
+                flash(f'{msg}, status : {resp_obj.status_code}', 'success')
+                return redirect(url_for('staff.get_guru'))
+            else:
+                flash(f'{msg}. Status : {resp_obj.status_code}', 'error')
+            return render_template('staff/data_pengguna/guru/edit_guru.html', form=form)
+        return render_template('staff/data_pengguna/guru/edit_guru.html', form=form)
+    
+    @staff.route('delete-guru/<id>', methods=['GET','DELETE','POST'])
+    def delete_guru(id):
+        base = request.url_root
+        url = base + f'api/v2/guru/single/{id}'
+        response = req.delete(url=url)
+
+        if response.status_code == 204:
+            flash(message=f'Data guru telah berhasil di hapus. Status : {response.status_code}', category='info')
+            return redirect(url_for('staff.get_guru'))
+        else:
+            flash(message=f'Terjadi kesalahan dalama memuat data. Status : {response.status_code}', category='info')
+            return redirect(url_for('staff.get_guru'))
+            
+        
 
 
 class User:
     @staff.route("/data-user")
     def get_user():
         base = request.url_root
-        model_user = User.base.get_all()
+        url = base + f'api/v2/auth/get-all'
+        response = req.get(url)
+        json_resp = response.json()
         form = FormEditStatus()
         formUpdatePassword = FormEditPassword()
         return render_template(
             "staff/data_pengguna/data_user.html",
-            user=model_user,
+            user=json_resp,
             form=form,
             formPassword=formUpdatePassword,
         )

@@ -3,7 +3,6 @@ from email.policy import default
 from app.backend.extensions import db
 import sqlalchemy as sa
 from .user_model import UserModel
-from .master_model import WaliKelasModel
 from sqlalchemy.orm import backref, relationship
 
 
@@ -63,10 +62,10 @@ class GuruModel(db.Model):
     agama = sa.Column(sa.String(32), nullable=True)
     alamat = sa.Column(sa.String(256), nullable=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE', onupdate='CASCADE'))
-    users = relationship('UserModel', backref='detail_guru')
+    users = relationship('UserModel', backref=backref('details_guru', cascade="all, delete-orphan"))
     mapel_id = sa.Column(sa.Integer, sa.ForeignKey('master_mapel.id', ondelete='CASCADE'))
     mapel = relationship('MapelModel', backref='mapels')
-    wali = relationship('WaliKelasModel', backref='wali')
+    telp = sa.Column(sa.String(16), nullable=True)
     
     def __init__(self,first_name=None, last_name=None, gender=None, alamat=None, agama=None, user_id=None) -> None:
         self.first_name = first_name

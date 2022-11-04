@@ -10,6 +10,7 @@ from flask_jwt_extended import (
 from app.backend.extensions import jwt
 from app.backend.lib.base_model import BaseModel
 from app.backend.lib.date_time import format_datetime_id, format_indo, utc_makassar
+from app.backend.models.master_model import KelasModel
 from app.backend.models.user_details_model import *
 from app.backend.models.user_model import TokenBlockList, UserModel
 from app.backend.extensions import db
@@ -17,6 +18,7 @@ from app.backend.lib.status_code import *
 from werkzeug.security import generate_password_hash
 
 auth = Blueprint("auth", __name__, url_prefix="/api/v2/auth")
+
 
 @jwt.token_in_blocklist_loader
 def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
@@ -275,13 +277,15 @@ def get_all():
             {
                 "id": user.id,
                 "username": user.username,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
                 "group": user.group,
                 "join": format_indo(user.join_date),
+                "last_update": format_datetime_id(user.update_date)
+                if user.update_date
+                else "-",
                 "last_login": format_datetime_id(user.user_last_login)
                 if user.user_last_login
                 else "-",
+                "is_active": user.is_active
             }
         )
     return jsonify(data), HTTP_200_OK
@@ -304,17 +308,16 @@ def edit_status():
 @auth.put("/edit-password")
 def edit_password():
     base = BaseModel(UserModel)
-    id = request.args.get('id')
+    id = request.args.get("id")
     model = base.get_one_or_none(id=id)
-    password = request.json.get('password')
-    
+    password = request.json.get("password")
+
     if not model:
-        return jsonify(msg='User not found.'),HTTP_404_NOT_FOUND 
+        return jsonify(msg="User not found."), HTTP_404_NOT_FOUND
     elif len(password) < 6:
-        return jsonify(msg='Password minimal 6 karakter'), HTTP_400_BAD_REQUEST
+        return jsonify(msg="Password minimal 6 karakter"), HTTP_400_BAD_REQUEST
     else:
         hash_pswd = generate_password_hash(password=password)
         model.password = hash_pswd
         base.edit()
-        return jsonify(msg='Upadated Password Succsess.'), HTTP_200_OK
-
+        return jsonify(msg="Upadated Password Succsess."), HTTP_200_OK
