@@ -362,6 +362,62 @@ class Guru:
         return render_template(
             "staff/data_pengguna/guru/data_guru.html", model=json_resp
         )
+        
+    @staff.route('tambah-data', methods=['GET','POST'])
+    def add_guru():
+        form = FormAddGuru(request.form)
+        base = request.root_url
+        url_mapel = base + f'api/v2/master/mapel/get-all'
+        responseMapel = req.get(url=url_mapel)
+        jsonRespMapel = responseMapel.json()['data']
+        for _ in jsonRespMapel:
+            form.mapel.choices.append((_['id'], _['mapel']))
+        
+        if request.method == 'POST':
+            username = form.username.data
+            password = form.password.data 
+            group = form.tipe.data if form.tipe.data else 'guru'
+            fullname = form.fullname.data
+            first_name = ""
+            last_name = ""
+            first_name, *last_name = fullname.split() if fullname else "None"           
+            if len(last_name) == 0:
+                last_name = first_name
+            elif len(last_name) != 0:
+                last_name = " ".join(last_name)
+            gender = form.jenisKelamin.data
+            mapel = form.mapel.data
+            agama = form.agama.data
+            alamat = form.alamat.data 
+            telp = form.telp.data
+            
+            url_create = base + 'api/v2/auth/create'
+            payload = json.dumps(
+                {
+                    'username': username,
+                    'password': password,
+                    'group': group,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'gender': gender,
+                    'alamat': alamat,
+                    'agama': agama,
+                    'mapel': mapel,
+                    'telp': telp
+                }
+            )
+            headers = {"Content-Type": "application/json"}
+            response = req.post(url=url_create, data=payload, headers=headers)
+            msg = response.json().get('msg')
+            
+            if response.status_code == 201:
+                flash(f'{msg} Status : {response.status_code}', 'success')
+                return redirect(url_for('staff.get_guru'))
+            else:
+                flash(f'{msg}. Status : {response.status_code}', 'error')
+                # return redirect(url_for('staff.get_guru'))       
+                return render_template('staff/data_pengguna/guru/tambah_guru.html', form=form)
+        return render_template('staff/data_pengguna/guru/tambah_guru.html', form=form)
     
     @staff.route('update-guru/<int:id>', methods=['POST','GET'])
     def update_guru(id):

@@ -181,19 +181,30 @@ def create():
         gender = request.json.get("gender")
         alamat = request.json.get("alamat")
         agama = request.json.get("agama")
+        mapel_id = request.json.get("mapel")
+        telp = request.json.get("telp")
 
         usrnm = BaseModel(UserModel)
         check_username = usrnm.get_one(username=username)
 
         if check_username is not None:
-            return jsonify({"msg": "Username is already exists"}), HTTP_409_CONFLICT
+            return jsonify(msg= "Username is already exists"), HTTP_409_CONFLICT
         else:
             user.create()
             guru = BaseModel(
-                GuruModel(first_name, last_name, gender, alamat, agama, user.model.id)
+                GuruModel(
+                    first_name=first_name,
+                    last_name=last_name,
+                    gender=gender,
+                    alamat=alamat,
+                    agama=agama,
+                    user_id=user.model.id,
+                    mapel=mapel_id,
+                    telp=telp,
+                )
             )
             guru.create()
-            return jsonify({"msg": f"add user {user.model.username}"}), HTTP_201_CREATED
+            return jsonify(msg= f"Data Guru : {guru.model.first_name} telah berhasil di tambahkan."), HTTP_201_CREATED
 
     elif group == "admin":
         first_name = request.json.get("first_name")
@@ -212,7 +223,7 @@ def create():
                 AdminDetailModel(first_name, last_name, gender, alamat, user.model.id)
             )
             user_detail.create()
-            return jsonify({"msg": f"add user {user.model.username}"}), HTTP_201_CREATED
+            return jsonify(msg= f"Data Admin : {user_detail.model.first_name} telah berhasil di tambahkan."), HTTP_201_CREATED
 
 
 @auth.route("/get-one")
@@ -285,7 +296,7 @@ def get_all():
                 "last_login": format_datetime_id(user.user_last_login)
                 if user.user_last_login
                 else "-",
-                "is_active": user.is_active
+                "is_active": user.is_active,
             }
         )
     return jsonify(data), HTTP_200_OK

@@ -63,17 +63,19 @@ class GuruModel(db.Model):
     alamat = sa.Column(sa.String(256), nullable=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE', onupdate='CASCADE'))
     users = relationship('UserModel', backref=backref('details_guru', cascade="all, delete-orphan"))
-    mapel_id = sa.Column(sa.Integer, sa.ForeignKey('master_mapel.id', ondelete='CASCADE'))
+    mapel_id = sa.Column(sa.Integer, sa.ForeignKey('master_mapel.id', ondelete='CASCADE'), nullable=True)
     mapel = relationship('MapelModel', backref='mapels')
     telp = sa.Column(sa.String(16), nullable=True)
     
-    def __init__(self,first_name=None, last_name=None, gender=None, alamat=None, agama=None, user_id=None) -> None:
+    def __init__(self,first_name=None, last_name=None, gender=None, alamat=None, agama=None, user_id=None, mapel=None, telp=None) -> None:
         self.first_name = first_name
         self.last_name = last_name
         self.gender = gender
         self.alamat = alamat
         self.agama = agama
         self.user_id = user_id
+        self.mapel_id = mapel
+        self.telp = telp
         
     def __str__(self) -> str:
         return self.first_name
