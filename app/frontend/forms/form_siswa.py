@@ -4,7 +4,7 @@ from wtforms.validators import ValidationError
 # from wtforms.fields import DateField
 
 class FormAddSiswa(FlaskForm):
-    username = StringField(label="Username :")
+    username = StringField(label="NISN :")
     password = PasswordField(label="Password :")
     tipe = StringField(label="Group :")
     fullname = StringField(label="Nama Lengkap :")
@@ -28,6 +28,11 @@ class FormAddSiswa(FlaskForm):
         ],
     )
     kelas = SelectField(label="Kelas :")
+    tempatLahir = StringField(label='Tempat Lahir :')
+    tanggalLahir = DateField(label='Tanggal Lahir :')
+    alamat = StringField(label='Alamat')
+    namaOrtu = StringField(label='Nama Orang Tua')
+    telp = StringField(label='No. Telp :')    
     submit = SubmitField(label="Submit Data")
 
     def validate_username(self, field):

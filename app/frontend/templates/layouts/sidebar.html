@@ -30,6 +30,74 @@
           </a>
         </li>
         <li class="nav-header">Data</li>
+        <!-- NOTE: DATA MASTER -->
+        <li class="nav-item {{'menu-open' if filename=='data-mapel'or filename=='tambah-mapel' or filename=='edit-mapel' else ''}}">
+          <a href="#" class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel'}}">
+            <i class="nav-icon fas fa-database"></i>
+            <p>
+              Data Master
+              <i class="right fas fa-angle-left"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{{ url_for('staff.get_mapel')}}" class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel'}}">
+                <i class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel'}}"></i>
+                <p>Mapel</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Semester</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Tahun Ajaran</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Guru Mapel</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Kelas</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Jam Mengajar</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Hari</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Wali Kelas</p>
+              </a>
+            </li>
+            <!-- <li class="nav-item">
+              <a href="{{ url_for('staff.get_siswa')}}"
+                class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' else None}}">
+                <i
+                  class="far nav-icon {{ 'fa-dot-circle' if filename=='data-siswa' or filename=='tambah-siswa' else 'fa-circle' }}"></i>
+                <p>Siswa</p>
+              </a>
+            </li> -->
+          </ul>
+        </li>
         <li class="nav-item {{'menu-open' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' or filename == 'edit-guru' or filename == 'edit-siswa' or filename == 'tambah-guru' else None}}">
           <a href="#" class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' or filename == 'edit-guru' or filename == 'edit-siswa' or filename == 'tambah-guru' else None}}">
             <i class="nav-icon fas fa-users-cog"></i>
@@ -59,75 +127,9 @@
                 <p>Siswa</p>
               </a>
             </li>
-          </ul>
-          <li class="nav-item">
-            <a href="#" class="nav-link ">
-              <i class="nav-icon fas fa-database"></i>
-              <p>
-                Data Master
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Mapel</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Semester</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Tahun Ajaran</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Guru Mapel</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Kelas</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Jam Mengajar</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Hari</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Wali Kelas</p>
-                </a>
-              </li>
-              <!-- <li class="nav-item">
-                <a href="{{ url_for('staff.get_siswa')}}"
-                  class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' else None}}">
-                  <i
-                    class="far nav-icon {{ 'fa-dot-circle' if filename=='data-siswa' or filename=='tambah-siswa' else 'fa-circle' }}"></i>
-                  <p>Siswa</p>
-                </a>
-              </li> -->
-            </ul>
-          </li>
+          </ul>          
         </li>
+        
         <li class="nav-header">Authentication</li>
         <li class="nav-item {{ 'menu-open' if filename=='data-user' else None }}">
           <a href="#" class="nav-link {{ 'active' if filename=='data-user' else None }}">

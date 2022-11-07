@@ -32,6 +32,7 @@ class BaseModel:
     def delete(self, *args):        
         db.session.delete(*args)
         db.session.commit()
+    
         
 class BaseModel2:
     def __init__(self, model):

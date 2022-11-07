@@ -1,6 +1,7 @@
 from fileinput import filename
 import hashlib
 import qrcode, os
+from sqlalchemy import func
 from werkzeug.utils import secure_filename
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers import HorizontalBarsDrawer
@@ -9,6 +10,7 @@ from flask_jwt_extended import jwt_required
 from app.backend.lib.base_model import BaseModel
 from app.backend.lib.date_time import format_datetime_id, format_indo, string_format, utc_makassar
 from app.backend.lib.status_code import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
+from app.backend.models.master_model import KelasModel
 from app.backend.models.user_details_model import SiswaModel
 from app.backend.models.user_model import UserModel
 from app.backend.extensions import db
@@ -25,6 +27,7 @@ qc_folder = os.getcwd() + '/app/backend/static/img/siswa/qr_code/'
 def static(filename):
     dir = send_from_directory('backend/static', filename)
     return dir
+
 
 @siswa.route('/get-all')
 def get():
@@ -117,7 +120,21 @@ def get_single(id):
             model.user.update_date = utc_makassar()
             # model.user.is_active = active
         
-            base.edit()        
+            base.edit()   
+            
+            baseKelas = BaseModel(KelasModel)
+            kelasModel = baseKelas.get_one(id=kelas) 
+            countSiswaGender = db.session.query(func.count(SiswaModel.kelas_id)).filter(SiswaModel.kelas_id==kelas).filter(SiswaModel.gender==gender).scalar()
+            countSiswaAll = db.session.query(func.count(SiswaModel.kelas_id)).filter(SiswaModel.kelas_id==kelas).scalar()
+            
+            if gender == 'laki-laki':
+                kelasModel.jml_laki = countSiswaGender
+            elif gender == 'perempuan':
+                kelasModel.jml_perempuan = countSiswaGender
+            
+            kelasModel.jml_seluruh = countSiswaAll
+            baseKelas.edit()
+                
             return jsonify(msg=f'Update data {model.first_name} successfull.'), HTTP_200_OK
     
     elif request.method == 'DELETE':        
@@ -131,15 +148,21 @@ def get_single(id):
             '''
             dir_file = os.getcwd()+'/app/backend/static/img/siswa/foto/'
             # file = dir_file + model.pic
-            file = os.path.join(dir_file, model.pic)
-            os.unlink(file)
-        
-            # if not file:
-            base_user = BaseModel(UserModel)
-            model_user = base_user.get_one(id=id)
-            base.delete(model_user)       
             
-            return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
+            if model.pic:
+                file = os.path.join(dir_file, model.pic)
+                os.unlink(file)
+            
+                base_user = BaseModel(UserModel)
+                model_user = base_user.get_one(id=id)
+                base.delete(model_user)       
+                return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
+            else:
+                base_user = BaseModel(UserModel)
+                model_user = base_user.get_one(id=id)
+                base.delete(model_user)       
+                return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
+                
         
 # generate qr code
 @siswa.route('/generate-qc', methods=['GET','PUT'])

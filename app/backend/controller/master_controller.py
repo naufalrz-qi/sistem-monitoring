@@ -1,11 +1,13 @@
 from flask import Blueprint, jsonify, request
-from app.backend.models.master_model import *
-from app.backend.lib.base_model import BaseModel
-from app.backend.lib.status_code import *
+from ..models.master_model import *
+from ..lib.base_model import BaseModel
+from ..lib.status_code import *
+from sqlalchemy import func
 
 master = Blueprint('master', __name__, url_prefix='/api/v2/master')
 
 class Kelas:
+
     @master.route('/kelas/create', methods=['POST','GET'])
     def create():
         kelas = request.json.get('kelas')
@@ -35,6 +37,7 @@ class Kelas:
         return jsonify({
             'data' : data
         }), HTTP_200_OK
+        
         
     @master.route('/kelas/get-one/<int:id>', methods=['GET', 'PUT', 'DELETE'])
     def get_one(id):
@@ -77,7 +80,7 @@ class Mapel(object):
             return jsonify(msg='Data Class has been already exists.'), HTTP_409_CONFLICT
         else:
             base.create()        
-            return jsonify(mapel=base.model.mapel), HTTP_201_CREATED
+            return jsonify(msg=f'Data mata pelajaran {base.model.mapel} telah di tambahkan.'), HTTP_201_CREATED
         
     @master.route('/mapel/get-all', endpoint='mapel-all', methods=['GET'])
     def get_all():
@@ -109,17 +112,20 @@ class Mapel(object):
         elif request.method == 'PUT':
             mapel = request.json.get('mapel')
             
-            class_check = base.get_one_or_none(mapel=mapel)
-            if class_check:
+            mapel_check = base.get_one_or_none(mapel=mapel)
+            if mapel_check:
                 return jsonify(msg=f'Data dengan {mapel} sudah ada.')      
             else:
                 model.mapel = mapel
                 base.edit()            
-                return jsonify(id=model.id, mapel=model.mapel), HTTP_200_OK
+                return jsonify(msg=f'Data mapel {model.mapel}, telah di perbaharui.'), HTTP_200_OK
         
         elif request.method == 'DELETE':
-            base.delete(model)            
-            return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
+            if not model:
+                return jsonify(msg='Data Mata Pelajaran tidak ada di database.'), HTTP_404_NOT_FOUND
+            else:
+                base.delete(model)            
+                return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
         
 class Hari(object):
     @master.route('/hari/create', endpoint='hari', methods=['POST','GET'])

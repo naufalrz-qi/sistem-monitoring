@@ -7,6 +7,7 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
 )
+from sqlalchemy import func
 from app.backend.extensions import jwt
 from app.backend.lib.base_model import BaseModel
 from app.backend.lib.date_time import format_datetime_id, format_indo, utc_makassar
@@ -133,7 +134,7 @@ def refresh_toke():
     return jsonify(access=access_token), HTTP_200_OK
 
 
-@auth.route("/create", methods=["POST", "GET"])
+@auth.route("/create", methods=["POST", "GET","PUT"])
 def create():
     username = request.json.get("username")
     password = request.json.get("password")
@@ -158,22 +159,28 @@ def create():
         check_username = usrnm.get_one(username=username)
 
         if check_username is not None:
-            return jsonify({"msg": "Username is already exists"}), HTTP_409_CONFLICT
+            return jsonify(msg= f"Username is already exists"), HTTP_409_CONFLICT
         else:
             user.create()
             siswa = BaseModel(
                 SiswaModel(first_name, last_name, gender, agama, user.model.id, kelas)
             )
+            baseKelas = BaseModel(KelasModel)
+            kelasModel = baseKelas.get_one(id=kelas)
             siswa.create()
-            return (
-                jsonify(
-                    {
-                        "msg": f"Add user {user.model.username} succesful.",
-                        "id": siswa.model.id,
-                    }
-                ),
-                HTTP_201_CREATED,
-            )
+            
+            countSiswaGender = db.session.query(func.count(SiswaModel.kelas_id)).filter(SiswaModel.kelas_id==kelas).filter(SiswaModel.gender==gender).scalar()
+            countSiswaAll = db.session.query(func.count(SiswaModel.kelas_id)).filter(SiswaModel.kelas_id==kelas).scalar()
+            
+            if siswa.model.gender == 'laki-laki':
+                kelasModel.jml_laki = countSiswaGender
+            elif siswa.model.gender == 'perempuan':
+                kelasModel.jml_perempuan = countSiswaGender
+            
+            kelasModel.jml_seluruh = countSiswaAll
+            baseKelas.edit()
+            
+            return jsonify(msg= f"Data Siswa {siswa.model.first_name} telah berhasil di tambahkan"),HTTP_201_CREATED,
 
     elif group == "guru":
         first_name = request.json.get("first_name")

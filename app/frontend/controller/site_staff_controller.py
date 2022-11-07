@@ -16,9 +16,11 @@ from app.backend.models.user_details_model import *
 from app.backend.lib.base_model import BaseModel
 from werkzeug.utils import secure_filename
 from app.frontend.forms.form_auth import FormEditStatus
+from app.frontend.forms.form_master import FormMapel
 from app.frontend.forms.form_siswa import FormAddSiswa, FormEditSiswa
 from ..forms.form_auth import *
 from ..forms.form_guru import *
+from ..lib.base_url import base_url
 import os
 import requests as req
 import io
@@ -41,7 +43,6 @@ def index():
 class Siswa:
     @staff.route("/data-siswa")
     def get_siswa():
-        base_url = request.url_root
         url = base_url + url_for("siswa.get")
         r = req.get(url)
         data = r.json()
@@ -58,7 +59,6 @@ class Siswa:
 
     @staff.route("/generate-qc", methods=["GET", "PUT"])
     def generate_qc():
-        base_url = request.url_root
         id = request.args.get("id")
         url = base_url + url_for("siswa.generate_qc", id=id)
         headers = {"Content-Type": "application/json"}
@@ -80,7 +80,6 @@ class Siswa:
     @staff.post("/upload-photo")
     # @staff.route('/upload-photo', methods=['GET','PUT','POST'])
     def upload_foto():
-        base_url = request.url_root
         id = request.args.get("id")
         url = base_url + url_for("siswa.upload_photo", id=id)
 
@@ -150,8 +149,12 @@ class Siswa:
             )
             headers = {"Content-Type": "application/json"}
             response = req.post(url=url, headers=headers, data=payload)
+            msg = response.json()
             if response.status_code == 201:
-                flash(message="Berhasil...", category="success")
+                flash(
+                    message=f"{msg['msg']}. Status : {response.status_code}",
+                    category="success",
+                )
                 return redirect(url_for("staff.get_siswa"))
             elif response.status_code == 409:
                 flash(
@@ -255,7 +258,7 @@ class Siswa:
             response_update = req.put(url_obj, headers=headers, data=payload)
 
             if response_update.status_code == 200:
-                flash(f"Data dari {first_name} telah berhasil diperbaharui.", "success")
+                flash(f"Data dari {first_name} telah berhasil diperbaharui.", "info")
                 return redirect(url_for("staff.get_siswa"))
             else:
                 flash(
@@ -279,7 +282,7 @@ class Siswa:
 
         response = req.delete(url)
         if response.status_code == 204:
-            flash(message="Data siswa telah berhasil di hapus.", category="success")
+            flash(message="Data siswa telah berhasil di hapus.", category="info")
             return redirect(url_for("staff.get_siswa"))
         else:
             flash("Ada tejadi kesalahan dalam menghapus data.", "error")
@@ -362,25 +365,25 @@ class Guru:
         return render_template(
             "staff/data_pengguna/guru/data_guru.html", model=json_resp
         )
-        
-    @staff.route('tambah-data', methods=['GET','POST'])
+
+    @staff.route("tambah-data", methods=["GET", "POST"])
     def add_guru():
         form = FormAddGuru(request.form)
         base = request.root_url
-        url_mapel = base + f'api/v2/master/mapel/get-all'
+        url_mapel = base + f"api/v2/master/mapel/get-all"
         responseMapel = req.get(url=url_mapel)
-        jsonRespMapel = responseMapel.json()['data']
+        jsonRespMapel = responseMapel.json()["data"]
         for _ in jsonRespMapel:
-            form.mapel.choices.append((_['id'], _['mapel']))
-        
-        if request.method == 'POST':
+            form.mapel.choices.append((_["id"], _["mapel"]))
+
+        if request.method == "POST":
             username = form.username.data
-            password = form.password.data 
-            group = form.tipe.data if form.tipe.data else 'guru'
+            password = form.password.data
+            group = form.tipe.data if form.tipe.data else "guru"
             fullname = form.fullname.data
             first_name = ""
             last_name = ""
-            first_name, *last_name = fullname.split() if fullname else "None"           
+            first_name, *last_name = fullname.split() if fullname else "None"
             if len(last_name) == 0:
                 last_name = first_name
             elif len(last_name) != 0:
@@ -388,66 +391,68 @@ class Guru:
             gender = form.jenisKelamin.data
             mapel = form.mapel.data
             agama = form.agama.data
-            alamat = form.alamat.data 
+            alamat = form.alamat.data
             telp = form.telp.data
-            
-            url_create = base + 'api/v2/auth/create'
+
+            url_create = base + "api/v2/auth/create"
             payload = json.dumps(
                 {
-                    'username': username,
-                    'password': password,
-                    'group': group,
-                    'first_name': first_name,
-                    'last_name': last_name,
-                    'gender': gender,
-                    'alamat': alamat,
-                    'agama': agama,
-                    'mapel': mapel,
-                    'telp': telp
+                    "username": username,
+                    "password": password,
+                    "group": group,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "gender": gender,
+                    "alamat": alamat,
+                    "agama": agama,
+                    "mapel": mapel,
+                    "telp": telp,
                 }
             )
             headers = {"Content-Type": "application/json"}
             response = req.post(url=url_create, data=payload, headers=headers)
-            msg = response.json().get('msg')
-            
+            msg = response.json().get("msg")
+
             if response.status_code == 201:
-                flash(f'{msg} Status : {response.status_code}', 'success')
-                return redirect(url_for('staff.get_guru'))
+                flash(f"{msg} Status : {response.status_code}", "success")
+                return redirect(url_for("staff.get_guru"))
             else:
-                flash(f'{msg}. Status : {response.status_code}', 'error')
-                # return redirect(url_for('staff.get_guru'))       
-                return render_template('staff/data_pengguna/guru/tambah_guru.html', form=form)
-        return render_template('staff/data_pengguna/guru/tambah_guru.html', form=form)
-    
-    @staff.route('update-guru/<int:id>', methods=['POST','GET'])
+                flash(f"{msg}. Status : {response.status_code}", "error")
+                # return redirect(url_for('staff.get_guru'))
+                return render_template(
+                    "staff/data_pengguna/guru/tambah_guru.html", form=form
+                )
+        return render_template("staff/data_pengguna/guru/tambah_guru.html", form=form)
+
+    @staff.route("update-guru/<int:id>", methods=["POST", "GET"])
     def update_guru(id):
         form = FormEditGuru(request.form)
         base = request.url_root
         # NOTE: GET SINGLE OBJECT
-        url_obj = base + f'api/v2/guru/single/{id}'
+        url_obj = base + f"api/v2/guru/single/{id}"
         resp_obj = req.get(url=url_obj)
         jsonObj = resp_obj.json()
-        
+
         # NOTE : GET ALL MAPEL
-        url_mapel = base + f'api/v2/master/mapel/get-all'
+        url_mapel = base + f"api/v2/master/mapel/get-all"
         resp_mapel = req.get(url=url_mapel)
-        jsonMapel = resp_mapel.json()['data']
+        jsonMapel = resp_mapel.json()["data"]
         # FORM SET CHOICES
         for _ in jsonMapel:
-            form.mapel.choices.append((_['id'], _['mapel']))
+            form.mapel.choices.append((_["id"], _["mapel"]))
         # FORM DEFAULT VALUE
-        form.nip.default = jsonObj['nip']
-        form.fullname.default = jsonObj['first_name'] + ' ' + jsonObj['last_name']
-        form.mapel.default = jsonObj['mapel_id']
-        form.jenisKelamin.default = jsonObj['gender'].lower()
-        form.agama.default = jsonObj['agama'].lower()
-        form.alamat.default = jsonObj['alamat']
-        form.telp.default = jsonObj['telp']
+        form.nip.default = jsonObj["nip"]
+        form.fullname.default = jsonObj["first_name"] + " " + jsonObj["last_name"]
+        form.mapel.default = jsonObj["mapel_id"]
+        form.jenisKelamin.default = jsonObj["gender"].lower()
+        form.agama.default = jsonObj["agama"].lower()
+        form.alamat.default = jsonObj["alamat"]
+        form.telp.default = jsonObj["telp"]
         form.process()
-        
+
         # NOTE: REQUEST FORM TO SAVE CHANGES
-        if request.method == 'POST':
-            nip = request.form.get('nip')
+        if request.method == "POST":
+            nip = request.form.get("nip")
             fullname = request.form.get("fullname")
             # NOTE : SPLIT FULLNAME TO FIRST_NAME and LAST_NAME
             first_name = ""
@@ -458,58 +463,62 @@ class Guru:
             elif len(last_name) != 0:
                 last_name = " ".join(last_name)
             # END
-            mapel = request.form.get('mapel')
-            gender = request.form.get('jenisKelamin')
-            agama = request.form.get('agama')
-            alamat = request.form.get('alamat')
-            telp = request.form.get('telp')
-            
+            mapel = request.form.get("mapel")
+            gender = request.form.get("jenisKelamin")
+            agama = request.form.get("agama")
+            alamat = request.form.get("alamat")
+            telp = request.form.get("telp")
+
             # HEADERS, DATA TO RESPONSE
             payload = json.dumps(
                 {
-                    'nip': nip,
-                    'first_name': first_name,
-                    'last_name': last_name,
-                    'mapel': mapel,
-                    'gender': gender,
-                    'agama': agama,
-                    'alamat': alamat,
-                    'telp': telp
+                    "nip": nip,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "mapel": mapel,
+                    "gender": gender,
+                    "agama": agama,
+                    "alamat": alamat,
+                    "telp": telp,
                 }
             )
             headers = {"Content-Type": "application/json"}
-            
+
             resp_obj = req.put(url=url_obj, data=payload, headers=headers)
             msg = resp_obj.json()
             if resp_obj.status_code == 200:
-                flash(f'{msg}, status : {resp_obj.status_code}', 'success')
-                return redirect(url_for('staff.get_guru'))
+                flash(f"{msg}, status : {resp_obj.status_code}", "success")
+                return redirect(url_for("staff.get_guru"))
             else:
-                flash(f'{msg}. Status : {resp_obj.status_code}', 'error')
-            return render_template('staff/data_pengguna/guru/edit_guru.html', form=form)
-        return render_template('staff/data_pengguna/guru/edit_guru.html', form=form)
-    
-    @staff.route('delete-guru/<id>', methods=['GET','DELETE','POST'])
+                flash(f"{msg}. Status : {resp_obj.status_code}", "error")
+            return render_template("staff/data_pengguna/guru/edit_guru.html", form=form)
+        return render_template("staff/data_pengguna/guru/edit_guru.html", form=form)
+
+    @staff.route("delete-guru/<id>", methods=["GET", "DELETE", "POST"])
     def delete_guru(id):
         base = request.url_root
-        url = base + f'api/v2/guru/single/{id}'
+        url = base + f"api/v2/guru/single/{id}"
         response = req.delete(url=url)
 
         if response.status_code == 204:
-            flash(message=f'Data guru telah berhasil di hapus. Status : {response.status_code}', category='info')
-            return redirect(url_for('staff.get_guru'))
+            flash(
+                message=f"Data guru telah berhasil di hapus. Status : {response.status_code}",
+                category="info",
+            )
+            return redirect(url_for("staff.get_guru"))
         else:
-            flash(message=f'Terjadi kesalahan dalama memuat data. Status : {response.status_code}', category='info')
-            return redirect(url_for('staff.get_guru'))
-            
-        
+            flash(
+                message=f"Terjadi kesalahan dalama memuat data. Status : {response.status_code}",
+                category="info",
+            )
+            return redirect(url_for("staff.get_guru"))
 
 
 class User:
     @staff.route("/data-user")
     def get_user():
         base = request.url_root
-        url = base + f'api/v2/auth/get-all'
+        url = base + f"api/v2/auth/get-all"
         response = req.get(url)
         json_resp = response.json()
         form = FormEditStatus()
@@ -572,6 +581,96 @@ class User:
                     "error",
                 )
                 return redirect(url_for("staff.get_user"))
+
+
+"""
+NOTE: MASTER DATA 
+"""
+
+
+class MasterData:
+    # NOTE: ================== MASTER DATA MAPEL =====================================
+    @staff.get("data-mapel")
+    def get_mapel():
+        url = base_url + f"api/v2/master/mapel/get-all"
+        response = req.get(url)
+        jsonRespon = response.json()
+        return render_template("staff/master/mapel/data_mapel.html", model=jsonRespon)
+
+    @staff.route("add-mapel", methods=["POST", "GET"])
+    def add_mapel():
+        form = FormMapel(request.form)
+        URL = base_url + f"api/v2/master/mapel/create"
+        if request.method == "POST" and form.validate_on_submit():
+            mapel = form.mapel.data
+            payload = json.dumps({"mapel": mapel})
+            headers = {"Content-Type": "application/json"}
+            response = req.post(url=URL, data=payload, headers=headers)
+            msg = response.json()
+            if response.status_code == 201:
+                flash(
+                    message=f"{msg['msg']}. Status : {response.status_code}",
+                    category="success",
+                )
+                return redirect(url_for("staff.get_mapel"))
+            else:
+                flash(
+                    message=f"{msg['msg']}. Status : {response.status_code}",
+                    category="error",
+                )
+                return render_template(
+                    "staff/master/mapel/tambah_mapel.html", form=form
+                )
+        return render_template("staff/master/mapel/tambah_mapel.html", form=form)
+
+    @staff.route("edit-mapel/<int:id>", methods=["GET", "POST"])
+    def edit_mapel(id):
+        URL = base_url + f"api/v2/master/mapel/get-one/{id}"
+
+        # NOTE: GET ONE DATA BY ID
+        responGetMapel = req.get(url=URL)
+        jsonResponse = responGetMapel.json()
+
+        form = FormMapel(request.form)
+        form.mapel.data = jsonResponse["mapel"]
+        if request.method == "POST" and form.validate_on_submit():
+            mapel = request.form.get("mapel")
+            payload = json.dumps({"mapel": mapel})
+            headers = {"Content-Type": "application/json"}
+            response = req.put(url=URL, data=payload, headers=headers)
+            msg = response.json()
+            if response.status_code == 200:
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="info",
+                )
+                return redirect(url_for("staff.get_mapel"))
+            else:
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="error",
+                )
+                return render_template("staff/master/mapel/edit_mapel.html", form=form)
+        return render_template("staff/master/mapel/edit_mapel.html", form=form)
+
+    @staff.route("delete-mapel/<int:id>", methods=["GET", "DELETE"])
+    def delete_mapel(id):
+        URL = base_url + f"api/v2/master/mapel/get-one/{id}"
+        response = req.delete(URL)
+        if response.status_code == 204:
+            flash(
+                message=f"Data mapel telah di hapus dari database. Status : {response.status_code}",
+                category="info",
+            )
+            return redirect(url_for('staff.get_mapel'))
+        elif response.status_code == 404:
+            msg = response.json()
+            flash(
+                message=f"{msg['msg']} : {response.status_code}",
+                category="info",
+            )        
+            return redirect(url_for('staff.get_mapel'))
+            
 
 
 class TestPage:
