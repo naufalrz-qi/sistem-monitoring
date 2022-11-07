@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship, backref
 
 class UserModel(db.Model):
     __tablename__ = 'auth_user'
-    # id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     username = sa.Column(sa.String(128), nullable=False)   
     password = sa.Column(sa.String(256), nullable=False)
     group = sa.Column(sa.String(128), nullable=False) 
@@ -33,7 +33,7 @@ class UserModel(db.Model):
     
 class TokenBlockList(db.Model):
     __tablename__ = 'auth_token_block'
-    # id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     jti = sa.Column(sa.String(36), nullable=False, index=True)
     created_at = sa.Column(sa.DateTime, nullable=False)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('auth_user.id', ondelete='CASCADE', onupdate='CASCADE'))

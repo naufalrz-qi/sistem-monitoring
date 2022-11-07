@@ -5,7 +5,7 @@ from .user_details_model import *
 
 class KelasModel(db.Model):
     __tablename__ = 'master_kelas'
-    # id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     kelas = sa.Column(sa.String(16), nullable=False)
     jml_laki = sa.Column(sa.Integer, nullable=True)
     jml_perempuan = sa.Column(sa.Integer, nullable=True)
@@ -22,7 +22,7 @@ class KelasModel(db.Model):
 
 class MapelModel(db.Model):
     __tablename__ = 'master_mapel'
-    # id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     mapel = sa.Column(sa.String(32), nullable=False)
     
     
@@ -31,7 +31,7 @@ class MapelModel(db.Model):
     
 class HariModel(db.Model):
     __tablename__ = 'master_hari'
-    # id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     hari = sa.Column(sa.String(32), nullable=False)
     
     def __init__(self, hari):
@@ -42,7 +42,7 @@ class HariModel(db.Model):
     
 class TahunAjaranModel(db.Model):
     __tablename__ = 'master_tahun_ajaran'
-    # id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     th_ajaran = sa.Column(sa.String(32), nullable=False)
     is_active = sa.Column(sa.String(1), nullable=False)
     
@@ -55,7 +55,7 @@ class TahunAjaranModel(db.Model):
 
 class SemesterModel(db.Model):
     __tablename__ = 'master_semester'
-    # id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     semester = sa.Column(sa.String(32), nullable=False)
     is_active = sa.Column(sa.String(1), nullable=False)
     
@@ -68,7 +68,7 @@ class SemesterModel(db.Model):
 
 class WaliKelasModel(db.Model):
     __tablename__ = 'master_wali_kelas'
-    # id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     guru_id = sa.Column(sa.Integer, sa.ForeignKey('detail_guru.id', ondelete='CASCADE', onupdate='CASCADE'))
     guru = rs.relationship('GuruModel', backref='wali_kelas')
     kelas_id = sa.Column(sa.Integer, sa.ForeignKey('master_kelas.id', ondelete='CASCADE', onupdate='CASCADE'))
@@ -79,6 +79,7 @@ class WaliKelasModel(db.Model):
 
 class JamMengajarModel(db.Model):
     __tablename__ = 'master_jam_mengajar'
+    id = sa.Column(sa.Integer, primary_key=True)
     jam = sa.Column(sa.String(32), nullable=False)
     
     def __init__(self, jam=None) -> None:
@@ -89,6 +90,7 @@ class JamMengajarModel(db.Model):
     
 class MengajarModel(db.Model):
     __tablename__ = 'master_mengajar'
+    id = sa.Column(sa.Integer, primary_key=True)
     kode_mengajar = sa.Column(sa.String(32), nullable=False)
     guru_id = sa.Column(sa.Integer, sa.ForeignKey('detail_guru.id', ondelete='CASCADE', onupdate='CASCADE'))
     guru = rs.relationship('GuruModel', backref='guru_mapel')

@@ -18,7 +18,7 @@ class Kelas:
             return jsonify(msg='Data Class has been already exists.'), HTTP_409_CONFLICT
         else:
             base.create()        
-            return jsonify(kelas=base.model.kelas), HTTP_201_CREATED
+            return jsonify(msg=f'Data kelas {base.model.kelas} telah ditambahkan.'), HTTP_201_CREATED
         
     @master.route('/kelas/get-all', endpoint='kelas_all', methods=['GET'])
     def get_all():
@@ -31,7 +31,8 @@ class Kelas:
                 'id' : kelas.id,
                 'kelas' : kelas.kelas,
                 'laki' : kelas.jml_laki,
-                'perempuan' : kelas.jml_perempuan
+                'perempuan' : kelas.jml_perempuan,
+                'jum_seluruh': kelas.jml_seluruh
             })
             
         return jsonify({
@@ -48,21 +49,28 @@ class Kelas:
             if model is not None:
                 return jsonify(id=model.id, kelas= model.kelas,
                                laki = model.jml_laki,
-                               perempuan = model.jml_perempuan
+                               perempuan = model.jml_perempuan,
+                               seluruh = model.jml_seluruh
                                )
             else:
                 return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
         
         elif request.method == 'PUT':
             kelas = request.json.get('kelas')
+            laki = request.json.get('laki')
+            perempuan = request.json.get('perempuan')
+            seluruh = request.json.get('seluruh')
             
-            class_check = base.get_one_or_none(kelas=kelas)
-            if class_check:
-                return jsonify(msg=f'Data dengan {kelas} sudah ada.')      
-            else:
-                model.kelas = kelas
-                base.edit()            
-                return jsonify(id=model.id, kelas=model.kelas), HTTP_200_OK
+            # class_check = base.get_one_or_none(kelas=kelas)
+            # if class_check:
+            #     return jsonify(msg=f'Data dengan {kelas} sudah ada.')      
+            # else:
+            model.kelas = kelas
+            model.jml_laki = laki
+            model.jml_perempuan = perempuan
+            model.jml_seluruh = seluruh
+            base.edit()            
+            return jsonify(msg=f'Data Kelas {model.kelas} telah diperbaharui.'), HTTP_200_OK
         
         elif request.method == 'DELETE':
             base.delete(model)            

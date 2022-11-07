@@ -5,6 +5,7 @@ from app.backend.models.master_model import *
 
 class AbsensiModel(db.Model):
     __tablename__ = 'data_absensi'
+    id = sa.Column(sa.Integer, primary_key=True)
     mengajar_id = sa.Column(sa.Integer, sa.ForeignKey('master_mengajar.id', onupdate='CASCADE', ondelete='CASCADE'))
     mengajar = sql.relationship('MengajarModel', backref='mengajar_guru')
     siswa_id = sa.Column(sa.Integer, sa.ForeignKey('detail_siswa.id', ondelete='CASCADE', onupdate='CASCADE'))

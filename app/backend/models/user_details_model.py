@@ -9,7 +9,7 @@ from sqlalchemy.orm import backref, relationship
 
 class AdminDetailModel(db.Model):
     __tablename__ = "detail_admin"
-    # id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     first_name = sa.Column(sa.String(128), nullable=False, default="")
     last_name = sa.Column(sa.String(128), nullable=False, default="")
     gender = sa.Column(sa.String(32), nullable=True)
@@ -28,7 +28,7 @@ class AdminDetailModel(db.Model):
 
 class SiswaModel(db.Model):
     __tablename__ = "detail_siswa"
-    # id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     first_name = sa.Column(sa.String(128), nullable=False, default="")
     last_name = sa.Column(sa.String(128), nullable=False, default="")
     gender = sa.Column(sa.String(32), nullable=False)

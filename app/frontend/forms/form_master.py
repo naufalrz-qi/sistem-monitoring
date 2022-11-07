@@ -57,3 +57,22 @@ class FormTahunAJaran(FlaskForm):
     def validate_status(self, field):
         if field.data == "":
             raise ValidationError("*Pilihan tidak boleh kosong.")
+
+class FormKelas(FlaskForm):
+    kelas = StringField(label='Kelas :')
+    submit = SubmitField(label='Sumbit Data')
+    
+    def validate_kelas(self, field):
+        if field.data == '':
+            raise ValidationError('*Inputan tidak boleh kosong.')
+        
+class FormEditKelas(FlaskForm):
+    kelas = StringField(label='Kelas :')
+    jumlahLaki = StringField(label='Jumlah Laki-Laki :')
+    jumlahPerempuan = StringField(label='Jumlah Perempuan :')
+    jumlahSiswa = StringField(label='Jumlah Siswa :')
+    submit = SubmitField(label='Sumbit Data')
+    
+    # def validate_kelas(self, field):
+    #     if field.data == '':
+    #         raise ValidationError('*Inputan tidak boleh kosong.')

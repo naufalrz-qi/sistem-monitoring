@@ -670,6 +670,7 @@ class MasterData:
                 category="info",
             )        
             return redirect(url_for('staff.get_mapel'))
+        
             
     # NOTE: ================== MASTER DATA SESMESTER =====================================
     @staff.get('data-semester')
@@ -740,6 +741,7 @@ class MasterData:
             )
             return redirect(url_for('staff.get_semester'))
         
+        
     # NOTE: ================== MASTER DATA TAHUN AJARAN =====================================
     @staff.route('data-tahun-ajaran')
     def get_ajaran():
@@ -808,7 +810,84 @@ class MasterData:
         if response.status_code == 204:
             flash(message=f'Data Tahun Ajaran telah dihapus dari database. Status : {response.status_code}', category='info')
             return redirect(url_for('staff.get_ajaran'))
-
+    
+    
+    # NOTE: ================== MASTER DATA MENGAJAR =====================================
+    # NOTE: ================== MASTER DATA KELAS =====================================
+    @staff.route('data-kelas')
+    def get_kelas():
+        URL = base_url + 'api/v2/master/kelas/get-all'
+        response = req.get(URL)
+        jsonResp = response.json()
+        return render_template('staff/master/kelas/data_kelas.html', model=jsonResp)
+    
+    @staff.route('add-kelas', methods=['GET','POST'])
+    def add_kelas():
+        form = FormKelas(request.form)
+        URL = base_url + 'api/v2/master/kelas/create'
+        
+        if request.method == 'POST' and form.validate_on_submit():
+            kelas = form.kelas.data 
+            
+            payload = json.dumps({
+                'kelas': kelas
+            })
+            headers = {'Content-Type': 'application/json'}
+            response = req.post(url=URL, data=payload, headers=headers)
+            msg = response.json()
+            if response.status_code == 201:
+                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='success')
+                return redirect(url_for('staff.get_kelas'))
+            else:
+                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='error')
+                return render_template('staff/master/kelas/tambah_kelas.html', form=form)
+        return render_template('staff/master/kelas/tambah_kelas.html', form=form)
+    
+    @staff.route('edit-kelas/<int:id>', methods=['GET', 'POST'])
+    def edit_kelas(id):
+        form = FormEditKelas(request.form)
+        URL = base_url + f'api/v2/master/kelas/get-one/{id}'
+        
+        response = req.get(URL)
+        jsonResp = response.json()
+        form.kelas.data = jsonResp['kelas']
+        form.jumlahLaki.data = jsonResp['laki']
+        form.jumlahPerempuan.data = jsonResp['perempuan']
+        form.jumlahSiswa.data = jsonResp['seluruh']
+        
+        if request.method == 'POST':
+            kelas = request.form.get('kelas')
+            laki = request.form.get('jumlahLaki')
+            perempuan = request.form.get('jumlahPerempuan')
+            seluruh = request.form.get('jumlahSiswa')
+            
+            payload = json.dumps({
+                'kelas': kelas,
+                'laki': laki,
+                'perempuan': perempuan,
+                'seluruh': seluruh
+            })
+            headers = {'Content-Type': 'application/json'}
+            
+            response = req.put(url=URL, data=payload, headers=headers)
+            msg = response.json()
+            
+            if response.status_code == 200:
+                flash(f'{msg["msg"]} Status : {response.status_code}', 'info')
+                return redirect(url_for('staff.get_kelas'))
+            else:
+                flash(f'{msg["msg"]} Status : {response.status_code}', 'error')
+                return render_template('staff/master/kelas/edit_kelas.html', form=form)
+        return render_template('staff/master/kelas/edit_kelas.html', form=form)
+    
+    @staff.route('delete-kelas/<int:id>', methods=['GET','DELETE'])
+    def delete_kelas(id):
+        URL = base_url + f'api/v2/master/kelas/get-one/{id}'
+        response = req.delete(URL)
+        if response.status_code == 204:
+            flash(f'Data kelas telah dihpus dari database. Status : {response.status_code}', 'info')
+            return redirect(url_for('staff.get_kelas'))
+    
 class TestPage:
     @staff.get("test-page")
     def test_page():
