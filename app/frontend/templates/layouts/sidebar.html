@@ -31,9 +31,11 @@
         </li>
         <li class="nav-header">Data</li>
         <!-- NOTE: DATA MASTER -->
-        <li class="nav-item {{'menu-open' if filename=='data-mapel'or filename=='tambah-mapel' or filename=='edit-mapel' else ''}}">
-          <a href="#" class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel'}}">
-            <i class="nav-icon fas fa-database"></i>
+        <li
+          class="nav-item {{'menu-open' if filename=='data-mapel'or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' else ''}}">
+          <a href="#"
+            class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semseter' or filename=='edit-semester' else ''}}">
+            <i class="nav-icon fas fa-layer-group"></i>
             <p>
               Data Master
               <i class="right fas fa-angle-left"></i>
@@ -41,14 +43,18 @@
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="{{ url_for('staff.get_mapel')}}" class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel'}}">
-                <i class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel'}}"></i>
+              <a href="{{ url_for('staff.get_mapel')}}"
+                class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel'}}">
+                <i
+                  class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel'}}"></i>
                 <p>Mapel</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
+              <a href="{{ url_for('staff.get_semester')}}"
+                class="nav-link {{'active' if filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' else ''}}">
+                <i
+                  class="far fa-circle nav-icon {{'fa fa-dot-circle' if filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' else ''}}"></i>
                 <p>Semester</p>
               </a>
             </li>
@@ -61,7 +67,7 @@
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Guru Mapel</p>
+                <p>Mengajar</p>
               </a>
             </li>
             <li class="nav-item">
@@ -73,7 +79,7 @@
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Jam Mengajar</p>
+                <p>Jam</p>
               </a>
             </li>
             <li class="nav-item">
@@ -98,9 +104,11 @@
             </li> -->
           </ul>
         </li>
-        <li class="nav-item {{'menu-open' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' or filename == 'edit-guru' or filename == 'edit-siswa' or filename == 'tambah-guru' else None}}">
-          <a href="#" class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' or filename == 'edit-guru' or filename == 'edit-siswa' or filename == 'tambah-guru' else None}}">
-            <i class="nav-icon fas fa-users-cog"></i>
+        <li
+          class="nav-item {{'menu-open' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' or filename == 'edit-guru' or filename == 'edit-siswa' or filename == 'tambah-guru' else None}}">
+          <a href="#"
+            class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' or filename == 'edit-guru' or filename == 'edit-siswa' or filename == 'tambah-guru' else None}}">
+            <i class="nav-icon fas fa-layer-group"></i>
             <p>
               Data Pengguna
               <i class="right fas fa-angle-left"></i>
@@ -114,8 +122,10 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ url_for('staff.get_guru')}}" class="nav-link {{'active' if filename == 'data-guru' or filename == 'edit-guru' or filename == 'tambah-guru' else ''}}">
-                <i class="far fa-circle {{ 'fa-dot-circle' if filename == 'data-guru' or filename == 'edit-guru' or filename == 'tambah-guru' else ''}}  nav-icon"></i>
+              <a href="{{ url_for('staff.get_guru')}}"
+                class="nav-link {{'active' if filename == 'data-guru' or filename == 'edit-guru' or filename == 'tambah-guru' else ''}}">
+                <i
+                  class="far fa-circle {{ 'fa-dot-circle' if filename == 'data-guru' or filename == 'edit-guru' or filename == 'tambah-guru' else ''}}  nav-icon"></i>
                 <p>Guru</p>
               </a>
             </li>
@@ -127,13 +137,13 @@
                 <p>Siswa</p>
               </a>
             </li>
-          </ul>          
+          </ul>
         </li>
-        
+
         <li class="nav-header">Authentication</li>
         <li class="nav-item {{ 'menu-open' if filename=='data-user' else None }}">
           <a href="#" class="nav-link {{ 'active' if filename=='data-user' else None }}">
-            <i class="nav-icon fas fa-user-lock"> </i>
+            <i class="nav-icon fas fa-th-list"> </i>
             <p>
               Auth User
               <i class="right fas fa-angle-left"></i>
@@ -164,8 +174,7 @@
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="#"
-                class="nav-link">
+              <a href="#" class="nav-link">
                 <i class="far nav-icon fa-dot-circle"></i>
                 <p>Data Diri</p>
               </a>

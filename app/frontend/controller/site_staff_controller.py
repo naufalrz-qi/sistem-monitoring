@@ -16,7 +16,7 @@ from app.backend.models.user_details_model import *
 from app.backend.lib.base_model import BaseModel
 from werkzeug.utils import secure_filename
 from app.frontend.forms.form_auth import FormEditStatus
-from app.frontend.forms.form_master import FormMapel
+from app.frontend.forms.form_master import *
 from app.frontend.forms.form_siswa import FormAddSiswa, FormEditSiswa
 from ..forms.form_auth import *
 from ..forms.form_guru import *
@@ -671,7 +671,75 @@ class MasterData:
             )        
             return redirect(url_for('staff.get_mapel'))
             
+    # NOTE: ================== MASTER DATA SESMESTER =====================================
+    @staff.get('data-semester')
+    def get_semester():
+        URL = base_url + f'api/v2/master/semester/get-all'
+        response = req.get(URL)
+        jsonResp = response.json()
+        return render_template('staff/master/semester/data_semester.html', model=jsonResp)
+    
+    @staff.route('add-semester', methods=['GET', 'POST'])
+    def add_semester():
+        form = FormSemester(request.form)
+        URL = base_url + f'api/v2/master/semester/create'
+        if request.method == 'POST' and form.validate_on_submit():
+            semester = form.semester.data
+            status = form.status.data
+            
+            payload = json.dumps({
+                'semester': semester,
+                'status': status
+            })
+            headers = {'Content-Type': 'application/json'}
+            response = req.post(url=URL, data=payload, headers=headers)
+            msg = response.json()
+            
+            if response.status_code == 201:
+                flash(message=f'{msg["msg"]} Status: {response.status_code}', category='success')
+                return redirect(url_for('staff.get_semester'))
+            else:
+                flash(message=f'{msg["msg"]} Status: {response.status_code}', category='error')
+                return render_template('staff/master/semester/tambah_semester.html', form=form)
+            
+        return render_template('staff/master/semester/tambah_semester.html', form=form)
+    
+    @staff.route('edit-semester/<int:id>', methods=['GET','POST'])
+    def edit_semester(id):
+        form = FormEditSemester(request.form)
+        URL = base_url + f'api/v2/master/semester/get-one/{id}'
+        responseGet = req.get(url=URL)
+        jsonResp = responseGet.json()
+        form.status.data = '1' if jsonResp['status'] == True else '0'
+        
+        if request.method == 'POST' and form.validate_on_submit():
+            status = request.form.get('status')
+            payload = json.dumps({
+                'status': status
+            })
+            headers = {'Content-Type': 'application/json'}
+            response = req.put(url=URL, data=payload, headers=headers)
+            msg = response.json()
+            
+            if response.status_code == 200:
+                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='info')
+                return redirect(url_for('staff.get_semester'))
+            else:
+                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='error')
+                return render_template('staff/master/semester/edit_semester.html', form=form)
+        return render_template('staff/master/semester/edit_semester.html', form=form)
 
+    @staff.route('delete-semester/<int:id>', methods=['DELETE','GET'])
+    def delete_semester(id):
+        URL = base_url + f'api/v2/master/semester/get-one/{id}'
+        response = req.delete(URL)
+        if response.status_code == 204:
+            flash(
+                message=f"Data semester telah di hapus dari database. Status : {response.status_code}",
+                category="info",
+            )
+            return redirect(url_for('staff.get_semester'))
+        
 
 class TestPage:
     @staff.get("test-page")

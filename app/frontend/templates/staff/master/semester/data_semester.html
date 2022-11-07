@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% set filename = 'data-mapel' %}
-{% block title %}Data Mata Pelajaran{% endblock %}
+{% set filename = 'data-semester' %}
+{% block title %}Data Semester{% endblock %}
 {% block head %}
 {{super()}}
 <!-- Tempusdominus Bootstrap 4 -->
@@ -17,7 +17,7 @@
 {% block content %}
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title font-weight-bold text-lg">&nbsp;Data Mata Pelajaran</h3>
+        <h3 class="card-title font-weight-bold text-lg">&nbsp;Data Semester</h3>
         <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
@@ -25,16 +25,17 @@
         </div>
     </div>
     <div class="card-body">
-        <a href="{{ url_for('staff.add_mapel')}}" class="btn btn-sm btn-primary mb-3">
+        <a href="{{ url_for('staff.add_semester')}}" class="btn btn-sm btn-primary mb-3">
             <i class="fas fa-plus"></i>
-            Tambah Data Mapel
+            Tambah Data Semester
         </a>
         <div class="col-md-8">
             <table id="tabel" class="table table-bordered table-striped table-sm">
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Mata Pelajaran</th>
+                        <th>Semester</th>
+                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -42,10 +43,13 @@
                     {% for _ in model['data'] %}
                     <tr>
                         <td class="align-middle text-center" style="width: 12px;">{{ loop.index}}</td>
-                        <td class="align-middle">{{ _.mapel }}</td>
+                        <td class="align-middle">{{ _.semester | title }}</td>
+                        <td class="align-middle">
+                            {{'Aktif' if _.status == true else 'Tidak Aktif' }}
+                        </td>
                         <!-- AKSI -->
                         <td class="align-middle text-center" style="width: 120px;">
-                            <a href="{{ url_for('staff.edit_mapel',  id=_.id)}}" class="btn btn-warning btn-xs" title="Edit Data">
+                            <a href="{{ url_for('staff.edit_semester',  id=_.id)}}" class="btn btn-warning btn-xs" title="Edit Data">
                                 <i class="fas fa-pencil-alt"></i>
                                 Edit
                             </a>
@@ -56,7 +60,7 @@
                             </button>
                         </td>
                     </tr>
-                    {% include 'modal/master/mapel/delete.html' %}
+                    {% include 'modal/master/semester/delete.html' %}
                     {% endfor %}
                 </tbody>
             </table>

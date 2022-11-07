@@ -244,7 +244,7 @@ class Semester(object):
     @master.route('/semester/create', endpoint='semester', methods=['POST','GET'])
     def create():
         semester = request.json.get('semester')
-        active = request.json.get('active')
+        active = request.json.get('status')
         
         base = BaseModel(SemesterModel(semester, active))
         sms_check = base.get_one_or_none(semester=semester)
@@ -252,7 +252,7 @@ class Semester(object):
             return jsonify(msg='Data Class has been already exists.'), HTTP_409_CONFLICT
         else:
             base.create()        
-            return jsonify(ajaran=base.model.semester), HTTP_201_CREATED
+            return jsonify(msg=f'Data Semester {base.model.semester} telah di tambahkan.' ), HTTP_201_CREATED
         
     @master.route('/semester/get-all', endpoint='semester-all', methods=['GET'])
     def get_all():
@@ -264,7 +264,7 @@ class Semester(object):
             data.append({
                 'id' : sms.id,
                 'semester' : sms.semester,
-                'active' : True  if sms.is_active == "0" else False 
+                'status' : True  if sms.is_active == "1" else False 
             })
             
         return jsonify({
@@ -280,22 +280,22 @@ class Semester(object):
             if model is not None:
                 return jsonify(id=model.id, 
                                semester= model.semester,
-                               active= True if model.is_active == "0" else False)
+                               status=  True  if model.is_active == "1" else False )
             else:
                 return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
                 
         elif request.method == 'PUT':
-            semester = request.json.get('semester')
-            active = request.json.get('active')
+            # semester = request.json.get('semester')
+            active = request.json.get('status')
             
-            class_check = base.get_one_or_none(semester=semester)
-            if class_check:
-                return jsonify(msg=f'Data dengan {semester} sudah ada.')      
+            # class_check = base.get_one_or_none(semester=semester)
+            if not model:
+                return jsonify(msg=f'Data dengan semester tidak ditemukan.'), HTTP_404_NOT_FOUND      
             else:
-                model.semester = semester
+                # model.semester = semester
                 model.is_active = active
                 base.edit()            
-                return jsonify(id=model.id, semester=semester), HTTP_200_OK
+                return jsonify(msg=f'Data Semester {model.semester} telah diperbaharui'), HTTP_200_OK
         
         elif request.method == 'DELETE':
             base.delete(model)            
