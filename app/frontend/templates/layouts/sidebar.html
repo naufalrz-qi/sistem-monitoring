@@ -32,9 +32,9 @@
         <li class="nav-header">Data</li>
         <!-- NOTE: DATA MASTER -->
         <li
-          class="nav-item {{'menu-open' if filename=='data-mapel'or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' else ''}}">
+          class="nav-item {{'menu-open' if filename=='data-mapel'or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' or filename=='tahun-ajaran' or filename=='tambah-ajaran' else ''}}">
           <a href="#"
-            class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semseter' or filename=='edit-semester' else ''}}">
+            class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semseter' or filename=='edit-semester' or filename=='tahun-ajaran' or filename=='tambah-ajaran' else ''}}">
             <i class="nav-icon fas fa-layer-group"></i>
             <p>
               Data Master
@@ -54,13 +54,13 @@
               <a href="{{ url_for('staff.get_semester')}}"
                 class="nav-link {{'active' if filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' else ''}}">
                 <i
-                  class="far fa-circle nav-icon {{'fa fa-dot-circle' if filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' else ''}}"></i>
+                  class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' else ''}}"></i>
                 <p>Semester</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
+              <a href="{{ url_for('staff.get_ajaran') }}" class="nav-link {{'active' if filename=='tahun-ajaran' or filename=='tambah-ajaran' else ''}}">
+                <i class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='tahun-ajaran' or filename=='tambah-ajaran' else ''}}"></i>
                 <p>Tahun Ajaran</p>
               </a>
             </li>

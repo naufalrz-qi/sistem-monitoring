@@ -186,14 +186,15 @@ class TahunAjaran(object):
     @master.route('/ajaran/create', endpoint='ajaran', methods=['POST','GET'])
     def create():
         ajaran = request.json.get('ajaran')
+        status = request.json.get('status')
         
-        base = BaseModel(TahunAjaranModel(ajaran=ajaran))
+        base = BaseModel(TahunAjaranModel(ajaran=ajaran, status=status))
         ajaran_check = base.get_one_or_none(th_ajaran=ajaran)
         if ajaran_check:
             return jsonify(msg='Data Class has been already exists.'), HTTP_409_CONFLICT
         else:
             base.create()        
-            return jsonify(ajaran=base.model.th_ajaran), HTTP_201_CREATED
+            return jsonify(msg=f'Data tahun ajaran {base.model.th_ajaran} telah ditambahkan.'), HTTP_201_CREATED
         
     @master.route('/ajaran/get-all', endpoint='ajaran-all', methods=['GET'])
     def get_all():
@@ -205,7 +206,7 @@ class TahunAjaran(object):
             data.append({
                 'id' : ajaran.id,
                 'th_ajaran' : ajaran.th_ajaran,
-                'active' : True  if ajaran.is_active == "0" else False 
+                'status' : True if ajaran.is_active == "1" else False 
             })
             
         return jsonify({
@@ -221,20 +222,22 @@ class TahunAjaran(object):
             if model is not None:
                 return jsonify(id=model.id, 
                                ajaran= model.th_ajaran,
-                               active= True if model.is_active == "0" else False)
+                               status= True if model.is_active == "1" else False)
             else:
-                return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
+                return jsonify(msg='Data tahun ajaran not found.'), HTTP_404_NOT_FOUND
                 
         elif request.method == 'PUT':
             ajaran = request.json.get('ajaran')
+            status = request.json.get('status')
             
-            class_check = base.get_one_or_none(th_ajaran=ajaran)
-            if class_check:
-                return jsonify(msg=f'Data dengan {ajaran} sudah ada.')      
-            else:
-                model.th_ajaran = ajaran
-                base.edit()            
-                return jsonify(id=model.id, ajaran=model.th_ajaran), HTTP_200_OK
+            # class_check = base.get_one_or_none(th_ajaran=ajaran)
+            # if class_check:
+            #     return jsonify(msg=f'Data dengan {ajaran} sudah ada.')      
+            # else:
+            model.th_ajaran = ajaran
+            model.is_active = status
+            base.edit()            
+            return jsonify(msg=f'Data tahun ajaran {model.th_ajaran} telah diperbaharui'), HTTP_200_OK
         
         elif request.method == 'DELETE':
             base.delete(model)            

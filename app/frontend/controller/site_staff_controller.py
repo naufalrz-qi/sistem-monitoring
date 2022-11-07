@@ -740,6 +740,74 @@ class MasterData:
             )
             return redirect(url_for('staff.get_semester'))
         
+    # NOTE: ================== MASTER DATA TAHUN AJARAN =====================================
+    @staff.route('data-tahun-ajaran')
+    def get_ajaran():
+        URL = base_url + 'api/v2/master/ajaran/get-all'
+        response = req.get(URL)
+        jsonResp = response.json()
+        return render_template('staff/master/tahun_ajaran/data_tahun_ajaran.html', model=jsonResp)
+    
+    @staff.route('add-tahun-ajaran', methods=['GET','POST'])
+    def add_ajaran():
+        form = FormTahunAJaran(request.form)
+        URL = base_url + 'api/v2/master/ajaran/create'
+        
+        if request.method == 'POST' and form.validate_on_submit():
+            ajaran = form.tahunAjaran.data
+            status = form.status.data
+            
+            payload = json.dumps({
+                'ajaran': ajaran,
+                'status': status
+            })
+            headers = {'Content-Type': 'application/json'}
+            response = req.post(url=URL, data=payload, headers=headers)
+            msg=response.json()
+            
+            if response.status_code == 201:
+                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='success')
+                return redirect(url_for('staff.get_ajaran'))
+            else:
+                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='error')
+                return render_template('staff/master/tahun_ajaran/tambah_tahun_ajaran.html', form=form)
+        return render_template('staff/master/tahun_ajaran/tambah_tahun_ajaran.html', form=form)
+
+    @staff.route('edit-tahun-ajaran/<int:id>', methods=['GET','POST'])
+    def edit_ajaran(id):
+        form = FormTahunAJaran(request.form)
+        URL = base_url + f'api/v2/master/ajaran/get-one/{id}'
+        response = req.get(URL)
+        jsonResp = response.json()
+        form.tahunAjaran.data = jsonResp['ajaran']
+        form.status.data = '1' if jsonResp['status'] == True else '0'
+        
+        if request.method == 'POST' and form.validate_on_submit():
+            ajaran = request.form.get('tahunAjaran')
+            status = request.form.get('status')
+            payload = json.dumps({
+                'ajaran' : ajaran,
+                'status' : status
+            })
+            headers = {'Content-Type': 'application/json'}
+            response = req.put(url=URL, data=payload, headers=headers)
+            msg = response.json()
+            if response.status_code == 200:
+                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='info')
+                return redirect(url_for('staff.get_ajaran'))
+            else:
+                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='error')
+                return render_template('staff/master/tahun_ajaran/edit_tahun_ajaran.html', form=form)
+                
+        return render_template('staff/master/tahun_ajaran/edit_tahun_ajaran.html', form=form)
+    
+    @staff.route('delete-tahun-ajaran/<int:id>', methods=['GET','DELETE'])
+    def delete_ajaran(id):
+        URL = base_url + f'api/v2/master/ajaran/get-one/{id}'
+        response = req.delete(URL)
+        if response.status_code == 204:
+            flash(message=f'Data Tahun Ajaran telah dihapus dari database. Status : {response.status_code}', category='info')
+            return redirect(url_for('staff.get_ajaran'))
 
 class TestPage:
     @staff.get("test-page")

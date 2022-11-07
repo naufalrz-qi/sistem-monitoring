@@ -46,9 +46,9 @@ class TahunAjaranModel(db.Model):
     th_ajaran = sa.Column(sa.String(32), nullable=False)
     is_active = sa.Column(sa.String(1), nullable=False)
     
-    def __init__(self, ajaran):
+    def __init__(self, ajaran, status=None):
         self.th_ajaran = ajaran
-        self.is_active = 0
+        self.is_active = status
     
     def __repr__(self) -> str:
         return self.th_ajaran

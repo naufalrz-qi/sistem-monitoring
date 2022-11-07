@@ -19,7 +19,7 @@ class FormSemester(FlaskForm):
     )
     status = SelectField(
         label="Status :",
-        choices=[("", "..:: SELECT ::.."), ("0", "Tidak Aktif"), ("1", "Aktif")],
+        choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
     )
     submit = SubmitField('Submit Data')
 
@@ -32,12 +32,27 @@ class FormSemester(FlaskForm):
             raise ValidationError("*Pilihan tidak boleh kosong.")
 
 class FormEditSemester(FlaskForm):
-    
     status = SelectField(
         label="Status :",
-        choices=[("", "..:: SELECT ::.."), ("0", "Tidak Aktif"), ("1", "Aktif")],
+       choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
     )
     submit = SubmitField('Submit Data')
+
+    def validate_status(self, field):
+        if field.data == "":
+            raise ValidationError("*Pilihan tidak boleh kosong.")
+
+class FormTahunAJaran(FlaskForm):
+    tahunAjaran = StringField(label='Tahun Ajaran :')
+    status = SelectField(
+    label="Status :",
+    choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
+    )
+    submit = SubmitField('Submit Data')
+    
+    def validate_tahunAjaran(self, field):
+        if field.data == "":
+            raise ValidationError("*Inputan tidak boleh kosong.")
 
     def validate_status(self, field):
         if field.data == "":
