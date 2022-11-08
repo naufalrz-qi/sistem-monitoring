@@ -146,7 +146,7 @@ class Hari(object):
             return jsonify(msg='Data Class has been already exists.'), HTTP_409_CONFLICT
         else:
             base.create()        
-            return jsonify(hari=base.model.hari), HTTP_201_CREATED
+            return jsonify(msg=f'Data Hari {base.model.hari} telah ditambahkan.'), HTTP_201_CREATED
         
     @master.route('/hari/get-all', endpoint='hari-all', methods=['GET'])
     def get_all():
@@ -160,9 +160,7 @@ class Hari(object):
                 'hari' : hari.hari
             })
             
-        return jsonify({
-            'data' : data
-        }), HTTP_200_OK
+        return jsonify(data=data), HTTP_200_OK
         
     @master.route('/hari/get-one/<int:id>', endpoint='hari-single', methods=['GET', 'PUT', 'DELETE'])
     def get_one(id):

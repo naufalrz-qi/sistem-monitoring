@@ -812,7 +812,6 @@ class MasterData:
             return redirect(url_for('staff.get_ajaran'))
     
     
-    # NOTE: ================== MASTER DATA MENGAJAR =====================================
     # NOTE: ================== MASTER DATA KELAS =====================================
     @staff.route('data-kelas')
     def get_kelas():
@@ -887,6 +886,49 @@ class MasterData:
         if response.status_code == 204:
             flash(f'Data kelas telah dihpus dari database. Status : {response.status_code}', 'info')
             return redirect(url_for('staff.get_kelas'))
+    
+    # NOTE: ================== MASTER DATA HARI =====================================
+    @staff.route('data-hari')
+    def get_hari():
+        URL = base_url + 'api/v2/master/hari/get-all'
+        response = req.get(URL)
+        jsonResp = response.json()        
+        return render_template('staff/master/hari/data_hari.html', model=jsonResp)
+    
+    @staff.route('add-hari', methods=['GET','POST'])
+    def add_hari():
+        URL = base_url + 'api/v2/master/hari/create'
+        form = FormHari(request.form)
+        if request.method == 'POST' and form.validate_on_submit():
+            hari = form.hari.data
+            
+            payload = json.dumps({
+                'hari': hari
+            })
+            headers = {'Content-Type': 'application/json'}
+            response = req.post(url=URL, data=payload, headers=headers)
+            msg = response.json()
+            if response.status_code == 201:
+                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='success')
+                return redirect(url_for('staff.get_hari'))
+            else:
+                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='error')
+                return render_template('staff/master/hari/tambah_hari.html', form=form)
+                
+        return render_template('staff/master/hari/tambah_hari.html', form=form)
+    
+    @staff.route('edit-hari/<int:id>', methods=['GET','POST'])
+    def edit_hari(id):
+        pass 
+    
+    @staff.route('delete-hari/<int:id>', methods=['GET','DELETE'])
+    def delete_hari(id):
+        URL = base_url + f'api/v2/master/hari/get-one/{id}'
+        response = req.delete(URL)
+        if response.status_code == 204:
+            flash(f'Data hari telah di hapus dari database. Status : {response.status_code}', 'info')
+            return redirect(url_for('staff.get_hari'))
+
     
 class TestPage:
     @staff.get("test-page")

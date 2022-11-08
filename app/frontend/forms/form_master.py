@@ -21,7 +21,7 @@ class FormSemester(FlaskForm):
         label="Status :",
         choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
     )
-    submit = SubmitField('Submit Data')
+    submit = SubmitField("Submit Data")
 
     def validate_semester(self, field):
         if field.data == "":
@@ -31,25 +31,27 @@ class FormSemester(FlaskForm):
         if field.data == "":
             raise ValidationError("*Pilihan tidak boleh kosong.")
 
+
 class FormEditSemester(FlaskForm):
     status = SelectField(
         label="Status :",
-       choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
+        choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
     )
-    submit = SubmitField('Submit Data')
+    submit = SubmitField("Submit Data")
 
     def validate_status(self, field):
         if field.data == "":
             raise ValidationError("*Pilihan tidak boleh kosong.")
 
+
 class FormTahunAJaran(FlaskForm):
-    tahunAjaran = StringField(label='Tahun Ajaran :')
+    tahunAjaran = StringField(label="Tahun Ajaran :")
     status = SelectField(
-    label="Status :",
-    choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
+        label="Status :",
+        choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
     )
-    submit = SubmitField('Submit Data')
-    
+    submit = SubmitField("Submit Data")
+
     def validate_tahunAjaran(self, field):
         if field.data == "":
             raise ValidationError("*Inputan tidak boleh kosong.")
@@ -58,21 +60,44 @@ class FormTahunAJaran(FlaskForm):
         if field.data == "":
             raise ValidationError("*Pilihan tidak boleh kosong.")
 
+
 class FormKelas(FlaskForm):
-    kelas = StringField(label='Kelas :')
-    submit = SubmitField(label='Sumbit Data')
-    
+    kelas = StringField(label="Kelas :")
+    submit = SubmitField(label="Sumbit Data")
+
     def validate_kelas(self, field):
-        if field.data == '':
-            raise ValidationError('*Inputan tidak boleh kosong.')
-        
+        if field.data == "":
+            raise ValidationError("*Inputan tidak boleh kosong.")
+
+
 class FormEditKelas(FlaskForm):
-    kelas = StringField(label='Kelas :')
-    jumlahLaki = StringField(label='Jumlah Laki-Laki :')
-    jumlahPerempuan = StringField(label='Jumlah Perempuan :')
-    jumlahSiswa = StringField(label='Jumlah Siswa :')
-    submit = SubmitField(label='Sumbit Data')
-    
+    kelas = StringField(label="Kelas :")
+    jumlahLaki = StringField(label="Jumlah Laki-Laki :")
+    jumlahPerempuan = StringField(label="Jumlah Perempuan :")
+    jumlahSiswa = StringField(label="Jumlah Siswa :")
+    submit = SubmitField(label="Sumbit Data")
+
     # def validate_kelas(self, field):
     #     if field.data == '':
     #         raise ValidationError('*Inputan tidak boleh kosong.')
+
+
+class FormHari(FlaskForm):
+    hari = SelectField(
+        label="Hari",
+        choices=[
+            ("", "..:: SELECT ::.."),
+            ("senin", " Senin"),
+            ("selasa", "Selasa"),
+            ("rabu", "Rabu"),
+            ("kamis", "Kamis"),
+            ("jumat", "Jumat"),
+            ('sabtu', "Sabtu"),
+            ('minggu', 'Minggu')
+        ],
+    )
+    submit = SubmitField(label='Submit Data')
+    
+    def validate_hari(self, field):
+        if field.data == '':
+            raise ValidationError('*Pilih Hari terlebih dahulu.')
