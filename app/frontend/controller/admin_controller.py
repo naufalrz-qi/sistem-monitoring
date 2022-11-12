@@ -41,17 +41,19 @@ def index():
 
 
 class PenggunaSiswa:
-    @admin2.route('get-siswa')
+    @admin2.route("get-siswa")
     def getSiswa():
-        urlKelas = base_url + 'api/v2/master/kelas/get-all'
+        urlKelas = base_url + "api/v2/master/kelas/get-all"
         respKelas = req.get(urlKelas)
         jsonRespKelas = respKelas.json()
-        
-        urlSiswa = base_url + url_for('siswa.get')
+
+        urlSiswa = base_url + url_for("siswa.get")
         respSiswa = req.get(urlSiswa)
         jsonRespSiswa = respSiswa.json()
-        return render_template('admin/siswa/get_siswa.html', kelas=jsonRespKelas, siswa=jsonRespSiswa)
-    
+        return render_template(
+            "admin/siswa/get_siswa.html", kelas=jsonRespKelas, siswa=jsonRespSiswa
+        )
+
     @admin2.route("/data-siswa")
     def get_siswa():
         url = base_url + url_for("siswa.get")
@@ -121,7 +123,7 @@ class PenggunaSiswa:
     # NOTE:  TAMBAH DATA SISWA
     @admin2.route("/add-siswa", methods=["GET", "POST"])
     def add_siswa():
-        
+
         # get kelas
         url_kelas = base_url + f"/api/v2/master/kelas/get-all"
         get_kelas = req.get(url_kelas)
@@ -148,7 +150,7 @@ class PenggunaSiswa:
             gender = form.jenisKelamin.data
             agama = form.agama.data
             kelas = form.kelas.data
-            telp = request.form.get('telp')
+            telp = request.form.get("telp")
 
             payload = json.dumps(
                 {
@@ -160,7 +162,7 @@ class PenggunaSiswa:
                     "gender": gender,
                     "agama": agama,
                     "kelas_id": kelas,
-                    "telp": telp
+                    "telp": telp,
                 }
             )
             headers = {"Content-Type": "application/json"}
@@ -179,16 +181,14 @@ class PenggunaSiswa:
                     category="error",
                 )
             else:
-                return render_template(
-                    "admin/siswa/tambah_siswa.html", form=form
-                )
+                return render_template("admin/siswa/tambah_siswa.html", form=form)
         return render_template("admin/siswa/tambah_siswa.html", form=form)
 
     # NOTE:  UPDATE DATA SISWA
     @admin2.route("/update-siswa/<int:id>", methods=["GET", "POST", "PUT"])
     def update_siswa(id):
         form = FormEditSiswa()
-        
+
         # GET KELAS
         url_kelas = base_url + f"/api/v2/master/kelas/get-all"
         get_kelas = req.get(url_kelas)
@@ -202,10 +202,10 @@ class PenggunaSiswa:
         # getOne = baseModel.get_one_or_none(user_id=id)
         # GET SINGLE DATA
         url_obj = base_url + f"api/v2/student/single/{id}"
-        
+
         resp_obj = req.get(url=url_obj)
         json_resp = resp_obj.json()
-        kelasId = json_resp['kelas_id']
+        kelasId = json_resp["kelas_id"]
         form.nisn.default = json_resp["nisn"]
         form.fullname.default = json_resp["first_name"] + " " + json_resp["last_name"]
         form.kelas.default = next(
@@ -275,9 +275,11 @@ class PenggunaSiswa:
             )
             response_update = req.put(url_obj, headers=headers, data=payload)
             if response_update.status_code == 200:
-                baseKelasAfter = base_url + f'api/v2/master/kelas/update-jumlah/{kelas}'
+                baseKelasAfter = base_url + f"api/v2/master/kelas/update-jumlah/{kelas}"
                 updateJumlahSiswaAfter = req.put(url=baseKelasAfter, headers=headers)
-                baseKelasBefore = base_url + f'api/v2/master/kelas/update-jumlah/{kelasId}'
+                baseKelasBefore = (
+                    base_url + f"api/v2/master/kelas/update-jumlah/{kelasId}"
+                )
                 updateJumlahSiswaAfter = req.put(url=baseKelasBefore, headers=headers)
                 flash(f"Data dari {first_name} telah berhasil diperbaharui.", "info")
                 return redirect(url_for("admin2.getSiswa"))
@@ -292,10 +294,8 @@ class PenggunaSiswa:
                     form=form,
                     obj=json_resp,
                 )
-        
-        return render_template(
-            "admin/siswa/edit_siswa.html", form=form, obj=json_resp
-        )
+
+        return render_template("admin/siswa/edit_siswa.html", form=form, obj=json_resp)
 
     # NOTE:  DELETE DATA SISWA
     @admin2.route("/delete-siswa/<int:id>", methods=["GET", "POST", "DELETE"])
@@ -303,11 +303,10 @@ class PenggunaSiswa:
         url = base_url + f"/api/v2/student/single/{id}"
         respGetSiswa = req.get(url)
         jsonResp = respGetSiswa.json()
-        kelasId = jsonResp['kelas_id']
-        
-        baseKelas = base_url + f'api/v2/master/kelas/update-jumlah/{kelasId}'
+        kelasId = jsonResp["kelas_id"]
+
+        baseKelas = base_url + f"api/v2/master/kelas/update-jumlah/{kelasId}"
         headers = {"Content-Type": "application/json"}
-        
 
         response = req.delete(url)
         if response.status_code == 204:
@@ -394,9 +393,7 @@ class PenggunaGuru:
         response = req.get(url)
         json_resp = response.json()
 
-        return render_template(
-            "admin/guru/data_guru.html", model=json_resp
-        )
+        return render_template("admin/guru/data_guru.html", model=json_resp)
 
     @admin2.route("tambah-data", methods=["GET", "POST"])
     def add_guru():
@@ -444,15 +441,13 @@ class PenggunaGuru:
             else:
                 flash(f"{msg}. Status : {response.status_code}", "error")
                 # return redirect(url_for('admin2.get_guru'))
-                return render_template(
-                    "admin/guru/tambah_guru.html", form=form
-                )
+                return render_template("admin/guru/tambah_guru.html", form=form)
         return render_template("admin/guru/tambah_guru.html", form=form)
 
     @admin2.route("update-guru/<int:id>", methods=["POST", "GET"])
     def update_guru(id):
         form = FormEditGuru(request.form)
-        
+
         # NOTE: GET SINGLE OBJECT
         url_obj = base_url + f"api/v2/guru/single/{id}"
         resp_obj = req.get(url=url_obj)
@@ -511,7 +506,7 @@ class PenggunaGuru:
 
     @admin2.route("delete-guru/<id>", methods=["GET", "DELETE", "POST"])
     def delete_guru(id):
-        
+
         url = base_url + f"api/v2/guru/single/{id}"
         response = req.delete(url=url)
 
@@ -532,7 +527,7 @@ class PenggunaGuru:
 class PenggunaUser:
     @admin2.route("/data-user")
     def get_user():
-        
+
         url = base_url + f"api/v2/auth/get-all"
         response = req.get(url)
         json_resp = response.json()
@@ -547,7 +542,7 @@ class PenggunaUser:
 
     @admin2.post("/edit-status/<int:id>")
     def update_status(id):
-        
+
         url = base_url + f"api/v2/auth/edit-status?id={id}"
 
         status_form = request.form.get("status")
@@ -570,7 +565,7 @@ class PenggunaUser:
 
     @admin2.post("edit-pswd/<int:id>")
     def update_password(id):
-        
+
         url = base_url + f"api/v2/auth/edit-password?id={id}"
 
         if request.method == "POST":
@@ -598,9 +593,7 @@ class PenggunaUser:
                 return redirect(url_for("admin2.get_user"))
 
 
-  
-
-# NOTE: MASTER DATA 
+# NOTE: MASTER DATA
 class MasterData:
     # NOTE: ================== MASTER DATA MAPEL =====================================
     @admin2.get("data-mapel")
@@ -675,333 +668,481 @@ class MasterData:
                 message=f"Data mapel telah di hapus dari database. Status : {response.status_code}",
                 category="info",
             )
-            return redirect(url_for('admin2.get_mapel'))
+            return redirect(url_for("admin2.get_mapel"))
         elif response.status_code == 404:
             msg = response.json()
             flash(
                 message=f"{msg['msg']} : {response.status_code}",
                 category="info",
-            )        
-            return redirect(url_for('admin2.get_mapel'))
-        
-            
+            )
+            return redirect(url_for("admin2.get_mapel"))
+
     # NOTE: ================== MASTER DATA SESMESTER =====================================
-    @admin2.get('data-semester')
+    @admin2.get("data-semester")
     def get_semester():
-        URL = base_url + f'api/v2/master/semester/get-all'
+        URL = base_url + f"api/v2/master/semester/get-all"
         response = req.get(URL)
         jsonResp = response.json()
-        return render_template('admin/master/semester/data_semester.html', model=jsonResp)
-    
-    @admin2.route('add-semester', methods=['GET', 'POST'])
+        return render_template(
+            "admin/master/semester/data_semester.html", model=jsonResp
+        )
+
+    @admin2.route("add-semester", methods=["GET", "POST"])
     def add_semester():
         form = FormSemester(request.form)
-        URL = base_url + f'api/v2/master/semester/create'
-        if request.method == 'POST' and form.validate_on_submit():
+        URL = base_url + f"api/v2/master/semester/create"
+        if request.method == "POST" and form.validate_on_submit():
             semester = form.semester.data
             status = form.status.data
-            
-            payload = json.dumps({
-                'semester': semester,
-                'status': status
-            })
-            headers = {'Content-Type': 'application/json'}
+
+            payload = json.dumps({"semester": semester, "status": status})
+            headers = {"Content-Type": "application/json"}
             response = req.post(url=URL, data=payload, headers=headers)
             msg = response.json()
-            
+
             if response.status_code == 201:
-                flash(message=f'{msg["msg"]} Status: {response.status_code}', category='success')
-                return redirect(url_for('admin2.get_semester'))
+                flash(
+                    message=f'{msg["msg"]} Status: {response.status_code}',
+                    category="success",
+                )
+                return redirect(url_for("admin2.get_semester"))
             else:
-                flash(message=f'{msg["msg"]} Status: {response.status_code}', category='error')
-                return render_template('admin/master/semester/tambah_semester.html', form=form)
-            
-        return render_template('admin/master/semester/tambah_semester.html', form=form)
-    
-    @admin2.route('edit-semester/<int:id>', methods=['GET','POST'])
+                flash(
+                    message=f'{msg["msg"]} Status: {response.status_code}',
+                    category="error",
+                )
+                return render_template(
+                    "admin/master/semester/tambah_semester.html", form=form
+                )
+
+        return render_template("admin/master/semester/tambah_semester.html", form=form)
+
+    @admin2.route("edit-semester/<int:id>", methods=["GET", "POST"])
     def edit_semester(id):
         form = FormEditSemester(request.form)
-        URL = base_url + f'api/v2/master/semester/get-one/{id}'
+        URL = base_url + f"api/v2/master/semester/get-one/{id}"
         responseGet = req.get(url=URL)
         jsonResp = responseGet.json()
-        form.status.data = '1' if jsonResp['status'] == True else '0'
-        
-        if request.method == 'POST' and form.validate_on_submit():
-            status = request.form.get('status')
-            payload = json.dumps({
-                'status': status
-            })
-            headers = {'Content-Type': 'application/json'}
+        form.status.data = "1" if jsonResp["status"] == True else "0"
+
+        if request.method == "POST" and form.validate_on_submit():
+            status = request.form.get("status")
+            payload = json.dumps({"status": status})
+            headers = {"Content-Type": "application/json"}
             response = req.put(url=URL, data=payload, headers=headers)
             msg = response.json()
-            
-            if response.status_code == 200:
-                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='info')
-                return redirect(url_for('admin2.get_semester'))
-            else:
-                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='error')
-                return render_template('admin/master/semester/edit_semester.html', form=form)
-        return render_template('admin/master/semester/edit_semester.html', form=form)
 
-    @admin2.route('delete-semester/<int:id>', methods=['DELETE','GET'])
+            if response.status_code == 200:
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="info",
+                )
+                return redirect(url_for("admin2.get_semester"))
+            else:
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="error",
+                )
+                return render_template(
+                    "admin/master/semester/edit_semester.html", form=form
+                )
+        return render_template("admin/master/semester/edit_semester.html", form=form)
+
+    @admin2.route("delete-semester/<int:id>", methods=["DELETE", "GET"])
     def delete_semester(id):
-        URL = base_url + f'api/v2/master/semester/get-one/{id}'
+        URL = base_url + f"api/v2/master/semester/get-one/{id}"
         response = req.delete(URL)
         if response.status_code == 204:
             flash(
                 message=f"Data semester telah di hapus dari database. Status : {response.status_code}",
                 category="info",
             )
-            return redirect(url_for('admin2.get_semester'))
-        
-        
+            return redirect(url_for("admin2.get_semester"))
+
     # NOTE: ================== MASTER DATA TAHUN AJARAN =====================================
-    @admin2.route('data-tahun-ajaran')
+    @admin2.route("data-tahun-ajaran")
     def get_ajaran():
-        URL = base_url + 'api/v2/master/ajaran/get-all'
+        URL = base_url + "api/v2/master/ajaran/get-all"
         response = req.get(URL)
         jsonResp = response.json()
-        return render_template('admin/master/tahun_ajaran/data_tahun_ajaran.html', model=jsonResp)
-    
-    @admin2.route('add-tahun-ajaran', methods=['GET','POST'])
+        return render_template(
+            "admin/master/tahun_ajaran/data_tahun_ajaran.html", model=jsonResp
+        )
+
+    @admin2.route("add-tahun-ajaran", methods=["GET", "POST"])
     def add_ajaran():
         form = FormTahunAJaran(request.form)
-        URL = base_url + 'api/v2/master/ajaran/create'
-        
-        if request.method == 'POST' and form.validate_on_submit():
+        URL = base_url + "api/v2/master/ajaran/create"
+
+        if request.method == "POST" and form.validate_on_submit():
             ajaran = form.tahunAjaran.data
             status = form.status.data
-            
-            payload = json.dumps({
-                'ajaran': ajaran,
-                'status': status
-            })
-            headers = {'Content-Type': 'application/json'}
-            response = req.post(url=URL, data=payload, headers=headers)
-            msg=response.json()
-            
-            if response.status_code == 201:
-                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='success')
-                return redirect(url_for('admin2.get_ajaran'))
-            else:
-                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='error')
-                return render_template('admin/master/tahun_ajaran/tambah_tahun_ajaran.html', form=form)
-        return render_template('admin/master/tahun_ajaran/tambah_tahun_ajaran.html', form=form)
 
-    @admin2.route('edit-tahun-ajaran/<int:id>', methods=['GET','POST'])
+            payload = json.dumps({"ajaran": ajaran, "status": status})
+            headers = {"Content-Type": "application/json"}
+            response = req.post(url=URL, data=payload, headers=headers)
+            msg = response.json()
+
+            if response.status_code == 201:
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="success",
+                )
+                return redirect(url_for("admin2.get_ajaran"))
+            else:
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="error",
+                )
+                return render_template(
+                    "admin/master/tahun_ajaran/tambah_tahun_ajaran.html", form=form
+                )
+        return render_template(
+            "admin/master/tahun_ajaran/tambah_tahun_ajaran.html", form=form
+        )
+
+    @admin2.route("edit-tahun-ajaran/<int:id>", methods=["GET", "POST"])
     def edit_ajaran(id):
         form = FormTahunAJaran(request.form)
-        URL = base_url + f'api/v2/master/ajaran/get-one/{id}'
+        URL = base_url + f"api/v2/master/ajaran/get-one/{id}"
         response = req.get(URL)
         jsonResp = response.json()
-        form.tahunAjaran.data = jsonResp['ajaran']
-        form.status.data = '1' if jsonResp['status'] == True else '0'
-        
-        if request.method == 'POST' and form.validate_on_submit():
-            ajaran = request.form.get('tahunAjaran')
-            status = request.form.get('status')
-            payload = json.dumps({
-                'ajaran' : ajaran,
-                'status' : status
-            })
-            headers = {'Content-Type': 'application/json'}
+        form.tahunAjaran.data = jsonResp["ajaran"]
+        form.status.data = "1" if jsonResp["status"] == True else "0"
+
+        if request.method == "POST" and form.validate_on_submit():
+            ajaran = request.form.get("tahunAjaran")
+            status = request.form.get("status")
+            payload = json.dumps({"ajaran": ajaran, "status": status})
+            headers = {"Content-Type": "application/json"}
             response = req.put(url=URL, data=payload, headers=headers)
             msg = response.json()
             if response.status_code == 200:
-                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='info')
-                return redirect(url_for('admin2.get_ajaran'))
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="info",
+                )
+                return redirect(url_for("admin2.get_ajaran"))
             else:
-                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='error')
-                return render_template('admin/master/tahun_ajaran/edit_tahun_ajaran.html', form=form)
-                
-        return render_template('admin/master/tahun_ajaran/edit_tahun_ajaran.html', form=form)
-    
-    @admin2.route('delete-tahun-ajaran/<int:id>', methods=['GET','DELETE'])
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="error",
+                )
+                return render_template(
+                    "admin/master/tahun_ajaran/edit_tahun_ajaran.html", form=form
+                )
+
+        return render_template(
+            "admin/master/tahun_ajaran/edit_tahun_ajaran.html", form=form
+        )
+
+    @admin2.route("delete-tahun-ajaran/<int:id>", methods=["GET", "DELETE"])
     def delete_ajaran(id):
-        URL = base_url + f'api/v2/master/ajaran/get-one/{id}'
+        URL = base_url + f"api/v2/master/ajaran/get-one/{id}"
         response = req.delete(URL)
         if response.status_code == 204:
-            flash(message=f'Data Tahun Ajaran telah dihapus dari database. Status : {response.status_code}', category='info')
-            return redirect(url_for('admin2.get_ajaran'))
-    
-    
+            flash(
+                message=f"Data Tahun Ajaran telah dihapus dari database. Status : {response.status_code}",
+                category="info",
+            )
+            return redirect(url_for("admin2.get_ajaran"))
+
     # NOTE: ================== MASTER DATA KELAS =====================================
-    @admin2.route('data-kelas')
+    @admin2.route("data-kelas")
     def get_kelas():
-        URL = base_url + 'api/v2/master/kelas/get-all'
+        URL = base_url + "api/v2/master/kelas/get-all"
         response = req.get(URL)
         jsonResp = response.json()
-        return render_template('admin/master/kelas/data_kelas.html', model=jsonResp)
-    
-    @admin2.route('add-kelas', methods=['GET','POST'])
+        return render_template("admin/master/kelas/data_kelas.html", model=jsonResp)
+
+    @admin2.route("add-kelas", methods=["GET", "POST"])
     def add_kelas():
         form = FormKelas(request.form)
-        URL = base_url + 'api/v2/master/kelas/create'
-        
-        if request.method == 'POST' and form.validate_on_submit():
-            kelas = form.kelas.data 
-            
-            payload = json.dumps({
-                'kelas': kelas
-            })
-            headers = {'Content-Type': 'application/json'}
+        URL = base_url + "api/v2/master/kelas/create"
+
+        if request.method == "POST" and form.validate_on_submit():
+            kelas = form.kelas.data
+
+            payload = json.dumps({"kelas": kelas})
+            headers = {"Content-Type": "application/json"}
             response = req.post(url=URL, data=payload, headers=headers)
             msg = response.json()
             if response.status_code == 201:
-                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='success')
-                return redirect(url_for('admin2.get_kelas'))
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="success",
+                )
+                return redirect(url_for("admin2.get_kelas"))
             else:
-                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='error')
-                return render_template('admin/master/kelas/tambah_kelas.html', form=form)
-        return render_template('admin/master/kelas/tambah_kelas.html', form=form)
-    
-    @admin2.route('edit-kelas/<int:id>', methods=['GET', 'POST'])
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="error",
+                )
+                return render_template(
+                    "admin/master/kelas/tambah_kelas.html", form=form
+                )
+        return render_template("admin/master/kelas/tambah_kelas.html", form=form)
+
+    @admin2.route("edit-kelas/<int:id>", methods=["GET", "POST"])
     def edit_kelas(id):
         form = FormEditKelas(request.form)
-        URL = base_url + f'api/v2/master/kelas/get-one/{id}'
-        
+        URL = base_url + f"api/v2/master/kelas/get-one/{id}"
+
         response = req.get(URL)
         jsonResp = response.json()
-        form.kelas.data = jsonResp['kelas']
-        form.jumlahLaki.data = jsonResp['laki']
-        form.jumlahPerempuan.data = jsonResp['perempuan']
-        form.jumlahSiswa.data = jsonResp['seluruh']
-        
-        if request.method == 'POST':
-            kelas = request.form.get('kelas')
-            laki = request.form.get('jumlahLaki')
-            perempuan = request.form.get('jumlahPerempuan')
-            seluruh = request.form.get('jumlahSiswa')
-            
-            payload = json.dumps({
-                'kelas': kelas,
-                'laki': laki,
-                'perempuan': perempuan,
-                'seluruh': seluruh
-            })
-            headers = {'Content-Type': 'application/json'}
-            
+        form.kelas.data = jsonResp["kelas"]
+        form.jumlahLaki.data = jsonResp["laki"]
+        form.jumlahPerempuan.data = jsonResp["perempuan"]
+        form.jumlahSiswa.data = jsonResp["seluruh"]
+
+        if request.method == "POST":
+            kelas = request.form.get("kelas")
+            laki = request.form.get("jumlahLaki")
+            perempuan = request.form.get("jumlahPerempuan")
+            seluruh = request.form.get("jumlahSiswa")
+
+            payload = json.dumps(
+                {
+                    "kelas": kelas,
+                    "laki": laki,
+                    "perempuan": perempuan,
+                    "seluruh": seluruh,
+                }
+            )
+            headers = {"Content-Type": "application/json"}
+
             response = req.put(url=URL, data=payload, headers=headers)
             msg = response.json()
-            
+
             if response.status_code == 200:
-                flash(f'{msg["msg"]} Status : {response.status_code}', 'info')
-                return redirect(url_for('admin2.get_kelas'))
+                flash(f'{msg["msg"]} Status : {response.status_code}', "info")
+                return redirect(url_for("admin2.get_kelas"))
             else:
-                flash(f'{msg["msg"]} Status : {response.status_code}', 'error')
-                return render_template('admin/master/kelas/edit_kelas.html', form=form)
-        return render_template('admin/master/kelas/edit_kelas.html', form=form)
-    
-    @admin2.route('delete-kelas/<int:id>', methods=['GET','DELETE'])
+                flash(f'{msg["msg"]} Status : {response.status_code}', "error")
+                return render_template("admin/master/kelas/edit_kelas.html", form=form)
+        return render_template("admin/master/kelas/edit_kelas.html", form=form)
+
+    @admin2.route("delete-kelas/<int:id>", methods=["GET", "DELETE"])
     def delete_kelas(id):
-        URL = base_url + f'api/v2/master/kelas/get-one/{id}'
+        URL = base_url + f"api/v2/master/kelas/get-one/{id}"
         response = req.delete(URL)
         if response.status_code == 204:
-            flash(f'Data kelas telah dihpus dari database. Status : {response.status_code}', 'info')
-            return redirect(url_for('admin2.get_kelas'))
-    
+            flash(
+                f"Data kelas telah dihpus dari database. Status : {response.status_code}",
+                "info",
+            )
+            return redirect(url_for("admin2.get_kelas"))
+
     # NOTE: ================== MASTER DATA HARI =====================================
-    @admin2.route('data-hari')
+    @admin2.route("data-hari")
     def get_hari():
-        URL = base_url + 'api/v2/master/hari/get-all'
+        URL = base_url + "api/v2/master/hari/get-all"
         response = req.get(URL)
-        jsonResp = response.json()        
-        return render_template('admin/master/hari/data_hari.html', model=jsonResp)
-    
-    @admin2.route('add-hari', methods=['GET','POST'])
+        jsonResp = response.json()
+        return render_template("admin/master/hari/data_hari.html", model=jsonResp)
+
+    @admin2.route("add-hari", methods=["GET", "POST"])
     def add_hari():
-        URL = base_url + 'api/v2/master/hari/create'
+        URL = base_url + "api/v2/master/hari/create"
         form = FormHari(request.form)
-        if request.method == 'POST' and form.validate_on_submit():
+        if request.method == "POST" and form.validate_on_submit():
             hari = form.hari.data
-            
-            payload = json.dumps({
-                'hari': hari
-            })
-            headers = {'Content-Type': 'application/json'}
+
+            payload = json.dumps({"hari": hari})
+            headers = {"Content-Type": "application/json"}
             response = req.post(url=URL, data=payload, headers=headers)
             msg = response.json()
             if response.status_code == 201:
-                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='success')
-                return redirect(url_for('admin2.get_hari'))
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="success",
+                )
+                return redirect(url_for("admin2.get_hari"))
             else:
-                flash(message=f'{msg["msg"]} Status : {response.status_code}', category='error')
-                return render_template('admin/master/hari/tambah_hari.html', form=form)
-                
-        return render_template('admin/master/hari/tambah_hari.html', form=form)
-    
-    @admin2.route('edit-hari/<int:id>', methods=['GET','POST'])
+                flash(
+                    message=f'{msg["msg"]} Status : {response.status_code}',
+                    category="error",
+                )
+                return render_template("admin/master/hari/tambah_hari.html", form=form)
+
+        return render_template("admin/master/hari/tambah_hari.html", form=form)
+
+    @admin2.route("edit-hari/<int:id>", methods=["GET", "POST"])
     def edit_hari(id):
-        pass 
-    
-    @admin2.route('delete-hari/<int:id>', methods=['GET','DELETE'])
+        pass
+
+    @admin2.route("delete-hari/<int:id>", methods=["GET", "DELETE"])
     def delete_hari(id):
-        URL = base_url + f'api/v2/master/hari/get-one/{id}'
+        URL = base_url + f"api/v2/master/hari/get-one/{id}"
         response = req.delete(URL)
         if response.status_code == 204:
-            flash(f'Data hari telah di hapus dari database. Status : {response.status_code}', 'info')
-            return redirect(url_for('admin2.get_hari'))
+            flash(
+                f"Data hari telah di hapus dari database. Status : {response.status_code}",
+                "info",
+            )
+            return redirect(url_for("admin2.get_hari"))
 
-    @admin2.route('data-jam')
+    # NOTE: ================== MASTER DATA JAM =====================================
+    @admin2.route("data-jam")
     def get_jam():
-        url = base_url + 'api/v2/master/jam/get-all'
+        url = base_url + "api/v2/master/jam/get-all"
         resp = req.get(url)
         jsonResp = resp.json()
         form = FormJam(request.form)
- 
-        return render_template('admin/master/jam/data_jam.html', model=jsonResp, form=form)
-    
-    @admin2.route('tambah-jam', methods=['GET','POST'])
+
+        return render_template(
+            "admin/master/jam/data_jam.html", model=jsonResp, form=form
+        )
+
+    @admin2.route("tambah-jam", methods=["GET", "POST"])
     def add_jam():
         form = FormJam(request.form)
-        url = base_url + 'api/v2/master/jam/create'
-        if  request.method == 'POST' and form.validate_on_submit():
+        url = base_url + "api/v2/master/jam/create"
+        if request.method == "POST":
             jam = form.jam.data
-            payload = json.dumps({
-                'jam': jam
-            })
-            headers = {'Content-Type':'application/json'}
+            payload = json.dumps({"jam": jam})
+            headers = {"Content-Type": "application/json"}
             resp = req.post(url=url, data=payload, headers=headers)
             msg = resp.json()
             if resp.status_code == 201:
-                flash(message=f'{msg["msg"]} Status : {resp.status_code}', category='success')
-                return redirect(url_for('admin2.get_jam'))
+                flash(
+                    message=f'{msg["msg"]} Status : {resp.status_code}',
+                    category="success",
+                )
+                return redirect(url_for("admin2.get_jam"))
             else:
-                flash(message=f'{msg["msg"]} Status : {resp.status_code}', category='error')
-                return redirect(url_for('admin2.get_jam'))
-    
-    @admin2.route('edit-jam/<int:id>', methods=['GET','POST'])
+                flash(
+                    message=f'{msg["msg"]} Status : {resp.status_code}',
+                    category="error",
+                )
+                return redirect(url_for("admin2.get_jam"))
+
+    @admin2.route("edit-jam/<int:id>", methods=["GET", "POST"])
     def edit_jam(id):
-        url = base_url + f'api/v2/master/jam/get-one/{id}'
-        if request.method == 'POST':
-            jam = request.form.get('jam')
-            payload = json.dumps({
-                'jam': jam
-            })
-            headers = {'Content-Type':'application/json'}
+        url = base_url + f"api/v2/master/jam/get-one/{id}"
+        if request.method == "POST":
+            jam = request.form.get("jam")
+            payload = json.dumps({"jam": jam})
+            headers = {"Content-Type": "application/json"}
             resp = req.put(url=url, data=payload, headers=headers)
             msg = resp.json()
             if resp.status_code == 200:
-                flash(message=f'{msg["msg"]} Status: {resp.status_code}', category='info')
-                return redirect(url_for('admin2.get_jam'))
+                flash(
+                    message=f'{msg["msg"]} Status: {resp.status_code}', category="info"
+                )
+                return redirect(url_for("admin2.get_jam"))
             else:
-                flash(message=f'{msg["msg"]} Status: {resp.status_code}', category='error')
-                return redirect(url_for('admin2.get_jam'))
-    
-    @admin2.route('delete-jam/<int:id>', methods=['GET','POST'])
+                flash(
+                    message=f'{msg["msg"]} Status: {resp.status_code}', category="error"
+                )
+                return redirect(url_for("admin2.get_jam"))
+
+    @admin2.route("delete-jam/<int:id>", methods=["GET", "POST"])
     def delete_jam(id):
-        url = base_url + f'api/v2/master/jam/get-one/{id}'
+        url = base_url + f"api/v2/master/jam/get-one/{id}"
         resp = req.delete(url=url)
         if resp.status_code == 204:
-            flash(message=f'Data Jam telah dihapus dari database Status: {resp.status_code}', category='info')
-            return redirect(url_for('admin2.get_jam'))
+            flash(
+                message=f"Data Jam telah dihapus dari database Status: {resp.status_code}",
+                category="info",
+            )
+            return redirect(url_for("admin2.get_jam"))
         else:
             msg = resp.json()
-            flash(message=f'{msg["msg"]} Status: {resp.status_code}', category='error')
-            return redirect(url_for('admin2.get_jam'))
+            flash(message=f'{msg["msg"]} Status: {resp.status_code}', category="error")
+            return redirect(url_for("admin2.get_jam"))
+
+    # NOTE: ================== MASTER DATA JAM =====================================
+    @admin2.route("data-wali-kelas")
+    def get_wali():
+        url = base_url + "api/v2/master/wali-kelas/get-all"
+        resp = req.get(url)
+        jsonResp = resp.json()
+
+        form = FormWaliKelas(request.form)
+        urlGuru = base_url + "api/v2/guru/get-all"
+        respGuru = req.get(urlGuru)
+        jsonRespGuru = respGuru.json()
+        for i in jsonRespGuru:
+            form.namaGuru.choices.append(
+                (i["id"], i["first_name"] + "" + i["last_name"])
+            )
+
+        urlKelas = base_url + "api/v2/master/kelas/get-all"
+        respKelas = req.get(urlKelas)
+        jsonRespKelas = respKelas.json()
+        for i in jsonRespKelas["data"]:
+            form.kelas.choices.append((i["id"], i["kelas"]))
+
+        return render_template(
+            "admin/master/wali_kelas/data_wali.html",
+            model=jsonResp,
+            form=form,
+            jsonGuru=jsonRespGuru,
+            jsonKelas=jsonRespKelas["data"],
+        )
+
+    @admin2.route("tambah-wali", methods=["GET", "POST"])
+    def add_wali():
+        form = FormWaliKelas(request.form)
+        url = base_url + "api/v2/master/wali-kelas/create"
+        if request.method == "POST":
+            guru = form.namaGuru.data
+            kelas = form.kelas.data
+            payload = json.dumps({"guru_id": guru, "kelas_id": kelas})
+            headers = {"Content-Type": "application/json"}
+            resp = req.post(url=url, data=payload, headers=headers)
+            msg = resp.json()
+            if resp.status_code == 201:
+                flash(
+                    message=f'{msg["msg"]} Status : {resp.status_code}',
+                    category="success",
+                )
+                return redirect(url_for("admin2.get_wali"))
+            else:
+                flash(
+                    message=f'{msg["msg"]} Status : {resp.status_code}',
+                    category="error",
+                )
+                return redirect(url_for("admin2.get_wali"))
+
+    @admin2.route('update-wali/<int:id>', methods=['GET','POST'])
+    def edit_wali(id):
+        url = base_url + f'api/v2/master/wali-kelas/get-one/{id}'
+        if request.method == 'POST':
+            guru_id = request.form.get('namaGuru')
+            kelas_id = request.form.get('namaKelas')
+            paylaod = json.dumps(
+                {
+                    'guru_id': guru_id,
+                    'kelas_id': kelas_id
+                }
+            )
+            headers = {'Content-Type':'application/json'}
+            resp = req.put(url=url, data=paylaod, headers=headers)
+            msg = resp.json()
+            if resp.status_code == 200:
+                flash(f'{msg["msg"]} Status : {resp.status_code}', 'info')
+                return redirect(url_for('admin2.get_wali'))
+            else:
+                flash(f'{msg["msg"]} Status : {resp.status_code}', 'error')
+                return redirect(url_for('admin2.get_wali'))
+    
+    @admin2.route('delete-wali/<int:id>', methods=['GET','POST'])
+    def delete_wali(id):
+        url = base_url + f'api/v2/master/wali-kelas/get-one/{id}'
+        
+        resp = req.delete(url=url)
+        if resp.status_code == 204:
+            flash(f'Data wali kelas telah dihapus dari database. Status : {resp.status_code}', 'info')
+            return redirect(url_for('admin2.get_wali'))
+        else:
+            flash(f'Terjadi kesalahan dalam memuat data. Status : {resp.status_code}', 'error')
+            return redirect(url_for('admin2.get_wali'))
                 
+
 class TestPage:
     @admin2.get("test-page")
     def test_page():
-        
-        return render_template("test_page.html" )
+
+        return render_template("test_page.html")

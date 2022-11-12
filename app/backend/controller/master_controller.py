@@ -350,7 +350,8 @@ class Jam(object):
     @master.route('/jam/create', endpoint='jam', methods=['POST','GET'])
     def create():
         jam = request.json.get('jam')
-        
+        if jam == '':
+            return jsonify(msg='Gagal input data, karena form inputan belum dipilih.'), HTTP_400_BAD_REQUEST
         base = BaseModel(JamMengajarModel(jam=jam))
         jam_check = base.get_one_or_none(jam=jam)
         if jam_check:
@@ -403,6 +404,9 @@ class WaliKelas(object):
         guru_id = request.json.get('guru_id')
         kelas_id = request.json.get('kelas_id')
         
+        if guru_id == '' or kelas_id == '':
+            return jsonify(msg='Gagal input data karena nama guru atau kelas masih kosong'), HTTP_400_BAD_REQUEST
+        
         base = BaseModel(WaliKelasModel(guru_id=guru_id, kelas_id=kelas_id))
         guru_check = base.get_one_or_none(guru_id=guru_id)
         kelas_check = base.get_one_or_none(kelas_id=kelas_id)
@@ -452,15 +456,13 @@ class WaliKelas(object):
                 return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
                 
         elif request.method == 'PUT':
+            guru_id = request.json.get('guru_id')
             kelas_id = request.json.get('kelas_id')
             
-            kelas_check = base.get_one_or_none(kelas_id=kelas_id)            
-            if kelas_check:
-                return jsonify(msg='Data has been already exists.'), HTTP_409_CONFLICT   
-            else:
-                model.kelas_id = kelas_id
-                base.edit()            
-                return jsonify(msg=f'Data Wali Kelas {model.guru.first_name} telah di perbaharui.'), HTTP_200_OK
+            model.guru_id = guru_id
+            model.kelas_id = kelas_id
+            base.edit()            
+            return jsonify(msg=f'Data Wali Kelas {model.guru.first_name} telah di perbaharui.'), HTTP_200_OK
         
         elif request.method == 'DELETE':
             base.delete(model)            

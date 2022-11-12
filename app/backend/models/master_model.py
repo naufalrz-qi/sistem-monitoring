@@ -69,10 +69,11 @@ class SemesterModel(db.Model):
 class WaliKelasModel(db.Model):
     __tablename__ = 'master_wali_kelas'
     id = sa.Column(sa.Integer, primary_key=True)
-    guru_id = sa.Column(sa.Integer, sa.ForeignKey('detail_guru.id', ondelete='CASCADE', onupdate='CASCADE'))
+    guru_id = sa.Column(sa.Integer, sa.ForeignKey('detail_guru.user_id'))
     guru = rs.relationship('GuruModel', backref='wali_kelas')
-    kelas_id = sa.Column(sa.Integer, sa.ForeignKey('master_kelas.id', ondelete='CASCADE', onupdate='CASCADE'))
+    kelas_id = sa.Column(sa.Integer, sa.ForeignKey('master_kelas.id'))
     kelas = rs.relationship('KelasModel', backref='kelas_didik')
+    
     
     def __repr__(self) -> str:
         return '{}'.format(self.kelas)  

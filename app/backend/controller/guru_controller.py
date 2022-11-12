@@ -17,7 +17,7 @@ def get():
     for user in base_model.get_all():
         data.append(
             {
-                "id": user.users.id,
+                "id": user.user_id,
                 "nip": user.users.username,
                 "first_name": user.first_name.title(),
                 "last_name": user.last_name.title(),

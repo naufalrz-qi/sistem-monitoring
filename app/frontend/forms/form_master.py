@@ -106,7 +106,19 @@ class FormJam(FlaskForm):
     jam = StringField('Jam :')
     submit = SubmitField('Sumbit Data')
     
-    def validate_jam(self, field):
-        if field.data == '':
-            raise ValidationError('*Inputan Jam tidak boleh kosong.')
+    # def validate_jam(self, field):
+    #     if field.data == '':
+    #         raise ValidationError('*Inputan Jam tidak boleh kosong.')
+
+class FormWaliKelas(FlaskForm):
+    namaGuru = SelectField('Nama Guru :', choices=[('','..:: SELECT ::..')])
+    kelas = SelectField('Nama Kelas :', choices=[('','..:: SELECT ::..')])
+    submit = SubmitField('Submit Data')
     
+    # def validate_namaGuru(self, field):
+    #     if field.data == '':
+    #         raise ValidationError('*Pilih nama guru terlebih dahulu.')
+        
+    # def validate_kelas(self, field):
+    #     if field.data == '':
+    #         raise ValidationError('*Pilih nama kelas terlebih dahulu.')
