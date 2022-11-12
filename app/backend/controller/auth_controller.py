@@ -345,21 +345,22 @@ def get_all():
     model = BaseModel(UserModel)
     data = []
     for user in model.get_all():
-        data.append(
-            {
-                "id": user.id,
-                "username": user.username,
-                "group": user.group,
-                "join": format_indo(user.join_date),
-                "last_update": format_datetime_id(user.update_date)
-                if user.update_date
-                else "-",
-                "last_login": format_datetime_id(user.user_last_login)
-                if user.user_last_login
-                else "-",
-                "is_active": user.is_active,
-            }
-        )
+        if user.group == 'siswa' or user.group == 'guru':
+            data.append(
+                {
+                    "id": user.id,
+                    "username": user.username,
+                    "group": user.group,
+                    "join": format_indo(user.join_date),
+                    "last_update": format_datetime_id(user.update_date)
+                    if user.update_date
+                    else "-",
+                    "last_login": format_datetime_id(user.user_last_login)
+                    if user.user_last_login
+                    else "-",
+                    "is_active": user.is_active,
+                }
+            )
     return jsonify(data), HTTP_200_OK
 
 
