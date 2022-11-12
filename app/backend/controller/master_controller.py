@@ -9,7 +9,6 @@ from sqlalchemy import func
 master = Blueprint('master', __name__, url_prefix='/api/v2/master')
 
 class Kelas:
-
     @master.route('/kelas/create', methods=['POST','GET'])
     def create():
         kelas = request.json.get('kelas')
@@ -419,12 +418,7 @@ class WaliKelas(object):
         
         else:
             base.create()        
-            return jsonify(
-                id=base.model.id,
-                wali_kelas=base.model.guru.users.first_name,
-                kelas = base.model.kelas.kelas
-                           
-                           ), HTTP_201_CREATED
+            return jsonify(msg=f'Data Wali Kelas {base.model.guru.first_name} telah ditambahkan.'), HTTP_201_CREATED
         
     @master.route('/wali-kelas/get-all', endpoint='wali-kelas-all', methods=['GET'])
     def get_all():
@@ -435,8 +429,8 @@ class WaliKelas(object):
         for wali in model:
             data.append({
                 'id' : wali.id,
-                'first_name' : wali.guru.users.first_name,
-                'last_name' : wali.guru.users.last_name,
+                'first_name' : wali.guru.first_name,
+                'last_name' : wali.guru.last_name,
                 'kelas' : wali.kelas.kelas
             })
             
@@ -450,8 +444,8 @@ class WaliKelas(object):
         if request.method == 'GET':
             if model is not None:
                 return jsonify(id=model.id,
-                               first_name=model.guru.users.first_name,
-                               last_name=model.guru.users.last_name,
+                               first_name=model.guru.first_name,
+                               last_name=model.guru.last_name,
                                kelas=model.kelas.kelas
                                ), HTTP_200_OK
             else:
@@ -466,11 +460,68 @@ class WaliKelas(object):
             else:
                 model.kelas_id = kelas_id
                 base.edit()            
-                return jsonify(id=model.id,
-                               jam=model.guru.users.first_name +' '+ model.guru.users.last_name,
-                               kelas=model.kelas.kelas), HTTP_200_OK
+                return jsonify(msg=f'Data Wali Kelas {model.guru.first_name} telah di perbaharui.'), HTTP_200_OK
         
         elif request.method == 'DELETE':
             base.delete(model)            
             return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
+
+
+class KepalaSekolah(object):
+    @master.route('/kepsek/create', endpoint='kepsek-create', methods=['POST','GET'])
+    def create():
+        guru_id = request.json.get('guru_id')
         
+        base = BaseModel(KepsekModel(guruId=guru_id))
+        guru_check = base.get_one_or_none(guru_id=guru_id)
+        
+        if guru_check:
+            return jsonify(msg='Data has been already exists.'), HTTP_409_CONFLICT
+        else:
+            base.create()        
+            return jsonify(msg=f'Data Kepala Sekolah {base.model.guru.first_name} telah ditambahkan.'), HTTP_201_CREATED
+        
+    @master.route('/kepsek/get-all', endpoint='kepsek-all', methods=['GET'])
+    def get_all():
+        base = BaseModel(KepsekModel)
+        model = base.get_all()
+        
+        data = []
+        for _ in model:
+            data.append({
+                'id' : _.id,
+                'first_name' : _.guru.first_name,
+                'last_name' : _.guru.last_name,
+                'status' : 'aktif' if _.status else 'tidak aktif'
+            })
+            
+        return jsonify(data=data), HTTP_200_OK
+        
+    @master.route('/kepsek/get-one/<int:id>', endpoint='kepsek-single', methods=['GET', 'PUT', 'DELETE'])
+    def get_one(id):
+        base = BaseModel(KepsekModel)
+        model = base.get_one_or_none(id=id)
+        
+        if request.method == 'GET':
+            if model is not None:
+                return jsonify(id=model.id,
+                               first_name=model.guru.first_name,
+                               last_name=model.guru.last_name,
+                               status=model.status
+                               ), HTTP_200_OK
+            else:
+                return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
+                
+        elif request.method == 'PUT':
+            kelas_id = request.json.get('kelas_id')
+            status = request.json.get('status')
+            
+            model.kelas_id = kelas_id
+            model.status = status
+            base.edit()          
+              
+            return jsonify(msg=f'Data Kepala Sekolah {model.guru.first_name} telah diperbaharui.'), HTTP_200_OK
+        
+        elif request.method == 'DELETE':
+            base.delete(model)            
+            return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT

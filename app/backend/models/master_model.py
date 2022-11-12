@@ -108,4 +108,18 @@ class MengajarModel(db.Model):
         return self.kode_mengajar
     
 
+class KepsekModel(db.Model):
+    __tablename__ = 'master_kepsek'
+    id = sa.Column(sa.Integer, primary_key=True)
+    guru_id = sa.Column(sa.Integer, sa.ForeignKey('detail_guru.id', onupdate='CASCADE'))
+    guru = rs.relationship('GuruModel', backref='kepsek')
+    status = sa.Column(sa.String(2))
+    
+    def __init__(self, guruId=None):
+        self.guru_id = guruId
+        self.status = 0
+        
+    def __repr__(self) -> str:
+        return f'Kepsek : {self.guru.guru}'
+        
     
