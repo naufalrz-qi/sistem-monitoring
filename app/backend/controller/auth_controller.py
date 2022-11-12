@@ -134,7 +134,7 @@ def refresh_toke():
     return jsonify(access=access_token), HTTP_200_OK
 
 
-@auth.route("/create", methods=["POST", "GET","PUT"])
+@auth.route("/create", methods=["POST", "GET", "PUT"])
 def create():
     username = request.json.get("username")
     password = request.json.get("password")
@@ -152,35 +152,81 @@ def create():
         first_name = request.json.get("first_name")
         last_name = request.json.get("last_name")
         gender = request.json.get("gender")
+        tempat_lahir = request.json.get("tempat_lahir")
+        tgl_lahir = request.json.get("tanggal_lahir")
         agama = request.json.get("agama")
+        nama_ortu = request.json.get("nama_ortu")
+        telp = request.json.get("telp")
+        alamat = request.json.get("alamat")
+        pic = request.json.get("")
         kelas = request.json.get("kelas_id")
 
         usrnm = BaseModel(UserModel)
         check_username = usrnm.get_one(username=username)
 
         if check_username is not None:
-            return jsonify(msg= f"Username is already exists"), HTTP_409_CONFLICT
+            return jsonify(msg=f"Username is already exists"), HTTP_409_CONFLICT
         else:
             user.create()
             siswa = BaseModel(
-                SiswaModel(first_name, last_name, gender, agama, user.model.id, kelas)
+                SiswaModel(
+                    first_name=first_name,
+                    last_name=last_name,
+                    gender=gender,
+                    tempat_lahir=tempat_lahir,
+                    tgl_lahir=tgl_lahir,
+                    agama=agama,
+                    nama_ortu=nama_ortu,
+                    telp=telp,
+                    alamat=alamat,
+                    user_id=user.model.id,
+                    kelas=kelas
+                )
             )
             baseKelas = BaseModel(KelasModel)
             kelasModel = baseKelas.get_one(id=kelas)
             siswa.create()
-            
-            countSiswaGender = db.session.query(func.count(SiswaModel.kelas_id)).filter(SiswaModel.kelas_id==kelas).filter(SiswaModel.gender==gender).scalar()
-            countSiswaAll = db.session.query(func.count(SiswaModel.kelas_id)).filter(SiswaModel.kelas_id==kelas).scalar()
-            
-            if siswa.model.gender == 'laki-laki':
+
+            countSiswaGender = (
+                db.session.query(func.count(SiswaModel.kelas_id))
+                .filter(SiswaModel.kelas_id == kelas)
+                .filter(SiswaModel.gender == gender)
+                .scalar()
+            )
+            countSiswaLaki = (
+                db.session.query(func.count(SiswaModel.kelas_id))
+                .filter(SiswaModel.kelas_id == kelas)
+                .filter(SiswaModel.gender == 'laki-laki')
+                .scalar()
+            )
+            countSiswaPerempuan = (
+                db.session.query(func.count(SiswaModel.kelas_id))
+                .filter(SiswaModel.kelas_id == kelas)
+                .filter(SiswaModel.gender == 'perempuan')
+                .scalar()
+            )
+            countSiswaAll = (
+                db.session.query(func.count(SiswaModel.kelas_id))
+                .filter(SiswaModel.kelas_id == kelas)
+                .scalar()
+            )
+
+            if siswa.model.gender == "laki-laki":
                 kelasModel.jml_laki = countSiswaGender
-            elif siswa.model.gender == 'perempuan':
+                kelasModel.jml_perempuan = countSiswaPerempuan
+            elif siswa.model.gender == "perempuan":
+                kelasModel.jml_laki = countSiswaLaki
                 kelasModel.jml_perempuan = countSiswaGender
-            
+
             kelasModel.jml_seluruh = countSiswaAll
             baseKelas.edit()
-            
-            return jsonify(msg= f"Data Siswa {siswa.model.first_name} telah berhasil di tambahkan"),HTTP_201_CREATED,
+
+            return (
+                jsonify(
+                    msg=f"Data Siswa {siswa.model.first_name} telah berhasil di tambahkan"
+                ),
+                HTTP_201_CREATED,
+            )
 
     elif group == "guru":
         first_name = request.json.get("first_name")
@@ -188,14 +234,13 @@ def create():
         gender = request.json.get("gender")
         alamat = request.json.get("alamat")
         agama = request.json.get("agama")
-        mapel_id = request.json.get("mapel")
         telp = request.json.get("telp")
 
         usrnm = BaseModel(UserModel)
         check_username = usrnm.get_one(username=username)
 
         if check_username is not None:
-            return jsonify(msg= "Username is already exists"), HTTP_409_CONFLICT
+            return jsonify(msg="Username is already exists"), HTTP_409_CONFLICT
         else:
             user.create()
             guru = BaseModel(
@@ -206,12 +251,16 @@ def create():
                     alamat=alamat,
                     agama=agama,
                     user_id=user.model.id,
-                    mapel=mapel_id,
                     telp=telp,
                 )
             )
             guru.create()
-            return jsonify(msg= f"Data Guru : {guru.model.first_name} telah berhasil di tambahkan."), HTTP_201_CREATED
+            return (
+                jsonify(
+                    msg=f"Data Guru : {guru.model.first_name} telah berhasil di tambahkan."
+                ),
+                HTTP_201_CREATED,
+            )
 
     elif group == "admin":
         first_name = request.json.get("first_name")
@@ -230,7 +279,12 @@ def create():
                 AdminDetailModel(first_name, last_name, gender, alamat, user.model.id)
             )
             user_detail.create()
-            return jsonify(msg= f"Data Admin : {user_detail.model.first_name} telah berhasil di tambahkan."), HTTP_201_CREATED
+            return (
+                jsonify(
+                    msg=f"Data Admin : {user_detail.model.first_name} telah berhasil di tambahkan."
+                ),
+                HTTP_201_CREATED,
+            )
 
 
 @auth.route("/get-one")
@@ -317,6 +371,7 @@ def edit_status():
 
     status = request.json.get("status")
     model.is_active = status
+    model.update_date = utc_makassar()
 
     base.edit()
 
@@ -337,5 +392,6 @@ def edit_password():
     else:
         hash_pswd = generate_password_hash(password=password)
         model.password = hash_pswd
+        model.update_date = utc_makassar()
         base.edit()
         return jsonify(msg="Upadated Password Succsess."), HTTP_200_OK

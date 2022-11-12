@@ -25,7 +25,6 @@ def get():
                 "agama": user.agama.title() if user.agama else "-",
                 "alamat": user.alamat.title() if user.alamat else "-",
                 "telp": user.telp if user.telp else "-",
-                "mapel": user.mapel.mapel if user.mapel_id else "-",
                 "active": True if user.users.is_active == "1" else False,
                 "join": format_indo(user.users.join_date),
                 "last_update": format_indo(user.users.update_date)
@@ -55,8 +54,6 @@ def get_single_object(id):
                     nip=guru.users.username,
                     first_name=guru.first_name.title(),
                     last_name=guru.last_name.title(),
-                    mapel_id=guru.mapel_id,
-                    mapel=guru.mapel.mapel.title(),
                     gender=guru.gender.title(),
                     agama=guru.agama.title(),
                     alamat=guru.alamat.title(),
@@ -74,7 +71,6 @@ def get_single_object(id):
             username = request.json.get("nip")
             first_name = request.json.get("first_name")
             last_name = request.json.get("last_name")
-            mapel_id = request.json.get("mapel")
             gender = request.json.get("gender")
             agama = request.json.get("agama")
             alamat = request.json.get("alamat")
@@ -83,7 +79,6 @@ def get_single_object(id):
             guru.users.username = username
             guru.first_name = first_name
             guru.last_name = last_name
-            guru.mapel_id = mapel_id
             guru.gender = gender
             guru.agama = agama
             guru.alamat = alamat
@@ -91,7 +86,7 @@ def get_single_object(id):
 
             base.edit()
             return (
-                jsonify(msg=f"Data Guru: {guru.first_name} berhasil di perbaharui"),
+                jsonify(msg=f"Data Guru: {guru.first_name} berhasil di perbaharui."),
                 HTTP_200_OK,
             )
 

@@ -1,7 +1,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
   <!-- Brand Logo -->
-  <a href="/" class="brand-link">
-    <img src="{{ url_for('.static', filename='img/logo.png') }}" alt="AdminLTE Logo"
+  <a href="#" class="brand-link">
+    <img src="{{ url_for('.static', filename='img/logo.png') }}" alt="Admin2LTE Logo"
       class="brand-image img-circle elevation-3" style="opacity: .8">
     <span class="brand-text font-weight-light">UPT SPF SMPN2 MKS</span>
   </a>
@@ -10,21 +10,51 @@
   {% block sideBar %}
   <div class="sidebar">
     <!-- Sidebar user (optional) -->
-    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-      <!-- <div class="image">
-          <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
-        </div> -->
+    <div class="user-panel mt-2 pb-1 mb-3 d-flex align-items-center">
+      <div class="image">
+          <img src="{{ url_for('.static', filename='img/avatar.png')}}" class="img-circle elevation-2" alt="User Image">
+        </div>
       <div class="info">
-        <a href="#" class="d-block">Admin</a>
+        <a href="#collapseExample" class="d-block " data-toggle="collapse">
+          <p class="mb-0 p-0">NAMA
+            <!-- <i class="right fas fa-angle-left"></i> -->
+          </p>
+          <div class="text-white-50">Administrator</div>
+        </a>
+        <div class="clearfix"></div>
+        <div class="collapse in" id="collapseExample">
+          <ul class="nav">
+            <li>
+              <a href="#" data-toggle="modal" data-target="#pengaturanAkun" class="collapsed">
+                <span class="link-collapse">Pengaturan Akun</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" data-toggle="modal" data-target="#gantiPassword" class="collapsed">
+                <span class="link-collapse">Ganti Password</span>
+              </a>
+            </li>
+
+          </ul>
+        </div>
       </div>
     </div>
+    <!-- <div class="user-panel d-flex flex-row">
+      <div class="pull-left image">
+        <img src="{{ url_for('.static', filename='img/avatar.png')}}" class="img-circle" alt="User Image">
+      </div>
+      <div class="pull-left info">
+        <p>Alexander Pierce</p>
+        <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+      </div>
+    </div> -->
     <!-- Sidebar Menu -->
-    <nav class="mt-2">
+    <nav class="mt-1">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
         <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
         <li class="nav-item">
-          <a href="{{url_for('staff.index')}}" class="nav-link {{ 'active' if filename=='beranda' else None }}">
+          <a href="{{url_for('admin2.index')}}" class="nav-link {{ 'active' if filename=='beranda' else None }}">
             <i class="nav-icon fas fa-tachometer-alt"></i>
             <p>Beranda</p>
           </a>
@@ -32,18 +62,18 @@
         <li class="nav-header">Data</li>
         <!-- NOTE: DATA MASTER -->
         <li
-          class="nav-item {{'menu-open' if filename=='data-mapel'or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' or filename=='tahun-ajaran' or filename=='tambah-ajaran' or filename=='data-kelas' or filename=='tambah-kelas' or filename=='edit-kelas' or filename=='data-hari' or filename=='tambah-hari' else ''}}">
+          class="nav-item {{'menu-open' if filename=='data-mapel'or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' or filename=='tahun-ajaran' or filename=='tambah-ajaran' or filename=='data-kelas' or filename=='tambah-kelas' or filename=='edit-kelas' or filename=='data-hari' or filename=='tambah-hari' or filename=='data-jam' else ''}}">
           <a href="#"
-            class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semseter' or filename=='edit-semester' or filename=='tahun-ajaran' or filename=='tambah-ajaran' or filename=='data-kelas' or filename=='tambah-kelas' or filename=='edit-kelas' or filename=='data-hari' or filename=='tambah-hari' else ''}}">
+            class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semseter' or filename=='edit-semester' or filename=='tahun-ajaran' or filename=='tambah-ajaran' or filename=='data-kelas' or filename=='tambah-kelas' or filename=='edit-kelas' or filename=='data-hari' or filename=='tambah-hari' or filename=='data-jam' else ''}}">
             <i class="nav-icon fas fa-layer-group"></i>
             <p>
-              Data Master
+              Data Umum
               <i class="right fas fa-angle-left"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="{{ url_for('staff.get_mapel')}}"
+              <a href="{{ url_for('admin2.get_mapel')}}"
                 class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel'}}">
                 <i
                   class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel'}}"></i>
@@ -51,7 +81,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ url_for('staff.get_semester')}}"
+              <a href="{{ url_for('admin2.get_semester')}}"
                 class="nav-link {{'active' if filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' else ''}}">
                 <i
                   class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' else ''}}"></i>
@@ -59,7 +89,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ url_for('staff.get_ajaran') }}"
+              <a href="{{ url_for('admin2.get_ajaran') }}"
                 class="nav-link {{'active' if filename=='tahun-ajaran' or filename=='tambah-ajaran' else ''}}">
                 <i
                   class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='tahun-ajaran' or filename=='tambah-ajaran' else ''}}"></i>
@@ -67,7 +97,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ url_for('staff.get_kelas')}}"
+              <a href="{{ url_for('admin2.get_kelas')}}"
                 class="nav-link {{'active' if filename=='data-kelas' or filename=='tambah-kelas' or filename=='edit-kelas' else ''}}">
                 <i
                   class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='data-kelas' or filename=='tambah-kelas' or filename=='edit-kelas' else ''}}"></i>
@@ -75,21 +105,15 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ url_for('staff.get_hari')}}" class="nav-link {{'active' if filename=='data-hari' or filename=='tambah-hari' else ''}}">
+              <a href="{{ url_for('admin2.get_hari')}}" class="nav-link {{'active' if filename=='data-hari' or filename=='tambah-hari' else ''}}">
                 <i class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='data-hari' or filename=='tambah-hari' else ''}}"></i>
                 <p>Hari</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
+              <a href="{{ url_for('admin2.get_jam') }}" class="nav-link {{'active' if filename=='data-jam' else ''}}">
+                <i class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='data-jam' else ''}}"></i>
                 <p>Jam</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Mengajar</p>
               </a>
             </li>
             <li class="nav-item">
@@ -99,7 +123,7 @@
               </a>
             </li>
             <!-- <li class="nav-item">
-              <a href="{{ url_for('staff.get_siswa')}}"
+              <a href="{{ url_for('admin2.get_siswa')}}"
                 class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' else None}}">
                 <i
                   class="far nav-icon {{ 'fa-dot-circle' if filename=='data-siswa' or filename=='tambah-siswa' else 'fa-circle' }}"></i>
@@ -108,7 +132,79 @@
             </li> -->
           </ul>
         </li>
-        <li
+        <li class="nav-item">
+          <a href="" class="nav-link">
+            <i class="nav-icon fas fa-clipboard-list"></i>
+            <p>
+              Jadwal Mengajar
+              <i class="right fas fa-angle-left"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="" class="nav-link">
+                <i class="nav-icon far fa-circle"></i>
+                <p>Datar Mengajar</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="" class="nav-link">
+                <i class="nav-icon far fa-circle"></i>
+                <p>Tambah Jadwal</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+        
+        <li class="nav-item {{'menu-open' if filename=='get-siswa' or filename=='tambah-siswa' or filename=='edit-siswa' else ''}}">
+          <a href="#" class="nav-link {{'active' if filename=='get-siswa' or filename=='tambah-siswa' or filename=='edit-siswa' else ''}}">
+            <i class="nav-icon fas fa-user-friends"></i>
+            <p>
+              Data Siswa
+              <i class="right fas fa-angle-left"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{{ url_for('admin2.getSiswa') }}" class="nav-link  {{'active' if filename=='get-siswa' else ''}}">
+                <i class="far fa-circle nav-icon  {{'fa-dot-circle' if filename=='get-siswa' else ''}}"></i>
+                <p>Daftar Siswa</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ url_for('admin2.add_siswa')}}" class="nav-link {{'active' if filename=='tambah-siswa' else ''}}">
+                <i class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='tambah-siswa' else ''}}"></i>
+                <p>Tambah Siswa</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item {{'menu-open' if filename=='data-guru' or filename=='tambah-guru' or filename=='edit-guru' else ''}}">
+          <a href="#" class="nav-link {{'active' if filename=='data-guru' or filename=='tambah-guru' or filename=='edit-guru' else ''}}">
+            <i class="nav-icon fas fa-user-tie"></i>
+            <p>
+              Data Guru
+              <i class="right fas fa-angle-left"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{{ url_for('admin2.get_guru') }}" class="nav-link  {{'active' if filename=='data-guru' else ''}}">
+                <i class="far fa-circle nav-icon  {{'fa-dot-circle' if filename=='data-guru' else ''}}"></i>
+                <p>Daftar Guru</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ url_for('admin2.add_guru') }}" class="nav-link {{'active' if filename=='tambah-guru' else ''}}">
+                <i class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='tambah-guru' else ''}}"></i>
+                <p>Tambah Guru</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-header">Authentication</li>
+        {#<li
           class="nav-item {{'menu-open' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' or filename == 'edit-guru' or filename == 'edit-siswa' or filename == 'tambah-guru' else None}}">
           <a href="#"
             class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' or filename == 'edit-guru' or filename == 'edit-siswa' or filename == 'tambah-guru' else None}}">
@@ -122,11 +218,11 @@
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Admin</p>
+                <p>Admin2</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ url_for('staff.get_guru')}}"
+              <a href="{{ url_for('admin2.get_guru')}}"
                 class="nav-link {{'active' if filename == 'data-guru' or filename == 'edit-guru' or filename == 'tambah-guru' else ''}}">
                 <i
                   class="far fa-circle {{ 'fa-dot-circle' if filename == 'data-guru' or filename == 'edit-guru' or filename == 'tambah-guru' else ''}}  nav-icon"></i>
@@ -134,7 +230,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ url_for('staff.get_siswa')}}"
+              <a href="{{ url_for('admin2.get_siswa')}}"
                 class="nav-link {{'active' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'edit-siswa' else None}}">
                 <i
                   class="far nav-icon {{ 'fa-dot-circle' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'edit-siswa' else 'fa-circle' }}"></i>
@@ -142,31 +238,18 @@
               </a>
             </li>
           </ul>
-        </li>
-
-        <li class="nav-header">Authentication</li>
-        <li class="nav-item {{ 'menu-open' if filename=='data-user' else None }}">
-          <a href="#" class="nav-link {{ 'active' if filename=='data-user' else None }}">
-            <i class="nav-icon fas fa-th-list"> </i>
-            <p>
-              Auth User
-              <i class="right fas fa-angle-left"></i>
-            </p>
-          </a>
-          <ul class="nav nav-treeview">
+        </li>#}
             <li class="nav-item">
-              <a href="{{url_for('staff.get_user')}}"
+              <a href="{{url_for('admin2.get_user')}}"
                 class="nav-link {{ 'active' if filename=='data-user' else None }}">
-                <i class="far nav-icon {{ 'fa-dot-circle' if filename=='data-user' else 'fa-circle' }}"></i>
-                <p>Data User</p>
+                <i class="fas fa-users-cog nav-icon"></i>
+                <p>Akun User</p>
               </a>
               <!-- <a href="#" class="nav-link ">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Ubah Password</p>
               </a> -->
             </li>
-          </ul>
-        </li>
         <li class="nav-header">Profil</li>
         <li class="nav-item">
           <a href="#" class="nav-link ">

@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request
+
+from app.backend.models.user_details_model import SiswaModel
 from ..models.master_model import *
 from ..lib.base_model import BaseModel
 from ..lib.status_code import *
@@ -76,6 +78,41 @@ class Kelas:
             base.delete(model)            
             return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
         
+    @master.route('/kelas/update-jumlah/<int:id>', methods=['PUT', 'GET'])
+    def update_jumlah(id):
+        base = BaseModel(KelasModel)
+        model = base.get_one(id=id)
+        i = model.id
+        countSiswaLaki = (
+                db.session.query(func.count(SiswaModel.kelas_id))
+                .filter(SiswaModel.kelas_id == model.id)
+                .filter(SiswaModel.gender == 'laki-laki')
+                .scalar()
+            )
+        countSiswaPerempuan = (
+            db.session.query(func.count(SiswaModel.kelas_id))
+            .filter(SiswaModel.kelas_id == model.id)
+            .filter(SiswaModel.gender == 'perempuan')
+            .scalar()
+        )
+        countAllSiswa = (
+            db.session.query(func.count(SiswaModel.kelas_id))
+            .filter(SiswaModel.kelas_id == model.id).scalar()
+        )
+        model.jml_perempuan = countSiswaPerempuan
+        model.jml_laki = countSiswaLaki
+        model.jml_seluruh = countAllSiswa
+        
+        base.edit()
+        
+        return jsonify(
+            id = i,
+            kelas=model.kelas,
+            l=countSiswaLaki,
+            p=countSiswaPerempuan
+            )
+            
+            
 class Mapel(object):
     # @master.add_url_rule('/mapel/create', methods=['POST','GET'])       
     @master.route('/mapel/create', endpoint='mapel', methods=['POST','GET'])
@@ -321,7 +358,7 @@ class Jam(object):
             return jsonify(msg='Data has been already exists.'), HTTP_409_CONFLICT
         else:
             base.create()        
-            return jsonify(jam=base.model.jam), HTTP_201_CREATED
+            return jsonify(msg=f'Data jam {base.model.jam} berhasil ditambahkan.'), HTTP_201_CREATED
         
     @master.route('/jam/get-all', endpoint='jam-all', methods=['GET'])
     def get_all():
@@ -353,13 +390,9 @@ class Jam(object):
         elif request.method == 'PUT':
             jam = request.json.get('jam')
             
-            jam_check = base.get_one_or_none(jam=jam)
-            if jam_check:
-                return jsonify(msg=f'Data dengan {jam} sudah ada.')      
-            else:
-                model.jam = jam
-                base.edit()            
-                return jsonify(id=model.id, jam=model.jam), HTTP_200_OK
+            model.jam = jam
+            base.edit()            
+            return jsonify(msg=f'Data jam {model.jam} telah diperbaharui.'), HTTP_200_OK
         
         elif request.method == 'DELETE':
             base.delete(model)            

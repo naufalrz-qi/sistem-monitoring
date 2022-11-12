@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, PasswordField
-
+from wtforms.validators import ValidationError
 
 class FormAddGuru(FlaskForm):
-    username = StringField(label="Username :")
+    username = StringField(label="NIP :")
     password = PasswordField(label="Password :")
     tipe = StringField(label="Group :")
     fullname = StringField(label="Nama Lengkap :")
@@ -26,16 +26,33 @@ class FormAddGuru(FlaskForm):
             ("budha", "Budha"),
         ],
     )
-    mapel = SelectField(label="Mata Pelajaran :", choices=[('','..:: SELECT ::..')])
     alamat = StringField(label='Alamat :')
     telp = StringField(label='No. Telp :')
     submit = SubmitField(label="Submit Data")
+    
+    def validate_username(self, field):
+        if field.data == '':
+            raise ValidationError('*Input NIP tidak boleh kosong.')
 
+    def validate_password(self, field):
+        if field.data == '':
+            raise ValidationError('*Input Password tidak boleh kosong.')
+        
+    def validate_fullname(self, field):
+        if field.data == '':
+            raise ValidationError('*Input Nama tidak boleh kosong.')
+        
+    def validate_jenisKelamin(self, field):
+        if field.data == '':
+            raise ValidationError('*Pilihan Jenis Kelamin tidak boleh kosong.')
+        
+    def validate_agama(self, field):
+        if field.data == '':
+            raise ValidationError('*Pilihan Agama tidak boleh kosong.')
 
 class FormEditGuru(FlaskForm):
     nip = StringField("NIP :")
     fullname = StringField("Nama Lengkap :")
-    mapel = SelectField("Mata Pelajaran", choices=[("", "..:: SELECT ::..")])
     jenisKelamin = SelectField(
         "Jenis Kelamin :",
         choices=[

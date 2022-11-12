@@ -9,7 +9,7 @@ class FormAddSiswa(FlaskForm):
     tipe = StringField(label="Group :")
     fullname = StringField(label="Nama Lengkap :")
     jenisKelamin = SelectField(
-        label="Jenis Kelamin",
+        label="Jenis Kelamin :",
         choices=[
             ("", "..::Select::.."),
             ("laki-laki", "Laki-laki"),
@@ -27,12 +27,12 @@ class FormAddSiswa(FlaskForm):
             ("budha", "Budha"),
         ],
     )
-    kelas = SelectField(label="Kelas :")
     tempatLahir = StringField(label='Tempat Lahir :')
     tanggalLahir = DateField(label='Tanggal Lahir :')
-    alamat = StringField(label='Alamat')
     namaOrtu = StringField(label='Nama Orang Tua')
     telp = StringField(label='No. Telp :')    
+    alamat = StringField(label='Alamat')
+    kelas = SelectField(label="Kelas :")
     submit = SubmitField(label="Submit Data")
 
     def validate_username(self, field):

@@ -101,3 +101,12 @@ class FormHari(FlaskForm):
     def validate_hari(self, field):
         if field.data == '':
             raise ValidationError('*Pilih Hari terlebih dahulu.')
+
+class FormJam(FlaskForm):
+    jam = StringField('Jam :')
+    submit = SubmitField('Sumbit Data')
+    
+    def validate_jam(self, field):
+        if field.data == '':
+            raise ValidationError('*Inputan Jam tidak boleh kosong.')
+    

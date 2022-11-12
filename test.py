@@ -18,13 +18,6 @@
 # print(last_name)
 # # print(" ".join(last_name))
 
-def find_max(num):
-    max_num = float('-inf')
-    for num in num:
-        if num in find_max:
-            max_num = num
-    
-    return max_num 
-
-find_max(20.0)
-find_max(find_max)
+x =4 
+y = x -1
+print(y)
