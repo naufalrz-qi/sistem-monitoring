@@ -18,6 +18,8 @@
 # print(last_name)
 # # print(" ".join(last_name))
 
-x =4 
-y = x -1
-print(y)
+import time
+
+
+kodeMengajar = "MPL-" + str(time.time()).rsplit(".", 1)[1]
+print(kodeMengajar)

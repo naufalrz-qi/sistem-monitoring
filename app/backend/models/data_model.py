@@ -1,14 +1,15 @@
 from app.backend.extensions import db 
 import sqlalchemy as sa
 import sqlalchemy.orm as sql
+from sqlalchemy.orm import backref
 from app.backend.models.master_model import *
 
 class AbsensiModel(db.Model):
     __tablename__ = 'data_absensi'
     id = sa.Column(sa.Integer, primary_key=True)
-    mengajar_id = sa.Column(sa.Integer, sa.ForeignKey('master_mengajar.id', onupdate='CASCADE', ondelete='CASCADE'))
-    mengajar = sql.relationship('MengajarModel', backref='mengajar_guru')
-    siswa_id = sa.Column(sa.Integer, sa.ForeignKey('detail_siswa.id', ondelete='CASCADE', onupdate='CASCADE'))
+    mengajar_id = sa.Column(sa.Integer, sa.ForeignKey('master_jadwal_mengajar.id', onupdate='CASCADE', ondelete='CASCADE'))
+    mengajar = sql.relationship('MengajarModel', backref=backref('mengajar_guru', cascade='all, delete-orphan'))
+    siswa_id = sa.Column(sa.Integer, sa.ForeignKey('detail_siswa.user_id', ondelete='CASCADE', onupdate='CASCADE'))
     siswa = sql.relationship('SiswaModel', backref='data_siswa')
     tgl_absen = sa.Column(sa.Date)
     ket = sa.Column(sa.String(16), nullable=False)
