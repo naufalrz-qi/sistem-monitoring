@@ -112,7 +112,7 @@ class MengajarModel(db.Model):
 class KepsekModel(db.Model):
     __tablename__ = 'master_kepsek'
     id = sa.Column(sa.Integer, primary_key=True)
-    guru_id = sa.Column(sa.Integer, sa.ForeignKey('detail_guru.id', onupdate='CASCADE'))
+    guru_id = sa.Column(sa.Integer, sa.ForeignKey('detail_guru.user_id', onupdate='CASCADE'))
     guru = rs.relationship('GuruModel', backref='kepsek')
     status = sa.Column(sa.String(2))
     
@@ -121,6 +121,17 @@ class KepsekModel(db.Model):
         self.status = 0
         
     def __repr__(self) -> str:
-        return f'Kepsek : {self.guru.guru}'
+        return f'Kepsek : {self.guru.first_name}'
         
+class GuruBKModel(db.Model):
+    __tablename__ = 'master_guru_bk'
+    id = sa.Column(sa.Integer, primary_key=True)
+    guru_id = sa.Column(sa.Integer, sa.ForeignKey('detail_guru.user_id', onupdate='CASCADE'))
+    guru = rs.relationship('GuruModel', backref='guru_bk')
     
+    def __init__(self, guruId=None):
+        self.guru_id = guruId
+        
+    def __repr__(self) -> str:
+        return 'Nama Guru : {}'.format(self.guru.first_name)
+

@@ -122,3 +122,15 @@ class FormWaliKelas(FlaskForm):
     # def validate_kelas(self, field):
     #     if field.data == '':
     #         raise ValidationError('*Pilih nama kelas terlebih dahulu.')
+    
+class FormGuruBK(FlaskForm):
+    namaGuru = SelectField('Nama Guru :', choices=[('','..:: SELECT ::..')])
+    submit = SubmitField('Submit Data')
+
+class FormKepsek(FlaskForm):
+    namaGuru = SelectField('Nama Guru :', choices=[('','..:: SELECT ::..')])
+    status = SelectField(
+        label="Status :",
+        choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
+    )
+    submit = SubmitField('Submit Data')

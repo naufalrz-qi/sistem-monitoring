@@ -494,7 +494,7 @@ class KepalaSekolah(object):
                 'id' : _.id,
                 'first_name' : _.guru.first_name,
                 'last_name' : _.guru.last_name,
-                'status' : 'aktif' if _.status else 'tidak aktif'
+                'status' : 'aktif' if _.status == '1' else 'tidak aktif'
             })
             
         return jsonify(data=data), HTTP_200_OK
@@ -515,14 +515,70 @@ class KepalaSekolah(object):
                 return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
                 
         elif request.method == 'PUT':
-            kelas_id = request.json.get('kelas_id')
+            guru_id = request.json.get('guru_id')
             status = request.json.get('status')
             
-            model.kelas_id = kelas_id
+            model.guru_id = guru_id
             model.status = status
             base.edit()          
               
             return jsonify(msg=f'Data Kepala Sekolah {model.guru.first_name} telah diperbaharui.'), HTTP_200_OK
+        
+        elif request.method == 'DELETE':
+            base.delete(model)            
+            return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
+
+
+class GuruBK(object):
+    @master.route('/guru-bk/create', endpoint='guru-bk-create', methods=['POST','GET'])
+    def create():
+        guru_id = request.json.get('guru_id')
+        
+        base = BaseModel(GuruBKModel(guruId=guru_id))
+        guru_check = base.get_one_or_none(guru_id=guru_id)
+        
+        if guru_check:
+            return jsonify(msg='Data has been already exists.'), HTTP_409_CONFLICT
+        else:
+            base.create()        
+            return jsonify(msg=f'Data Guru BK {base.model.guru.first_name} telah ditambahkan.'), HTTP_201_CREATED
+        
+    @master.route('/guru-bk/get-all', endpoint='guru-bk-all', methods=['GET'])
+    def get_all():
+        base = BaseModel(GuruBKModel)
+        model = base.get_all()
+        
+        data = []
+        for _ in model:
+            data.append({
+                'id' : _.id,
+                'first_name' : _.guru.first_name,
+                'last_name' : _.guru.last_name,
+            })
+            
+        return jsonify(data=data), HTTP_200_OK
+        
+    @master.route('/guru-bk/get-one/<int:id>', endpoint='guru-bk-single', methods=['GET', 'PUT', 'DELETE'])
+    def get_one(id):
+        base = BaseModel(GuruBKModel)
+        model = base.get_one_or_none(id=id)
+        
+        if request.method == 'GET':
+            if model is not None:
+                return jsonify(id=model.id,
+                               first_name=model.guru.first_name,
+                               last_name=model.guru.last_name,
+                               ), HTTP_200_OK
+            else:
+                return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
+                
+        elif request.method == 'PUT':
+            guru_id = request.json.get('guru_id')
+            
+            model.guru_id = guru_id
+            base.edit()          
+              
+            return jsonify(msg=f'Data Guru BK {model.guru.first_name} telah diperbaharui.'), HTTP_200_OK
         
         elif request.method == 'DELETE':
             base.delete(model)            

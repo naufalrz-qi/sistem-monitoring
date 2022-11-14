@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% set filename = 'data-wali' %}
-{% block title %}Data Wali Kelas{% endblock %}
+{% set filename = 'data-kepsek' %}
+{% block title %}Data Kepsek{% endblock %}
 {% block head %}
 {{super()}}
 <!-- Tempusdominus Bootstrap 4 -->
@@ -17,7 +17,7 @@
 {% block content %}
 <div class="card card-outline card-info">
     <div class="card-header">
-        <h3 class="card-title font-weight-bold text-lg">&nbsp;Data Wali Kelas</h3>
+        <h3 class="card-title font-weight-bold text-lg">&nbsp;Data Kepala Sekolah</h3>
         <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
@@ -34,8 +34,8 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Nama Wali Kelas</th>
-                        <th>Kelas</th>
+                        <th>Nama Kepala Sekolah</th>
+                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -44,7 +44,7 @@
                     <tr>
                         <td class="align-middle text-center" style="width: 12px;">{{ loop.index}}</td>
                         <td class="align-middle">{{ _.first_name | title }} {{ _.last_name | title}}</td>
-                        <td class="align-middle">{{ _.kelas }}</td>
+                        <td class="align-middle"><span class="badge {{'bg-success' if _.status=='aktif' else 'bg-danger'}}">{{ _.status | title}}</span></td>
                         <!-- AKSI -->
                         <td class="align-middle text-center" style="width: 120px;">
                             <button class="btn btn-warning btn-xs" title="Delete Data." data-toggle="modal"
@@ -59,8 +59,8 @@
                             </button>
                         </td>
                     </tr>
-                    {% include 'modal/master/wali_kelas/delete.html' %}
-                    {% include 'modal/master/wali_kelas/edit_data.html' %}
+                    {% include 'modal/master/kepsek/delete.html' %}
+                    {% include 'modal/master/kepsek/edit_data.html' %}
                     {% endfor %}
                 </tbody>
             </table>
@@ -68,7 +68,7 @@
     </div>
     <div class="card-footer"></div>
 </div>
-{% include 'modal/master/wali_kelas/tambah_data.html' %}
+{% include 'modal/master/kepsek/tambah_data.html' %}
 {% endblock %}
 {% block js %}
 <!-- Tempusdominus Bootstrap 4 -->

@@ -1052,7 +1052,7 @@ class MasterData:
             flash(message=f'{msg["msg"]} Status: {resp.status_code}', category="error")
             return redirect(url_for("admin2.get_jam"))
 
-    # NOTE: ================== MASTER DATA JAM =====================================
+    # NOTE: ================== MASTER DATA WALI KELAS =====================================
     @admin2.route("data-wali-kelas")
     def get_wali():
         url = base_url + "api/v2/master/wali-kelas/get-all"
@@ -1106,43 +1106,180 @@ class MasterData:
                 )
                 return redirect(url_for("admin2.get_wali"))
 
-    @admin2.route('update-wali/<int:id>', methods=['GET','POST'])
+    @admin2.route("update-wali/<int:id>", methods=["GET", "POST"])
     def edit_wali(id):
-        url = base_url + f'api/v2/master/wali-kelas/get-one/{id}'
-        if request.method == 'POST':
-            guru_id = request.form.get('namaGuru')
-            kelas_id = request.form.get('namaKelas')
-            paylaod = json.dumps(
-                {
-                    'guru_id': guru_id,
-                    'kelas_id': kelas_id
-                }
-            )
-            headers = {'Content-Type':'application/json'}
+        url = base_url + f"api/v2/master/wali-kelas/get-one/{id}"
+        if request.method == "POST":
+            guru_id = request.form.get("namaGuru")
+            kelas_id = request.form.get("namaKelas")
+            paylaod = json.dumps({"guru_id": guru_id, "kelas_id": kelas_id})
+            headers = {"Content-Type": "application/json"}
             resp = req.put(url=url, data=paylaod, headers=headers)
             msg = resp.json()
             if resp.status_code == 200:
-                flash(f'{msg["msg"]} Status : {resp.status_code}', 'info')
-                return redirect(url_for('admin2.get_wali'))
+                flash(f'{msg["msg"]} Status : {resp.status_code}', "info")
+                return redirect(url_for("admin2.get_wali"))
             else:
-                flash(f'{msg["msg"]} Status : {resp.status_code}', 'error')
-                return redirect(url_for('admin2.get_wali'))
-    
-    @admin2.route('delete-wali/<int:id>', methods=['GET','POST'])
+                flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
+                return redirect(url_for("admin2.get_wali"))
+
+    @admin2.route("delete-wali/<int:id>", methods=["GET", "POST"])
     def delete_wali(id):
-        url = base_url + f'api/v2/master/wali-kelas/get-one/{id}'
-        
+        url = base_url + f"api/v2/master/wali-kelas/get-one/{id}"
+
         resp = req.delete(url=url)
         if resp.status_code == 204:
-            flash(f'Data wali kelas telah dihapus dari database. Status : {resp.status_code}', 'info')
-            return redirect(url_for('admin2.get_wali'))
+            flash(
+                f"Data wali kelas telah dihapus dari database. Status : {resp.status_code}",
+                "info",
+            )
+            return redirect(url_for("admin2.get_wali"))
         else:
-            flash(f'Terjadi kesalahan dalam memuat data. Status : {resp.status_code}', 'error')
-            return redirect(url_for('admin2.get_wali'))
-                
+            flash(
+                f"Terjadi kesalahan dalam memuat data. Status : {resp.status_code}",
+                "error",
+            )
+            return redirect(url_for("admin2.get_wali"))
 
-class TestPage:
-    @admin2.get("test-page")
-    def test_page():
+    # NOTE: ================== MASTER DATA GURU BK=====================================
+    @admin2.route("data-guru-bk", methods=["GET"])
+    def get_bk():
+        url = base_url + "api/v2/master/guru-bk/get-all"
+        resp = req.get(url)
+        jsonResp = resp.json()
+        form = FormGuruBK(request.form)
+        urlGuru = base_url + "api/v2/guru/get-all"
+        respGuru = req.get(urlGuru)
+        jsonRespGuru = respGuru.json()
+        for i in jsonRespGuru:
+            form.namaGuru.choices.append(
+                (i["id"], i["first_name"] + "" + i["last_name"])
+            )
+        return render_template(
+            "admin/master/guru_bk/data_guru_bk.html",
+            model=jsonResp,
+            form=form,
+            jsonGuru=jsonRespGuru,
+        )
 
-        return render_template("test_page.html")
+    @admin2.route("add-guru-bk", methods=["GET", "POST"])
+    def add_bk():
+        url = base_url + f"api/v2/master/guru-bk/create"
+        guru_id = request.form.get("namaGuru")
+        payload = json.dumps({"guru_id": guru_id})
+        headers = {"Content-Type": "application/json"}
+        resp = req.post(url=url, data=payload, headers=headers)
+
+        msg = resp.json()
+        if resp.status_code == 201:
+            flash(f'{msg["msg"]} Status : {resp.status_code}', "success")
+            return redirect(url_for("admin2.get_bk"))
+        else:
+            flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
+            return redirect(url_for("admin2.get_bk"))
+
+    @admin2.route("edit-guru-bk/<int:id>", methods=["GET", "POST"])
+    def edit_bk(id):
+        url = base_url + f"api/v2/master/guru-bk/get-one/{id}"
+        guru_id = request.form.get("namaGuru")
+        payload = json.dumps({"guru_id": guru_id})
+        headers = {"Content-Type": "application/json"}
+
+        resp = req.put(url=url, data=payload, headers=headers)
+        msg = resp.json()
+        if resp.status_code == 200:
+            flash(f'{msg["msg"]} Status : {resp.status_code}', "info")
+            return redirect(url_for("admin2.get_bk"))
+        else:
+            flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
+            return redirect(url_for("admin2.get_bk"))
+
+    @admin2.route("delete-guru-bk/<int:id>", methods=["GET", "DELETE"])
+    def delete_bk(id):
+        url = base_url + f"api/v2/master/guru-bk/get-one/{id}"
+
+        resp = req.delete(url=url)
+        if resp.status_code == 204:
+            flash(
+                f"Data Guru BK telah dihapus dari database. Status : {resp.status_code}",
+                "info",
+            )
+            return redirect(url_for("admin2.get_bk"))
+        else:
+            flash(f"Gagal memuat data. Status : {resp.status_code}", "error")
+            return redirect(url_for("admin2.get_bk"))
+        
+    # NOTE: ================== MASTER DATA KEPALA SEKOLAH =====================================
+    @admin2.route("data-kepsek", methods=["GET"])
+    def get_kepsek():
+        url = base_url + "api/v2/master/kepsek/get-all"
+        resp = req.get(url)
+        jsonResp = resp.json()
+        form = FormKepsek(request.form)
+        urlGuru = base_url + "api/v2/guru/get-all"
+        respGuru = req.get(urlGuru)
+        jsonRespGuru = respGuru.json()
+        for i in jsonRespGuru:
+            form.namaGuru.choices.append(
+                (i["id"], i["first_name"] + "" + i["last_name"])
+            )
+            
+        # status = [{'0':'Tidak Aktif','1':'AKtif'}]
+        status = [{'id':'0','status':'tidak aktif'},{'id': '1', 'status': 'aktif'}]
+        
+        return render_template(
+            "admin/master/kepsek/data_kepsek.html",
+            model=jsonResp,
+            form=form,
+            jsonGuru=jsonRespGuru,
+            status = status
+        )
+
+    @admin2.route("add-kepsek", methods=["GET", "POST"])
+    def add_kepsek():
+        url = base_url + f"api/v2/master/kepsek/create"
+        guru_id = request.form.get("namaGuru")
+        payload = json.dumps({"guru_id": guru_id})
+        headers = {"Content-Type": "application/json"}
+        resp = req.post(url=url, data=payload, headers=headers)
+
+        msg = resp.json()
+        if resp.status_code == 201:
+            flash(f'{msg["msg"]} Status : {resp.status_code}', "success")
+            return redirect(url_for("admin2.get_kepsek"))
+        else:
+            flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
+            return redirect(url_for("admin2.get_kepsek"))
+
+    @admin2.route("edit-kepsek/<int:id>", methods=["GET", "POST"])
+    def edit_kepsek(id):
+        url = base_url + f"api/v2/master/kepsek/get-one/{id}"
+        guru_id = request.form.get("namaGuru")
+        status = request.form.get('status')
+        
+        payload = json.dumps({"guru_id": guru_id, 'status' : status})
+        headers = {"Content-Type": "application/json"}
+
+        resp = req.put(url=url, data=payload, headers=headers)
+        msg = resp.json()
+        if resp.status_code == 200:
+            flash(f'{msg["msg"]} Status : {resp.status_code}', "info")
+            return redirect(url_for("admin2.get_kepsek"))
+        else:
+            flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
+            return redirect(url_for("admin2.get_kepsek"))
+
+    @admin2.route("delete-kepsek/<int:id>", methods=["GET", "DELETE"])
+    def delete_kepsek(id):
+        url = base_url + f"api/v2/master/kepsek/get-one/{id}"
+
+        resp = req.delete(url=url)
+        if resp.status_code == 204:
+            flash(
+                f"Data Kepala Sekolah telah dihapus dari database. Status : {resp.status_code}",
+                "info",
+            )
+            return redirect(url_for("admin2.get_kepsek"))
+        else:
+            flash(f"Gagal memuat data. Status : {resp.status_code}", "error")
+            return redirect(url_for("admin2.get_kepsek"))
