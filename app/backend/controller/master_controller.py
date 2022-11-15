@@ -709,15 +709,18 @@ class GuruBK(object):
 class JadwalMengajar:
     @master.route("jadwal-mengajar/create", endpoint="create-jadwal", methods=["POST"])
     def create():
-        kodeMengajar = "MPL-" + str(time.time()).rsplit(".", 1)[1]
-        guruId = request.json.get("guru_id")
-        hariId = request.json.get("hari_id")
-        jamMulai = request.json.get("jam_mulai_id")
-        jamSelesai = request.json.get("jam_selesai_id")
-        kelasId = request.json.get("kelas_id")
-        semesterId = request.json.get("semeter_id")
+        # kodeMengajar = "MPL-" + str(time.time()).rsplit(".", 1)[1]
+        kodeMengajar = request.json.get('kode_mengajar')
         tahunAjaranId = request.json.get("tahun_ajaran_id")
-
+        semesterId = request.json.get("semeter_id")
+        guruId = request.json.get("guru_id")
+        mapel_id = request.json.get('mapel_id')
+        hariId = request.json.get("hari_id")
+        kelasId = request.json.get("kelas_id")
+        jamMulai = request.json.get("jam_mulai")
+        jamSelesai = request.json.get("jam_selesai")
+        jamKe = request.json.get("jam_ke")
+        
         base = BaseModel(
             MengajarModel(
                 kodeMengajar=kodeMengajar,
@@ -728,6 +731,8 @@ class JadwalMengajar:
                 kelasId=kelasId,
                 semesterId=semesterId,
                 tahunAjaranId=tahunAjaranId,
+                mapelId=mapel_id,
+                jamKe=jamKe
             )
         )
 
@@ -744,7 +749,7 @@ class JadwalMengajar:
 
             return (
                 jsonify(
-                    msg=f"Data jadwal mengajar dengan koden : {base.model.kode_mapel} telah di tambahkan"
+                    msg=f"Data jadwal mengajar dengan koden : {base.model.kode_mengajar} telah di tambahkan"
                 ),
                 HTTP_201_CREATED,
             )
@@ -807,8 +812,8 @@ class JadwalMengajar:
         elif request.method == "PUT":
             guruId = request.json.get("guru_id")
             hariId = request.json.get("hari_id")
-            jamMulai = request.json.get("jam_mulai_id")
-            jamSelesai = request.json.get("jam_selesai_id")
+            jamMulai = request.json.get("jam_mulai")
+            jamSelesai = request.json.get("jam_selesai")
             kelasId = request.json.get("kelas_id")
             semesterId = request.json.get("semeter_id")
             tahunAjaranId = request.json.get("tahun_ajaran_id")

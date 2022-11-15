@@ -141,7 +141,9 @@ class MengajarModel(db.Model):
         jamSelesai=None,
         kelasId=None,
         semesterId=None,
-        tahunAjaranId=None
+        tahunAjaranId=None,
+        mapelId=None,
+        jamKe=None
         
     ) -> None:
         self.kode_mengajar = kodeMengajar
@@ -152,6 +154,8 @@ class MengajarModel(db.Model):
         self.kelas_id = kelasId
         self.semester_id = semesterId
         self.tahun_ajaran_id = tahunAjaranId
+        self.mapel_id = mapelId
+        self.jam_ke = jamKe
 
     def __repr__(self) -> str:
         return 'Kode Mengajar : {}, Nama Guru : {}, Mapel : {}'.format(self.kode_mengajar, self.guru.first_name, self)

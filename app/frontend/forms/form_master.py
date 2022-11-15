@@ -14,12 +14,12 @@ class FormMapel(FlaskForm):
 
 class FormSemester(FlaskForm):
     semester = SelectField(
-        label="Semester :",
-        choices=[("", "..:: SELECT ::.."), ("ganjil", "Ganjil"), ("genap", "Genap")],
+        label="Semester",
+        choices=[("", "- Pilih -"), ("ganjil", "Ganjil"), ("genap", "Genap")],
     )
     status = SelectField(
-        label="Status :",
-        choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
+        label="Status",
+        choices=[("", "- Pilih -"), ("1", "Aktif"), ("0", "Tidak Aktif")],
     )
     submit = SubmitField("Submit Data")
 
@@ -34,8 +34,8 @@ class FormSemester(FlaskForm):
 
 class FormEditSemester(FlaskForm):
     status = SelectField(
-        label="Status :",
-        choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
+        label="Status",
+        choices=[("", "- Pilih -"), ("1", "Aktif"), ("0", "Tidak Aktif")],
     )
     submit = SubmitField("Submit Data")
 
@@ -45,10 +45,10 @@ class FormEditSemester(FlaskForm):
 
 
 class FormTahunAJaran(FlaskForm):
-    tahunAjaran = StringField(label="Tahun Ajaran :")
+    tahunAjaran = StringField(label="Tahun Ajaran")
     status = SelectField(
-        label="Status :",
-        choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
+        label="Status",
+        choices=[("", "- Pilih -"), ("1", "Aktif"), ("0", "Tidak Aktif")],
     )
     submit = SubmitField("Submit Data")
 
@@ -62,7 +62,7 @@ class FormTahunAJaran(FlaskForm):
 
 
 class FormKelas(FlaskForm):
-    kelas = StringField(label="Kelas :")
+    kelas = StringField(label="Kelas")
     submit = SubmitField(label="Sumbit Data")
 
     def validate_kelas(self, field):
@@ -71,10 +71,10 @@ class FormKelas(FlaskForm):
 
 
 class FormEditKelas(FlaskForm):
-    kelas = StringField(label="Kelas :")
-    jumlahLaki = StringField(label="Jumlah Laki-Laki :")
-    jumlahPerempuan = StringField(label="Jumlah Perempuan :")
-    jumlahSiswa = StringField(label="Jumlah Siswa :")
+    kelas = StringField(label="Kelas")
+    jumlahLaki = StringField(label="Jumlah Laki-Laki")
+    jumlahPerempuan = StringField(label="Jumlah Perempuan")
+    jumlahSiswa = StringField(label="Jumlah Siswa")
     submit = SubmitField(label="Sumbit Data")
 
     # def validate_kelas(self, field):
@@ -86,7 +86,7 @@ class FormHari(FlaskForm):
     hari = SelectField(
         label="Hari",
         choices=[
-            ("", "..:: SELECT ::.."),
+            ("", "- Pilih -"),
             ("senin", " Senin"),
             ("selasa", "Selasa"),
             ("rabu", "Rabu"),
@@ -103,7 +103,7 @@ class FormHari(FlaskForm):
             raise ValidationError('*Pilih Hari terlebih dahulu.')
 
 class FormJam(FlaskForm):
-    jam = StringField('Jam :')
+    jam = StringField('Jam')
     submit = SubmitField('Sumbit Data')
     
     # def validate_jam(self, field):
@@ -111,8 +111,8 @@ class FormJam(FlaskForm):
     #         raise ValidationError('*Inputan Jam tidak boleh kosong.')
 
 class FormWaliKelas(FlaskForm):
-    namaGuru = SelectField('Nama Guru :', choices=[('','..:: SELECT ::..')])
-    kelas = SelectField('Nama Kelas :', choices=[('','..:: SELECT ::..')])
+    namaGuru = SelectField('Nama Guru', choices=[('','- Pilih -')])
+    kelas = SelectField('Nama Kelas', choices=[('','- Pilih -')])
     submit = SubmitField('Submit Data')
     
     # def validate_namaGuru(self, field):
@@ -124,13 +124,13 @@ class FormWaliKelas(FlaskForm):
     #         raise ValidationError('*Pilih nama kelas terlebih dahulu.')
     
 class FormGuruBK(FlaskForm):
-    namaGuru = SelectField('Nama Guru :', choices=[('','..:: SELECT ::..')])
+    namaGuru = SelectField('Nama Guru', choices=[('','- Pilih -')])
     submit = SubmitField('Submit Data')
 
 class FormKepsek(FlaskForm):
-    namaGuru = SelectField('Nama Guru :', choices=[('','..:: SELECT ::..')])
+    namaGuru = SelectField('Nama Guru', choices=[('','- Pilih -')])
     status = SelectField(
-        label="Status :",
-        choices=[("", "..:: SELECT ::.."), ("1", "Aktif"), ("0", "Tidak Aktif")],
+        label="Status",
+        choices=[("", "- Pilih -"), ("1", "Aktif"), ("0", "Tidak Aktif")],
     )
     submit = SubmitField('Submit Data')

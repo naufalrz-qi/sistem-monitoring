@@ -4,22 +4,22 @@ from wtforms.validators import ValidationError
 # from wtforms.fields import DateField
 
 class FormAddSiswa(FlaskForm):
-    username = StringField(label="NISN :")
-    password = PasswordField(label="Password :")
-    tipe = StringField(label="Group :")
-    fullname = StringField(label="Nama Lengkap :")
+    username = StringField(label="NISN")
+    password = PasswordField(label="Password")
+    tipe = StringField(label="Group")
+    fullname = StringField(label="Nama Lengkap")
     jenisKelamin = SelectField(
-        label="Jenis Kelamin :",
+        label="Jenis Kelamin",
         choices=[
-            ("", "..::Select::.."),
+            ("", "- Pilih -"),
             ("laki-laki", "Laki-laki"),
             ("perempuan", "Perempuan"),
         ],
     )
     agama = SelectField(
-        label="Agama :",
+        label="Agama",
         choices=[
-            ("", "..::Select::.."),
+            ("", "- Pilih -"),
             ("islam", "Islam"),
             ("kristen", "Kristen"),
             ("katolik", "Katolik"),
@@ -27,12 +27,12 @@ class FormAddSiswa(FlaskForm):
             ("budha", "Budha"),
         ],
     )
-    tempatLahir = StringField(label='Tempat Lahir :')
-    tanggalLahir = DateField(label='Tanggal Lahir :')
+    tempatLahir = StringField(label='Tempat Lahir')
+    tanggalLahir = DateField(label='Tanggal Lahir')
     namaOrtu = StringField(label='Nama Orang Tua')
-    telp = StringField(label='No. Telp :')    
+    telp = StringField(label='No. Telp')    
     alamat = StringField(label='Alamat')
-    kelas = SelectField(label="Kelas :")
+    kelas = SelectField(label="Kelas")
     submit = SubmitField(label="Submit Data")
 
     def validate_username(self, field):
@@ -63,24 +63,24 @@ class FormAddSiswa(FlaskForm):
 
 
 class FormEditSiswa(FlaskForm):
-    nisn = StringField("NISN :")
-    fullname = StringField("Nama Lengkap :")
-    kelas = SelectField("Kelas :")
-    # kelas = SelectField("Kelas :", choices=[("", "..:: SELECT ::..")])
+    nisn = StringField("NISN")
+    fullname = StringField("Nama Lengkap")
+    kelas = SelectField("Kelas")
+    # kelas = SelectField("Kelas", choices=[("", "- Pilih -")])
     jenisKelamin = SelectField(
-        "Jenis Kelamin :",
+        "Jenis Kelamin",
         choices=[
-            ("","..:: SELECT ::.."),
+            ("","- Pilih -"),
             ("laki-laki", "Laki-Laki"),
             ("perempuan", "Perempuan"),
         ],
     )
-    tempatLahir = StringField('Tempat Lahir :')
-    tanggalLahir= DateField('Tanggal Lahir :')
+    tempatLahir = StringField('Tempat Lahir')
+    tanggalLahir= DateField('Tanggal Lahir')
     agama = SelectField(
         label="Agama",
         choices=[
-            ("", "..::Select::.."),
+            ("", "- Pilih -"),
             ("islam", "Islam"),
             ("kristen", "Kristen"),
             ("katolik", "Katolik"),

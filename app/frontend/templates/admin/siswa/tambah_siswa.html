@@ -111,7 +111,7 @@
               {% elif form.agama.data %}
               {{ form.agama(class="form-control form-control-sm", aria_invalid="false")}}
               {% else %}
-              {{ form.agama(class="form-control form-control-sm", onmousedown="if(this.options.length>6){this.size=6;}",  onchange='this.size=0;', onblur="this.size=0;")}}
+              {{ form.agama(class="form-control form-control-sm")}}
               {% endif %}
             </div>
           </div>
@@ -126,7 +126,7 @@
               {% elif form.kelas.data %}
               {{ form.kelas(class="form-control form-control-sm", aria_invalid="false")}}
               {% else %}
-              {{ form.kelas(class="form-control form-control-sm", onmousedown="if(this.options.length>6){this.size=6;}",  onchange='this.size=0;', onblur="this.size=0;")}}
+              {{ form.kelas(class="form-control form-control-sm")}}
               {% endif %}
             </div>
           </div>

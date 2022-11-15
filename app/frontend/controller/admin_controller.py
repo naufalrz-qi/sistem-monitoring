@@ -1,5 +1,6 @@
 import json
 from msvcrt import getwch
+import time
 from flask import (
     Blueprint,
     Response,
@@ -16,6 +17,7 @@ from app.backend.models.user_details_model import *
 from app.backend.lib.base_model import BaseModel
 from werkzeug.utils import secure_filename
 from app.frontend.forms.form_auth import FormEditStatus
+from app.frontend.forms.form_jadwal import FormJadwalMengajar
 from app.frontend.forms.form_master import *
 from app.frontend.forms.form_siswa import FormAddSiswa, FormEditSiswa
 from ..forms.form_auth import *
@@ -1208,7 +1210,7 @@ class MasterData:
         else:
             flash(f"Gagal memuat data. Status : {resp.status_code}", "error")
             return redirect(url_for("admin2.get_bk"))
-        
+
     # NOTE: ================== MASTER DATA KEPALA SEKOLAH =====================================
     @admin2.route("data-kepsek", methods=["GET"])
     def get_kepsek():
@@ -1223,16 +1225,16 @@ class MasterData:
             form.namaGuru.choices.append(
                 (i["id"], i["first_name"] + "" + i["last_name"])
             )
-            
+
         # status = [{'0':'Tidak Aktif','1':'AKtif'}]
-        status = [{'id':'0','status':'tidak aktif'},{'id': '1', 'status': 'aktif'}]
-        
+        status = [{"id": "0", "status": "tidak aktif"}, {"id": "1", "status": "aktif"}]
+
         return render_template(
             "admin/master/kepsek/data_kepsek.html",
             model=jsonResp,
             form=form,
             jsonGuru=jsonRespGuru,
-            status = status
+            status=status,
         )
 
     @admin2.route("add-kepsek", methods=["GET", "POST"])
@@ -1255,9 +1257,9 @@ class MasterData:
     def edit_kepsek(id):
         url = base_url + f"api/v2/master/kepsek/get-one/{id}"
         guru_id = request.form.get("namaGuru")
-        status = request.form.get('status')
-        
-        payload = json.dumps({"guru_id": guru_id, 'status' : status})
+        status = request.form.get("status")
+
+        payload = json.dumps({"guru_id": guru_id, "status": status})
         headers = {"Content-Type": "application/json"}
 
         resp = req.put(url=url, data=payload, headers=headers)
@@ -1283,3 +1285,109 @@ class MasterData:
         else:
             flash(f"Gagal memuat data. Status : {resp.status_code}", "error")
             return redirect(url_for("admin2.get_kepsek"))
+
+
+class JadwalMengajara:
+    # NOTE: ================== DATA JADWAL MENGAAJAR =====================================
+    @admin2.route("data-jawdwal-mengajar")
+    def get_jadwal():
+        url = base_url + 'api/v2/master/jadwal-mengajar/get-all'
+        resp = req.get(url)
+        jsonResp = resp.json()
+        return render_template("admin/jadwal_mengajar/data_jadwal.html", model=jsonResp)
+
+    @admin2.route("tambah-jadwal-mengajar", methods=["GET", "POST"])
+    def add_jadwal():
+        form = FormJadwalMengajar(request.form)
+        kodeMengajar = "MPL-" + str(time.time()).rsplit(".", 1)[1]
+        urlSemester = base_url + "api/v2/master/semester/get-all"
+        respSemester = req.get(urlSemester)
+        for i in respSemester.json()["data"]:
+            if i["status"] == True:
+                sms = i["semester"]
+                sms_id = i['id']
+
+        urlTahunAjaran = base_url + "api/v2/master/ajaran/get-all"
+        respTahunAjaran = req.get(urlTahunAjaran)
+        for i in respTahunAjaran.json()["data"]:
+            if i["status"] == True:
+                ta = i["th_ajaran"]
+                ta_id = i['id']
+
+        urlGuru = base_url + "api/v2/guru/get-all"
+        respGuru = req.get(urlGuru)
+        jsonRespGuru = respGuru.json()
+        for i in jsonRespGuru:
+            form.namaGuru.choices.append(
+                (i["id"], i["first_name"] + "" + i["last_name"])
+            )
+            
+        urlMapel = base_url + "api/v2/master/mapel/get-all"
+        respMapel = req.get(urlMapel)
+        for i in respMapel.json()['data']:
+            form.namaMapel.choices.append((i['id'], i['mapel'].title()))
+        
+        urlHari = base_url + 'api/v2/master/hari/get-all'
+        respHari = req.get(urlHari)
+        for i in respHari.json()['data']:
+            form.hari.choices.append((i['id'], i['hari'].title()))
+            
+        urlKelas = base_url + 'api/v2/master/kelas/get-all'
+        respKelas = req.get(urlKelas)
+        for i in respKelas.json()['data']:
+            form.kelas.choices.append((i['id'], i['kelas']))
+        
+        urlJam = base_url + 'api/v2/master/jam/get-all'
+        respJam = req.get(urlJam)
+        for i in respJam.json()['data']:
+            form.waktuMulai.choices.append((i['jam'], i['jam']))
+            form.waktuSelesai.choices.append((i['jam'], i['jam']))
+            
+        
+        form.kode.data = kodeMengajar
+        form.semester.data = sms.title()
+        form.ta.data = ta_id
+        form.sms.data = sms_id
+        form.tahunAjaran.data = ta
+        
+        if request.method == 'POST' and form.validate_on_submit():
+            kode_mengajar = request.form.get('kode')
+            tahun_ajaran_id = request.form.get('ta')
+            semeter_id = request.form.get('sms')
+            guru_id = request.form.get('namaGuru')
+            mapel_id = request.form.get('namaMapel')
+            hari_id = request.form.get('hari')
+            kelas_id = request.form.get('kelas')
+            jam_mulai = request.form.get('waktuMulai')
+            jam_selesai = request.form.get('waktuSelesai')
+            jam_ke = request.form.get('jamKe')
+
+            url = base_url + 'api/v2/master/jadwal-mengajar/create'
+            payload = json.dumps(
+                {
+                    'kode_mengajar' : kode_mengajar,
+                    'tahun_ajaran_id' : tahun_ajaran_id,
+                    'semeter_id' : semeter_id,
+                    'guru_id' : guru_id,
+                    'mapel_id' : mapel_id,
+                    'hari_id' : hari_id,
+                    'kelas_id' : kelas_id,
+                    'jam_mulai' : jam_mulai,
+                    'jam_selesai' : jam_selesai,
+                    'jam_ke' : jam_ke
+                }
+            )
+            headers = {
+                'Content-Type' : 'application/json'
+            }
+            
+            resp = req.post(url=url, data=payload, headers=headers)
+            msg = resp.json()
+            if resp.status_code == 201:
+                flash(f'{msg["msg"]} Status : {resp.status_code}', 'success')
+                return redirect(url_for('admin2.get_jadwal'))
+            else:
+                flash(f'{msg["msg"]} Status : {resp.status_code}')
+                return redirect(url_for('admin2.get_jadwal', 'error'))
+                
+        return render_template("admin/jadwal_mengajar/tambah_jadwal.html", form=form)
