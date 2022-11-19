@@ -51,11 +51,11 @@
           <td>{{_.kode_mengajar}}</td>
           <td>{{_.first_name | title}} {{ _.last_name | title}}</td>
           <td>{{_.mapel | title}}</td>
-          <td>{{_.hari | title}}</td>
+          <td>{{_.hari | title}}, {{_.jam_mulai}}-{{_.jam_selesai}}</td>
           <td>{{_.kelas }}</td>
           <td>{{_.tahun_ajaran }}/{{_.semester | title}}</td>
           <td>
-            <a href="#" class="btn btn-danger btn-flat btn-xs">
+            <a href="{{ url_for('admin2.delete_jadwal', id=_.id)}}" class="btn btn-danger btn-flat btn-xs">
               <i class="fas fa-times"></i>
                Batal
             </a>

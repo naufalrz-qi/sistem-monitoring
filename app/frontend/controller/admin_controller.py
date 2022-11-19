@@ -28,7 +28,7 @@ import requests as req
 import io
 import xlwt
 
-admin2 = Blueprint("admin2", __name__, template_folder="../templates/", url_prefix="/")
+admin2 = Blueprint("admin2", __name__, template_folder="../templates/", url_prefix="/admin")
 
 
 @admin2.route("/admin/<path:filename>")
@@ -113,6 +113,7 @@ class PenggunaSiswa:
             files.get("images").close()
             temp_file = upload_folder + file_name
             os.remove(f"{temp_file}")
+            flash(f'File foto siswa telah berhasil di upload. Status : {response.status_code}', 'success')
             return redirect(url_for("admin2.getSiswa"))
             # return redirect(url_for("admin2.get_siswa"))
         else:
@@ -313,12 +314,11 @@ class PenggunaSiswa:
         response = req.delete(url)
         if response.status_code == 204:
             respkelas = req.put(url=baseKelas, headers=headers)
-            print(respkelas.text)
-            flash(message="Data siswa telah berhasil di hapus.", category="info")
+            flash(message=f"Data siswa telah berhasil di hapus. {response.status_code}", category="info")
             return redirect(url_for("admin2.getSiswa"))
             # return redirect(url_for("admin2.get_siswa"))
         else:
-            flash("Ada tejadi kesalahan dalam menghapus data.", "error")
+            flash(f"Ada tejadi kesalahan dalam menghapus data. Status : {response.status_code}", "error")
             return redirect(url_for("admin2.getSiswa"))
             # return redirect(url_for("admin2.get_siswa"))
 
@@ -1391,3 +1391,16 @@ class JadwalMengajara:
                 return redirect(url_for('admin2.get_jadwal', 'error'))
                 
         return render_template("admin/jadwal_mengajar/tambah_jadwal.html", form=form)
+
+    @admin2.route('delete-jadwal/<int:id>', methods=['GET','DELETE'])
+    def delete_jadwal(id):
+        url = base_url + f'api/v2/master/jadwal-mengajar/get-one/{id}'
+        resp = req.delete(url)
+        
+        if resp.status_code == 204:
+            flash(f'Data Jadwal Pelajaran telah dibatalkan. Status : {resp.status_code}', 'info')
+            return redirect(url_for('admin2.get_jadwal'))
+        else:
+            flash(f'Gala memuat Data Jadwal Pelajaran. Status : {resp.status_code}', 'error')
+            return redirect(url_for('admin2.get_jadwal'))
+            

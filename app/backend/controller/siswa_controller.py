@@ -1,5 +1,6 @@
 from fileinput import filename
 import hashlib
+from time import sleep
 import qrcode, os
 from sqlalchemy import func
 from werkzeug.utils import secure_filename
@@ -18,15 +19,15 @@ from app.backend.lib.uploader import uploads
 from datetime import datetime
 import app
 
-siswa = Blueprint('siswa', __name__, url_prefix='/api/v2/student')
+siswa = Blueprint('siswa', __name__, url_prefix='/api/v2/student', static_url_path='/path/', static_folder='../static/')
 qc_folder = os.getcwd() + '/app/backend/static/img/siswa/qr_code/'
 
 
 # NOTE : MANUAL STATIC FOLDER
-@siswa.route('backend/<path:filename>')
-def static(filename):
-    dir = send_from_directory('backend/static', filename)
-    return dir
+# @siswa.route('backend/<path:filename>')
+# def static(filename):
+#     dir = send_from_directory('backend/static', filename)
+#     return dir
 
 
 @siswa.route('/get-all')
@@ -73,7 +74,6 @@ def get_single(id):
     if request.method == 'GET':
         if not model:
             return jsonify(msg='Data not found.'), HTTP_404_NOT_FOUND
-        print(model.tgl_lahir)
         return jsonify(id= model.user.id,
                        nisn=model.user.username,
                        first_name= model.first_name.title(),
@@ -148,12 +148,32 @@ def get_single(id):
             Check file before delete user and file
             '''
             dir_file = os.getcwd()+'/app/backend/static/img/siswa/foto/'
+            qr_file = os.getcwd()+'/app/backend/static/img/siswa/qr_code'
             # file = dir_file + model.pic
             
-            if model.pic:
+            if model.pic and model.qr_code:
                 file = os.path.join(dir_file, model.pic)
+                file_qr = os.path.join(qr_file, model.qr_code)
                 os.unlink(file)
+                sleep(2)
+                os.unlink(file_qr)
+                base_user = BaseModel(UserModel)
+                model_user = base_user.get_one(id=id)
+                base.delete(model_user)       
+                return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
+            elif model.qr_code or model.pic:
+                file_qr = os.path.join(qr_file, model.qr_code) if model.qr_code else None
+                file = os.path.join(dir_file, model.pic) if model.pic else None
+                print(file_qr)
+                if file_qr is not None:
+                    os.unlink(file_qr)
+                    base_user = BaseModel(UserModel)
+                    model_user = base_user.get_one(id=id)
+                    print(file)
+                    base.delete(model_user)       
+                    return jsonify(msg='Data has been deleted.'), HTTP_204_NO_CONTENT
             
+                os.unlink(file)
                 base_user = BaseModel(UserModel)
                 model_user = base_user.get_one(id=id)
                 base.delete(model_user)       
@@ -179,10 +199,11 @@ def generate_qc():
         qc.add_data(model.user.username)
         qc_img = qc.make_image(image_factory=StyledPilImage, module_drawer=HorizontalBarsDrawer(), fit=True)
         enc_file_name = hashlib.md5(secure_filename(model.user.username).encode('utf-8')).hexdigest()
-        path_file = qc_folder +  model.first_name + '_' + enc_file_name + '.png'
+        first_name = model.first_name if len(model.first_name) != 2 else model.last_name.split(' ',1)[0]
+        path_file = qc_folder + model.kelas.kelas + '_' +  first_name.lower() + '_' + enc_file_name + '.png'
         qc_img.save(path_file)
         
-        model.qr_code = model.first_name + '_' + enc_file_name + '.png'
+        model.qr_code = model.kelas.kelas +'_'+ first_name.lower() + '_' + enc_file_name + '.png'
         
         base.edit()
         
@@ -199,10 +220,10 @@ def upload_photo():
         return jsonify(msg='Data not found'), HTTP_404_NOT_FOUND
     else:
         f = request.files['images']
-        first_name = model.first_name if len(model.first_name) != 2 else model.last_name
+        first_name = model.first_name if len(model.first_name) != 2 else model.last_name.split(' ', 1)[0]
         user_first_name = first_name.replace(" ", "_").lower()
         
-        upload_file = uploads(f, user_first_name)
+        upload_file = uploads(f, user_first_name, model.kelas.kelas)
         if upload_file['status'] == 'ok':
             model.pic = upload_file['photo_name']            
             base.edit()            

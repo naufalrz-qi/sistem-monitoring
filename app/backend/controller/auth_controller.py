@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, url_for
 from flask_jwt_extended import (
     current_user,
     get_jwt,
@@ -17,6 +17,7 @@ from app.backend.models.user_model import TokenBlockList, UserModel
 from app.backend.extensions import db
 from app.backend.lib.status_code import *
 from werkzeug.security import generate_password_hash
+from ..lib.date_time import *
 
 auth = Blueprint("auth", __name__, url_prefix="/api/v2/auth")
 
@@ -62,13 +63,22 @@ def login():
                 user.edit()
                 return (
                     jsonify(
-                        {
-                            "id": sql_user.id,
-                            "username": sql_user.username,
-                            "first_name": sql_siswa.first_name,
-                            "access_token": access_token,
-                            "refresh_token": refresh_token,
-                        }
+                        id=sql_user.id,
+                        username=sql_user.username,
+                        first_name=sql_siswa.first_name,
+                        last_name=sql_siswa.last_name,
+                        gender=sql_siswa.gender,
+                        tempat_lahir=sql_siswa.tempat_lahir,
+                        tgl_lahir= format_indo(sql_siswa.tgl_lahir) if sql_siswa.tgl_lahir else None,
+                        agama=sql_siswa.agama,
+                        nama_ortu=sql_siswa.nama_ortu_or_wali,
+                        telp=sql_siswa.no_telp,
+                        alamat=sql_siswa.alamat,
+                        qr_code= url_for('siswa.static', filename='img/siswa/qr_code/' + sql_siswa.qr_code) if sql_siswa.qr_code else None,
+                        picture= url_for('siswa.static', filename='img/siswa/foto/'+ sql_siswa.pic) if sql_siswa.pic else None,
+                        pic_name= sql_siswa.pic,
+                        access_token=access_token,
+                        refresh_token=refresh_token,
                     ),
                     HTTP_200_OK,
                 )
@@ -180,7 +190,7 @@ def create():
                     telp=telp,
                     alamat=alamat,
                     user_id=user.model.id,
-                    kelas=kelas
+                    kelas=kelas,
                 )
             )
             baseKelas = BaseModel(KelasModel)
@@ -196,13 +206,13 @@ def create():
             countSiswaLaki = (
                 db.session.query(func.count(SiswaModel.kelas_id))
                 .filter(SiswaModel.kelas_id == kelas)
-                .filter(SiswaModel.gender == 'laki-laki')
+                .filter(SiswaModel.gender == "laki-laki")
                 .scalar()
             )
             countSiswaPerempuan = (
                 db.session.query(func.count(SiswaModel.kelas_id))
                 .filter(SiswaModel.kelas_id == kelas)
-                .filter(SiswaModel.gender == 'perempuan')
+                .filter(SiswaModel.gender == "perempuan")
                 .scalar()
             )
             countSiswaAll = (
@@ -345,7 +355,7 @@ def get_all():
     model = BaseModel(UserModel)
     data = []
     for user in model.get_all():
-        if user.group == 'siswa' or user.group == 'guru':
+        if user.group == "siswa" or user.group == "guru":
             data.append(
                 {
                     "id": user.id,

@@ -18,8 +18,22 @@
 # print(last_name)
 # # print(" ".join(last_name))
 
-import time
+# import time
 
 
-kodeMengajar = "MPL-" + str(time.time()).rsplit(".", 1)[1]
-print(kodeMengajar)
+# kodeMengajar = "MPL-" + str(time.time()).rsplit(".", 1)[1]
+# print(kodeMengajar)
+# import requests as req
+
+# url = 'http://127.0.0.1:5000/api/v2/auth/get-all'
+# resp = req.get(url)
+# jsonResp = resp.json()
+# data = []
+# for i in jsonResp:
+#     data.append({'id': i['id']})
+
+# print(jsonResp)
+
+nama = 'Aura Suci Ambarala'
+get_one = nama.split(sep=' ', maxsplit=1)[1]
+print(get_one)

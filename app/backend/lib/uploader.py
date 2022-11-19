@@ -16,19 +16,19 @@ def allowed_extension(filename):
 def get_secure_filename(filename):
     return str(secure_filename(filename))
 
-def uploads(f, nama_user):
+def uploads(f, nama_user, kelas):
     if f and allowed_extension(f.filename):
         fileOrigin = f.filename.rsplit('.', 1)
         fileExt = fileOrigin[1].lower()
         if fileExt == 'jpeg' or fileExt == 'jpg' or fileExt == 'png':
             encFile = hashlib.md5(get_secure_filename(
                 f.filename).encode('utf-8')).hexdigest()
-            pathFile = UPLOAD_FOLDER + nama_user +'_' + encFile+'.' + fileExt
+            pathFile = UPLOAD_FOLDER + kelas + '_' + nama_user +'_' + encFile+'.' + fileExt
             f.save(pathFile)
             return {
                 'status': 'ok',
                 'path_file': pathFile,
-                'photo_name': nama_user + '_' + encFile + '.' + fileExt
+                'photo_name': kelas + '_'+ nama_user + '_' + encFile + '.' + fileExt
             }
         elif fileExt == 'pdf':
             encFile = hashlib.md5(get_secure_filename(

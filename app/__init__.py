@@ -17,12 +17,14 @@ def create_app():
 
 def extended_ext(app):
     from app.backend.extensions import db, admin, jwt, migrate
+    # from app.frontend.extensions import login_manager
     
     db.init_app(app)
     migrate.init_app(app, db)
     admin.init_app(app)
     jwt.init_app(app)
-
+    # login_manager.init_app(app)
+    
 def extended_admin():
     from app.super_admin.admin_model import UserView
     from app.super_admin.admin_register_views import user
