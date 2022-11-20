@@ -69,14 +69,25 @@ def login():
                         last_name=sql_siswa.last_name,
                         gender=sql_siswa.gender,
                         tempat_lahir=sql_siswa.tempat_lahir,
-                        tgl_lahir= format_indo(sql_siswa.tgl_lahir) if sql_siswa.tgl_lahir else None,
+                        tgl_lahir=format_indo(sql_siswa.tgl_lahir)
+                        if sql_siswa.tgl_lahir
+                        else None,
                         agama=sql_siswa.agama,
                         nama_ortu=sql_siswa.nama_ortu_or_wali,
                         telp=sql_siswa.no_telp,
                         alamat=sql_siswa.alamat,
-                        qr_code= url_for('siswa.static', filename='img/siswa/qr_code/' + sql_siswa.qr_code) if sql_siswa.qr_code else None,
-                        picture= url_for('siswa.static', filename='img/siswa/foto/'+ sql_siswa.pic) if sql_siswa.pic else None,
-                        pic_name= sql_siswa.pic,
+                        qr_code=url_for(
+                            "siswa.static",
+                            filename="img/siswa/qr_code/" + sql_siswa.qr_code,
+                        )
+                        if sql_siswa.qr_code
+                        else None,
+                        picture=url_for(
+                            "siswa.static", filename="img/siswa/foto/" + sql_siswa.pic
+                        )
+                        if sql_siswa.pic
+                        else None,
+                        pic_name=sql_siswa.pic,
                         access_token=access_token,
                         refresh_token=refresh_token,
                     ),
