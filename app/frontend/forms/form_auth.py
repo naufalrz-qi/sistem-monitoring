@@ -2,31 +2,42 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, PasswordField, StringField, SelectField
 from wtforms.validators import ValidationError
 
+
 class FormEditStatus(FlaskForm):
     state = SubmitField("Aktif")
 
+
 class FormEditPassword(FlaskForm):
-    kataSandi = PasswordField('Password')
-    submit = SubmitField('Save Changes')
-    
+    kataSandi = PasswordField("Password")
+    submit = SubmitField("Save Changes")
+
     def validate_kataSandi(self, field):
         if field.data == None:
-            raise ValidationError('*Password tidak boleh kosong.')
+            raise ValidationError("*Password tidak boleh kosong.")
         elif len(field.data) < 6:
-            raise ValidationError('*Password minimal 6 karakter.')
-        
+            raise ValidationError("*Password minimal 6 karakter.")
+
+
 class FormLogin(FlaskForm):
-    username = StringField('Username')
-    password = PasswordField('Password')
-    level = SelectField('Level Pengguna', choices=[('','- Pilih -'),('admin', 'Admin'), ('guru', 'Guru'), ('bk', 'Guru BK')])
-    submit = SubmitField('Sign In')
-    
+    username = StringField("Username")
+    password = PasswordField("Password")
+    level = SelectField(
+        "Level Pengguna",
+        choices=[
+            ("", "- Pilih -"),
+            ("admin", "Admin"),
+            ("guru", "Guru"),
+            ("bk", "Guru BK"),
+        ],
+    )
+    submit = SubmitField("Sign In")
+
     def validate_username(self, field):
-        if field.data == '':
-            raise ValidationError('** Username harap di isi.')
-        
+        if field.data == "":
+            raise ValidationError("** Username harap di isi.")
+
     def validate_password(self, field):
         if len(field.data) < 6 and len(field.data) > 0:
-            raise ValidationError('** Panjang karakter minimal 6 digit.')
-        elif field.data == '':
-            raise ValidationError('** Password belum di isi.')
+            raise ValidationError("** Panjang karakter minimal 6 digit.")
+        elif field.data == "":
+            raise ValidationError("** Password belum di isi.")

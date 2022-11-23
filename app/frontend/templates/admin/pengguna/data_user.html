@@ -49,21 +49,23 @@
           <td>{{_.join}}</td>
           <td>{{_.last_update}}</td>
           <td>{{_.user_last_login}}</td>
-          <td>
+          <td class="align-middle">
             <form action="{{url_for('admin2.update_status',id=_.id)}}" method="post">
               {#{ form.csrf_token}#}
               <input type="text" hidden="true" name="status" value="{{'Aktif' if _.is_active == '1' else 'Non-Aktif'}}">
               <!-- {{form.state(class="btn btn-success btn-xs", title="Non-Aktifkan") if _.is_active == '1' else form.state(class="btn btn-danger btn-xs", value='Non-Aktif', title="Aktifkan") }} -->
-              <input type="submit" class="btn {{'btn-success' if _.is_active == '1' else 'btn-danger'}} btn-xs" title="{{'Non-Aktifkan' if _.is_active == '1' else 'Aktifkan'}}" value="{{'Non-Aktifkan' if _.is_active == '1' else 'Aktifkan'}}">
+              <input type="submit" class="btn {{'btn-success' if _.is_active == '1' else 'btn-danger'}} btn-xs"
+                title="{{'Non-Aktifkan' if _.is_active == '1' else 'Aktifkan'}}"
+                value="{{'Non-Aktifkan' if _.is_active == '1' else 'Aktifkan'}}">
             </form>
           </td>
           <td>
             <button class="btn btn-info btn-xs" title="Ubah Password" data-toggle="modal"
-            data-target="#modal-user-{{_.id}}">
-            <i class="fas fa-user-edit"></i> Ubah Pswd
-          </button>
+              data-target="#modal-user-{{_.id}}">
+              <i class="fas fa-user-edit"></i> Ubah Pswd
+            </button>
           </td>
-      
+
         </tr>
         {% include 'modal/admin/user/modal_user.html' %}
         {% endfor %}

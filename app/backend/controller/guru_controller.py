@@ -18,22 +18,22 @@ def get():
         data.append(
             {
                 "id": user.user_id,
-                "nip": user.users.username,
+                "nip": user.user.username,
                 "first_name": user.first_name.title(),
                 "last_name": user.last_name.title(),
                 "gender": user.gender.title(),
                 "agama": user.agama.title() if user.agama else "-",
                 "alamat": user.alamat.title() if user.alamat else "-",
                 "telp": user.telp if user.telp else "-",
-                "active": True if user.users.is_active == "1" else False,
-                "join": format_indo(user.users.join_date),
-                "last_update": format_indo(user.users.update_date)
-                if user.users.update_date
+                "active": True if user.user.is_active == "1" else False,
+                "join": format_indo(user.user.join_date),
+                "last_update": format_indo(user.user.update_date)
+                if user.user.update_date
                 else "-",
-                "last_login": format_datetime_id(user.users.user_last_login)
-                if user.users.user_last_login
+                "last_login": format_datetime_id(user.user.user_last_login)
+                if user.user.user_last_login
                 else "-",
-                "type": user.users.group.upper(),
+                "type": user.user.group.upper(),
             }
         )
     return jsonify(data), HTTP_200_OK
@@ -50,8 +50,8 @@ def get_single_object(id):
         else:
             return (
                 jsonify(
-                    id=guru.users.id,
-                    nip=guru.users.username,
+                    id=guru.user.id,
+                    nip=guru.user.username,
                     first_name=guru.first_name.title(),
                     last_name=guru.last_name.title(),
                     gender=guru.gender.title(),
@@ -76,7 +76,7 @@ def get_single_object(id):
             alamat = request.json.get("alamat")
             telp = request.json.get("telp")
 
-            guru.users.username = username
+            guru.user.username = username
             guru.first_name = first_name
             guru.last_name = last_name
             guru.gender = gender

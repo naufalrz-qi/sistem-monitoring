@@ -104,33 +104,42 @@ class MengajarModel(db.Model):
         sa.Integer,
         sa.ForeignKey("detail_guru.user_id", ondelete="CASCADE", onupdate="CASCADE"),
     )
-    guru = rs.relationship("GuruModel",backref=backref("guru_mapels", cascade="all, delete-orphan"))
-    mapel_id = sa.Column(sa.Integer, sa.ForeignKey('master_mapel.id', ondelete='CASCADE', onupdate='CASCADE'))
-    mapel = rs.relationship('MapelModel', backref=backref('mengajar_mapel', cascade='all, delete-orphan'))
+    guru = rs.relationship(
+        "GuruModel", backref=backref("guru_mapels", cascade="all, delete-orphan")
+    )
+    mapel_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey("master_mapel.id", ondelete="CASCADE", onupdate="CASCADE"),
+    )
+    mapel = rs.relationship(
+        "MapelModel", backref=backref("mengajar_mapel", cascade="all, delete-orphan")
+    )
     jam_ke = sa.Column(sa.String(6), nullable=True)
     hari_id = sa.Column(
         sa.Integer,
         sa.ForeignKey("master_hari.id", ondelete="CASCADE", onupdate="CASCADE"),
     )
-    hari = rs.relationship('HariModel', backref=backref('hari_mengajar'))
-    
-    jam_mulai = sa.Column(sa.String(12))
-    jam_selesai = sa.Column(sa.String(12))
+    hari = rs.relationship("HariModel", backref=backref("hari_mengajar"))
+
+    jam_mulai = sa.Column(sa.String(12), nullable=True)
+    jam_selesai = sa.Column(sa.String(12), nullable=True)
     kelas_id = sa.Column(
         sa.Integer,
         sa.ForeignKey("master_kelas.id", ondelete="CASCADE", onupdate="CASCADE"),
     )
-    kelas = rs.relationship('KelasModel', backref=backref('kelas_mengajar'))
+    kelas = rs.relationship("KelasModel", backref=backref("kelas_mengajar"))
     semester_id = sa.Column(
         sa.Integer,
         sa.ForeignKey("master_semester.id", ondelete="CASCADE", onupdate="CASCADE"),
     )
-    semester = rs.relationship('SemesterModel', backref=backref('semester_aktif'))
+    semester = rs.relationship("SemesterModel", backref=backref("semester_aktif"))
     tahun_ajaran_id = sa.Column(
         sa.Integer,
         sa.ForeignKey("master_tahun_ajaran.id", ondelete="CASCADE", onupdate="CASCADE"),
     )
-    tahun_ajaran = rs.relationship('TahunAjaranModel', backref=backref('tahun_ajaran_aktif'))
+    tahun_ajaran = rs.relationship(
+        "TahunAjaranModel", backref=backref("tahun_ajaran_aktif")
+    )
 
     def __init__(
         self,
@@ -143,8 +152,7 @@ class MengajarModel(db.Model):
         semesterId=None,
         tahunAjaranId=None,
         mapelId=None,
-        jamKe=None
-        
+        jamKe=None,
     ) -> None:
         self.kode_mengajar = kodeMengajar
         self.guru_id = guruId
@@ -158,7 +166,9 @@ class MengajarModel(db.Model):
         self.jam_ke = jamKe
 
     def __repr__(self) -> str:
-        return 'Kode Mengajar : {}, Nama Guru : {}, Mapel : {}'.format(self.kode_mengajar, self.guru.first_name, self)
+        return "Kode Mengajar : {}, Nama Guru : {}, Mapel : {}".format(
+            self.kode_mengajar, self.guru.first_name, self
+        )
 
 
 class KepsekModel(db.Model):

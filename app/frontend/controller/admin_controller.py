@@ -7,6 +7,7 @@ from flask import (
     request,
     redirect,
     send_from_directory,
+    session,
     url_for,
     render_template,
     flash,
@@ -23,12 +24,15 @@ from app.frontend.forms.form_siswa import FormAddSiswa, FormEditSiswa
 from ..forms.form_auth import *
 from ..forms.form_guru import *
 from ..lib.base_url import base_url
+from flask_login import login_required, current_user, logout_user
 import os
 import requests as req
 import io
 import xlwt
 
-admin2 = Blueprint("admin2", __name__, template_folder="../templates/", url_prefix="/admin")
+admin2 = Blueprint(
+    "admin2", __name__, template_folder="../templates/", url_prefix="/admin"
+)
 
 
 @admin2.route("/admin/<path:filename>")
@@ -38,12 +42,25 @@ def static(filename):
 
 
 @admin2.route("/")
+@login_required
 def index():
-    return render_template("admin/index_admin.html")
+    if current_user.is_authenticated:
+        current_user.firstName = session["firstName"]
+        return render_template("admin/index_admin.html")
+    else:
+        return redirect(url_for("login.index"))
+
+
+@admin2.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("login.index"))
 
 
 class PenggunaSiswa:
     @admin2.route("get-siswa")
+    @login_required
     def getSiswa():
         urlKelas = base_url + "api/v2/master/kelas/get-all"
         respKelas = req.get(urlKelas)
@@ -113,7 +130,10 @@ class PenggunaSiswa:
             files.get("images").close()
             temp_file = upload_folder + file_name
             os.remove(f"{temp_file}")
-            flash(f'File foto siswa telah berhasil di upload. Status : {response.status_code}', 'success')
+            flash(
+                f"File foto siswa telah berhasil di upload. Status : {response.status_code}",
+                "success",
+            )
             return redirect(url_for("admin2.getSiswa"))
             # return redirect(url_for("admin2.get_siswa"))
         else:
@@ -314,11 +334,17 @@ class PenggunaSiswa:
         response = req.delete(url)
         if response.status_code == 204:
             respkelas = req.put(url=baseKelas, headers=headers)
-            flash(message=f"Data siswa telah berhasil di hapus. {response.status_code}", category="info")
+            flash(
+                message=f"Data siswa telah berhasil di hapus. {response.status_code}",
+                category="info",
+            )
             return redirect(url_for("admin2.getSiswa"))
             # return redirect(url_for("admin2.get_siswa"))
         else:
-            flash(f"Ada tejadi kesalahan dalam menghapus data. Status : {response.status_code}", "error")
+            flash(
+                f"Ada tejadi kesalahan dalam menghapus data. Status : {response.status_code}",
+                "error",
+            )
             return redirect(url_for("admin2.getSiswa"))
             # return redirect(url_for("admin2.get_siswa"))
 
@@ -1291,7 +1317,7 @@ class JadwalMengajara:
     # NOTE: ================== DATA JADWAL MENGAAJAR =====================================
     @admin2.route("data-jawdwal-mengajar")
     def get_jadwal():
-        url = base_url + 'api/v2/master/jadwal-mengajar/get-all'
+        url = base_url + "api/v2/master/jadwal-mengajar/get-all"
         resp = req.get(url)
         jsonResp = resp.json()
         return render_template("admin/jadwal_mengajar/data_jadwal.html", model=jsonResp)
@@ -1305,102 +1331,104 @@ class JadwalMengajara:
         for i in respSemester.json()["data"]:
             if i["status"] == True:
                 sms = i["semester"]
-                sms_id = i['id']
+                sms_id = i["id"]
 
         urlTahunAjaran = base_url + "api/v2/master/ajaran/get-all"
         respTahunAjaran = req.get(urlTahunAjaran)
         for i in respTahunAjaran.json()["data"]:
             if i["status"] == True:
                 ta = i["th_ajaran"]
-                ta_id = i['id']
+                ta_id = i["id"]
 
         urlGuru = base_url + "api/v2/guru/get-all"
         respGuru = req.get(urlGuru)
         jsonRespGuru = respGuru.json()
         for i in jsonRespGuru:
             form.namaGuru.choices.append(
-                (i["id"], i["first_name"] + "" + i["last_name"])
+                (i["id"], i["first_name"] + " " + i["last_name"])
             )
-            
+
         urlMapel = base_url + "api/v2/master/mapel/get-all"
         respMapel = req.get(urlMapel)
-        for i in respMapel.json()['data']:
-            form.namaMapel.choices.append((i['id'], i['mapel'].title()))
-        
-        urlHari = base_url + 'api/v2/master/hari/get-all'
+        for i in respMapel.json()["data"]:
+            form.namaMapel.choices.append((i["id"], i["mapel"].title()))
+
+        urlHari = base_url + "api/v2/master/hari/get-all"
         respHari = req.get(urlHari)
-        for i in respHari.json()['data']:
-            form.hari.choices.append((i['id'], i['hari'].title()))
-            
-        urlKelas = base_url + 'api/v2/master/kelas/get-all'
+        for i in respHari.json()["data"]:
+            form.hari.choices.append((i["id"], i["hari"].title()))
+
+        urlKelas = base_url + "api/v2/master/kelas/get-all"
         respKelas = req.get(urlKelas)
-        for i in respKelas.json()['data']:
-            form.kelas.choices.append((i['id'], i['kelas']))
-        
-        urlJam = base_url + 'api/v2/master/jam/get-all'
+        for i in respKelas.json()["data"]:
+            form.kelas.choices.append((i["id"], i["kelas"]))
+
+        urlJam = base_url + "api/v2/master/jam/get-all"
         respJam = req.get(urlJam)
-        for i in respJam.json()['data']:
-            form.waktuMulai.choices.append((i['jam'], i['jam']))
-            form.waktuSelesai.choices.append((i['jam'], i['jam']))
-            
-        
+        for i in respJam.json()["data"]:
+            form.waktuMulai.choices.append((i["jam"], i["jam"]))
+            form.waktuSelesai.choices.append((i["jam"], i["jam"]))
+
         form.kode.data = kodeMengajar
         form.semester.data = sms.title()
         form.ta.data = ta_id
         form.sms.data = sms_id
         form.tahunAjaran.data = ta
-        
-        if request.method == 'POST' and form.validate_on_submit():
-            kode_mengajar = request.form.get('kode')
-            tahun_ajaran_id = request.form.get('ta')
-            semeter_id = request.form.get('sms')
-            guru_id = request.form.get('namaGuru')
-            mapel_id = request.form.get('namaMapel')
-            hari_id = request.form.get('hari')
-            kelas_id = request.form.get('kelas')
-            jam_mulai = request.form.get('waktuMulai')
-            jam_selesai = request.form.get('waktuSelesai')
-            jam_ke = request.form.get('jamKe')
 
-            url = base_url + 'api/v2/master/jadwal-mengajar/create'
+        if request.method == "POST" and form.validate_on_submit():
+            kode_mengajar = request.form.get("kode")
+            tahun_ajaran_id = request.form.get("ta")
+            semeter_id = request.form.get("sms")
+            guru_id = request.form.get("namaGuru")
+            mapel_id = request.form.get("namaMapel")
+            hari_id = request.form.get("hari")
+            kelas_id = request.form.get("kelas")
+            jam_mulai = request.form.get("waktuMulai")
+            jam_selesai = request.form.get("waktuSelesai")
+            jam_ke = request.form.get("jamKe")
+
+            url = base_url + "api/v2/master/jadwal-mengajar/create"
             payload = json.dumps(
                 {
-                    'kode_mengajar' : kode_mengajar,
-                    'tahun_ajaran_id' : tahun_ajaran_id,
-                    'semeter_id' : semeter_id,
-                    'guru_id' : guru_id,
-                    'mapel_id' : mapel_id,
-                    'hari_id' : hari_id,
-                    'kelas_id' : kelas_id,
-                    'jam_mulai' : jam_mulai,
-                    'jam_selesai' : jam_selesai,
-                    'jam_ke' : jam_ke
+                    "kode_mengajar": kode_mengajar,
+                    "tahun_ajaran_id": tahun_ajaran_id,
+                    "semeter_id": semeter_id,
+                    "guru_id": guru_id,
+                    "mapel_id": mapel_id,
+                    "hari_id": hari_id,
+                    "kelas_id": kelas_id,
+                    "jam_mulai": jam_mulai,
+                    "jam_selesai": jam_selesai,
+                    "jam_ke": jam_ke,
                 }
             )
-            headers = {
-                'Content-Type' : 'application/json'
-            }
-            
+            headers = {"Content-Type": "application/json"}
+
             resp = req.post(url=url, data=payload, headers=headers)
             msg = resp.json()
             if resp.status_code == 201:
-                flash(f'{msg["msg"]} Status : {resp.status_code}', 'success')
-                return redirect(url_for('admin2.get_jadwal'))
+                flash(f'{msg["msg"]} Status : {resp.status_code}', "success")
+                return redirect(url_for("admin2.get_jadwal"))
             else:
                 flash(f'{msg["msg"]} Status : {resp.status_code}')
-                return redirect(url_for('admin2.get_jadwal', 'error'))
-                
+                return redirect(url_for("admin2.get_jadwal", "error"))
+
         return render_template("admin/jadwal_mengajar/tambah_jadwal.html", form=form)
 
-    @admin2.route('delete-jadwal/<int:id>', methods=['GET','DELETE'])
+    @admin2.route("delete-jadwal/<int:id>", methods=["GET", "DELETE"])
     def delete_jadwal(id):
-        url = base_url + f'api/v2/master/jadwal-mengajar/get-one/{id}'
+        url = base_url + f"api/v2/master/jadwal-mengajar/get-one/{id}"
         resp = req.delete(url)
-        
+
         if resp.status_code == 204:
-            flash(f'Data Jadwal Pelajaran telah dibatalkan. Status : {resp.status_code}', 'info')
-            return redirect(url_for('admin2.get_jadwal'))
+            flash(
+                f"Data Jadwal Pelajaran telah dibatalkan. Status : {resp.status_code}",
+                "info",
+            )
+            return redirect(url_for("admin2.get_jadwal"))
         else:
-            flash(f'Gala memuat Data Jadwal Pelajaran. Status : {resp.status_code}', 'error')
-            return redirect(url_for('admin2.get_jadwal'))
-            
+            flash(
+                f"Gala memuat Data Jadwal Pelajaran. Status : {resp.status_code}",
+                "error",
+            )
+            return redirect(url_for("admin2.get_jadwal"))

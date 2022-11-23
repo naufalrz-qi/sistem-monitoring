@@ -1,14 +1,24 @@
 from flask_login import UserMixin
-from ..lib.base_url import base_url
-import requests as req
+from ..extensions import login_manager
+from flask import session
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    user = UserLogin()
+    user.id = user_id
+    return user
+
 
 class UserLogin(UserMixin):
-    # url = base_url + 'api/v2/auth/get-all'
-    # resp = req.get(url)
-    # jsonResp = resp.json()
-    # data = []
-    # for i in jsonResp:
-    #     data.append({'id', i['id']})
     id = None
+    username = None
+    firstName = None
+    lastName = None
+    gender = None
+    alamat = None
+    group = None
 
-    
+    @property
+    def is_authenticated(self):
+        return self.id

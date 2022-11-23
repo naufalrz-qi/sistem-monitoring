@@ -7,7 +7,7 @@ from .master_model import *
 from sqlalchemy.orm import backref, relationship
 
 
-class AdminDetailModel(db.Model):
+class AdminModel(db.Model):
     __tablename__ = "detail_admin"
     id = sa.Column(sa.Integer, primary_key=True)
     first_name = sa.Column(sa.String(128), nullable=False, default="")
@@ -15,6 +15,9 @@ class AdminDetailModel(db.Model):
     gender = sa.Column(sa.String(32), nullable=True)
     alamat = sa.Column(sa.String(128), nullable=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey("auth_user.id", ondelete="CASCADE"))
+    user = relationship(
+        "UserModel", backref=backref("user_admin", cascade="all, delete-orphan")
+    )
 
     def __init__(
         self, first_name=None, last_name=None, gender=None, alamat=None, user_id=None
@@ -46,7 +49,7 @@ class SiswaModel(db.Model):
         sa.ForeignKey("auth_user.id", ondelete="CASCADE", onupdate="CASCADE"),
     )
     user = relationship(
-        "UserModel", backref=backref("details", cascade="all, delete-orphan")
+        "UserModel", backref=backref("user_siswa", cascade="all, delete-orphan")
     )
     kelas_id = sa.Column(sa.Integer, sa.ForeignKey("master_kelas.id"))
 
@@ -96,8 +99,8 @@ class GuruModel(db.Model):
         sa.Integer,
         sa.ForeignKey("auth_user.id", ondelete="CASCADE", onupdate="CASCADE"),
     )
-    users = relationship(
-        "UserModel", backref=backref("details_guru", cascade="all, delete-orphan")
+    user = relationship(
+        "UserModel", backref=backref("user_guru", cascade="all, delete-orphan")
     )
 
     def __init__(

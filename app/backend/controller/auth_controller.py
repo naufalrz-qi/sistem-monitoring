@@ -17,6 +17,7 @@ from app.backend.models.user_model import TokenBlockList, UserModel
 from app.backend.extensions import db
 from app.backend.lib.status_code import *
 from werkzeug.security import generate_password_hash
+
 from ..lib.date_time import *
 
 auth = Blueprint("auth", __name__, url_prefix="/api/v2/auth")
@@ -118,6 +119,23 @@ def login():
                             "acces_token": access_token,
                             "refresh_token": refresh_token,
                         }
+                    ),
+                    HTTP_200_OK,
+                )
+            elif sql_user.group == "admin" and sql_user.is_active == "1":
+                sql_user.user_last_login = utc_makassar()
+                base_admin = BaseModel(AdminModel)
+                admin = base_admin.get_one_or_none(user_id=sql_user.id)
+                user.edit()
+                return (
+                    jsonify(
+                        id=admin.user_id,
+                        username=admin.user.username,
+                        group=admin.user.group,
+                        first_name=admin.first_name,
+                        last_name=admin.last_name,
+                        gender=admin.gender,
+                        alamat=admin.alamat,
                     ),
                     HTTP_200_OK,
                 )
@@ -297,7 +315,7 @@ def create():
         else:
             user.create()
             user_detail = BaseModel(
-                AdminDetailModel(first_name, last_name, gender, alamat, user.model.id)
+                AdminModel(first_name, last_name, gender, alamat, user.model.id)
             )
             user_detail.create()
             return (
@@ -344,7 +362,7 @@ def get_one():
             HTTP_200_OK,
         )
     elif current_user.get("group") == "admin":
-        model = BaseModel(AdminDetailModel)
+        model = BaseModel(AdminModel)
         user = model.get_one_or_none(user_id=user_id)
         return (
             jsonify(
@@ -354,6 +372,31 @@ def get_one():
                     "last_name": current_user.get("last_name"),
                     "group": current_user.get("group"),
                     "is_active": current_user.get("is_active"),
+                    "gender": user.gender,
+                }
+            ),
+            HTTP_200_OK,
+        )
+
+
+@auth.route("/get-single/<int:id>")
+def get_single(id):
+    # current_user = get_jwt_identity()
+    base = BaseModel(UserModel)
+    user = base.get_one_or_none(id=id)
+    # jjwt = get_jwt()['exp']
+    if user.group == "admin":
+        model = BaseModel(AdminModel)
+        user = model.get_one_or_none(user_id=user.id)
+        print(user.first_name)
+        return (
+            jsonify(
+                {
+                    "id": user.user_id,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "group": user.user.group,
+                    "is_active": user.user.is_active,
                     "gender": user.gender,
                 }
             ),

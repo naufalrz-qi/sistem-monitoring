@@ -13,7 +13,7 @@
 #     last_name = first_name
 # elif len(last_name) != 0:
 #     last_name = " ".join(last_name)
-    
+
 # print(first_name)
 # print(last_name)
 # # print(" ".join(last_name))
@@ -34,6 +34,14 @@
 
 # print(jsonResp)
 
-nama = 'Aura Suci Ambarala'
-get_one = nama.split(sep=' ', maxsplit=1)[1]
-print(get_one)
+# nama = 'Aura Suci Ambarala'
+# get_one = nama.split(sep=' ', maxsplit=1)[1]
+# print(get_one)
+
+data = {'username': 1}
+
+print(data.get('username'))
+
+data['nama'] = 'saya'
+
+print(data)
