@@ -4,25 +4,25 @@
 <head>
   <!-- block head -->
   {% block head %}
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Halaman | Administrator</title>
   <!-- <title>Halaman | {% block title %}{% endblock %}</title> -->
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="{{ url_for('.static', filename='plugins/fontawesome-free/css/all.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('admin2.static', filename='plugins/fontawesome-free/css/all.min.css') }}" />
   <!-- SweetAlert2 -->
   <link rel="stylesheet"
-    href="{{ url_for('.static', filename='plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+    href="{{ url_for('admin2.static', filename='plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}" />
   <!-- Toastr -->
-  <link rel="stylesheet" href="{{ url_for('.static', filename='plugins/toastr/toastr.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('admin2.static', filename='plugins/toastr/toastr.min.css') }}" />
   <!-- Theme style -->
-  <link rel="stylesheet" href="{{ url_for('.static', filename='css/adminlte.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('admin2.static', filename='css/adminlte.min.css') }}" />
   <!-- favicon -->
-  <link rel="icon" type="image/x-icon" href="{{ url_for('.static', filename='img/icon/favicon.ico') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('admin2.static', filename='img/icon/favicon.ico') }}" />
   {% endblock %}
   <!-- end block -->
 </head>
@@ -30,26 +30,29 @@
 <body class="hold-transition sidebar-mini layout-fixed">
   <!-- Site wrapper -->
   <div class="wrapper">
-
     <!-- Navbar -->
     {% include 'layouts/navbar.html' %}
+
     <!-- /.navbar -->
 
     <!-- Main Sidebar Container -->
+    {% if current_user.is_authenticated %}
+    {% if current_user.group == 'admin' %}
     {% include 'layouts/sidebar.html' %}
+    {% elif current_user.group == 'guru' %}
+    {% include 'layouts/sidebar_guru.html' %}
+    {% else %}
+    {% endif %}
+    {% endif %}
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
       <!-- Content Header (Page header) -->
-      <section class="content-header">
-      </section>
+      <section class="content-header"></section>
 
       <!-- Main content -->
       <section class="content">
-        <div class="container-fluid">
-          {% block content %}
-          {% endblock  %}
-        </div>
+        <div class="container-fluid">{% block content %} {% endblock %}</div>
       </section>
       <!-- /.content -->
     </div>
@@ -67,42 +70,38 @@
   <!-- ./wrapper -->
 
   <!-- jQuery -->
-  <script src="{{ url_for('.static', filename='plugins/jquery/jquery.min.js') }}"></script>
+  <script src="{{ url_for('admin2.static', filename='plugins/jquery/jquery.min.js') }}"></script>
   <!-- Bootstrap 4 -->
-  <script src="{{ url_for('.static', filename='plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('admin2.static', filename='plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
   <!-- SweetAlert2 -->
-  <script src="{{ url_for('.static', filename='plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+  <script src="{{ url_for('admin2.static', filename='plugins/sweetalert2/sweetalert2.min.js') }}"></script>
   <!-- Toastr -->
-  <script src="{{ url_for('.static', filename='plugins/toastr/toastr.min.js') }}"></script>
+  <script src="{{ url_for('admin2.static', filename='plugins/toastr/toastr.min.js') }}"></script>
   <!-- AdminLTE App -->
-  <script src="{{ url_for('.static', filename='js/adminlte.min.js') }}"></script>
+  <script src="{{ url_for('admin2.static', filename='js/adminlte.min.js') }}"></script>
   <!-- Moment js -->
-  <script src="{{ url_for('.static', filename='plugins/moment/moment.min.js') }}"></script>
+  <script src="{{ url_for('admin2.static', filename='plugins/moment/moment.min.js') }}"></script>
 
-  {% block js %}{% endblock js %}
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-  {% for category, message in messages %}
+  {% block js %}{% endblock js %} {% with messages =
+    get_flashed_messages(with_categories=true) %} {% if messages %} {% for
+    category, message in messages %}
   <script>
     //alert("{{message}}")
     $(function () {
       var Toast = Swal.mixin({
         toast: true,
-        position: 'top-end',
+        position: "top-end",
         showConfirmButton: false,
-        timer: 4500
+        timer: 4500,
       });
 
       Toast.fire({
-        icon: '{{category}}',
-        title: '{{message}}'
+        icon: "{{category}}",
+        title: "{{message}}",
       });
     });
   </script>
-  {% endfor %}
-  {% endif %}
-  {% endwith %}
-
+  {% endfor %} {% endif %} {% endwith %}
 </body>
 
 </html>

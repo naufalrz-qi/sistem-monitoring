@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, PasswordField, StringField, SelectField
+from wtforms import SubmitField, PasswordField, StringField, SelectField, BooleanField
 from wtforms.validators import ValidationError
 
 
@@ -30,6 +30,7 @@ class FormLogin(FlaskForm):
             ("bk", "Guru BK"),
         ],
     )
+    remember = BooleanField("Remember Me")
     submit = SubmitField("Sign In")
 
     def validate_username(self, field):

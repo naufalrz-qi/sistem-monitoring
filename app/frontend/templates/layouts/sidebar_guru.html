@@ -19,7 +19,7 @@
         <a href="#collapseExample" class="d-block">
           {% if current_user.is_authenticated %}
           <p class="mb-0 p-0">
-            {{ current_user.first_name}} {{ current_user.last_name}}
+            {{ current_user.first_name}} {{ current_user.last_ame}}
             <!-- <i class="right fas fa-angle-left"></i> -->
           </p>
           <div class="text-white-50">{{ current_user.username | upper}}</div>
@@ -34,7 +34,7 @@
         <!-- Add icons to the links using the .nav-icon class
               with font-awesome or any other icon font library -->
         <li class="nav-item">
-          <a href="{{url_for('admin2.index')}}" class="nav-link {{ 'active' if filename=='beranda' else None }}">
+          <a href="{{url_for('guru2.index')}}" class="nav-link {{ 'active' if filename=='beranda' else None }}">
             <i class="nav-icon fas fa-tachometer-alt"></i>
             <p>Beranda</p>
           </a>

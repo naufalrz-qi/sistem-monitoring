@@ -4,6 +4,7 @@ import time
 from flask import (
     Blueprint,
     Response,
+    abort,
     request,
     redirect,
     send_from_directory,
@@ -45,99 +46,112 @@ def static(filename):
 @login_required
 def index():
     if current_user.is_authenticated:
-        current_user.firstName = session["firstName"]
-        return render_template("admin/index_admin.html")
-    else:
-        return redirect(url_for("login.index"))
-
-
-@admin2.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for("login.index"))
+        if current_user.group == "admin":
+            return render_template("admin/index_admin.html")
+        else:
+            abort(404)
 
 
 class PenggunaSiswa:
     @admin2.route("get-siswa")
     @login_required
     def getSiswa():
-        urlKelas = base_url + "api/v2/master/kelas/get-all"
-        respKelas = req.get(urlKelas)
-        jsonRespKelas = respKelas.json()
+        if current_user.is_authenticated:
+            if current_user.group == "admin":
+                urlKelas = base_url + "api/v2/master/kelas/get-all"
+                respKelas = req.get(urlKelas)
+                jsonRespKelas = respKelas.json()
 
-        urlSiswa = base_url + url_for("siswa.get")
-        respSiswa = req.get(urlSiswa)
-        jsonRespSiswa = respSiswa.json()
-        return render_template(
-            "admin/siswa/get_siswa.html", kelas=jsonRespKelas, siswa=jsonRespSiswa
-        )
+                urlSiswa = base_url + url_for("siswa.get")
+                respSiswa = req.get(urlSiswa)
+                jsonRespSiswa = respSiswa.json()
+                return render_template(
+                    "admin/siswa/get_siswa.html",
+                    kelas=jsonRespKelas,
+                    siswa=jsonRespSiswa,
+                )
+            else:
+                abort(404)
 
     @admin2.route("/data-siswa")
+    @login_required
     def get_siswa():
-        url = base_url + url_for("siswa.get")
-        r = req.get(url)
-        data = r.json()
-        # NOTE: GET KELAS
-        base_kelas = request.url_root
-        url_kelas = base_kelas + url_for("master.kelas_all")
-        resp_kelas = req.get(url_kelas)
-        json_kelas = resp_kelas.json()
-        return render_template(
-            "admin/siswa/data_siswa.html",
-            model=data,
-            jsonKelas=json_kelas,
-        )
+        if current_user.is_authenticated:
+            if current_user.group == "admin":
+                url = base_url + url_for("siswa.get")
+                r = req.get(url)
+                data = r.json()
+                # NOTE: GET KELAS
+                base_kelas = request.url_root
+                url_kelas = base_kelas + url_for("master.kelas_all")
+                resp_kelas = req.get(url_kelas)
+                json_kelas = resp_kelas.json()
+                return render_template(
+                    "admin/siswa/data_siswa.html",
+                    model=data,
+                    jsonKelas=json_kelas,
+                )
+            else:
+                abort(404)
 
     @admin2.route("/generate-qc", methods=["GET", "PUT"])
+    @login_required
     def generate_qc():
-        id = request.args.get("id")
-        url = base_url + url_for("siswa.generate_qc", id=id)
-        headers = {"Content-Type": "application/json"}
-        r = req.put(url, headers=headers)
-        if r.status_code == 200:
-            flash(
-                message=f"Generate QR kode berhasil. Status : {r.status_code}",
-                category="success",
-            )
-            return redirect(url_for("admin2.getSiswa"))
-            # return redirect(url_for("admin2.get_siswa"))
-        else:
-            flash(
-                message=f"Maaf terjadi kesalahan dalam generate QR CODE. Status : {r.status_code}",
-                category="error",
-            )
-            return redirect(url_for("admin2.getSiswa"))
-            # return redirect(url_for("admin2.get_siswa"))
+        if current_user.is_authenticated:
+            if current_user.group == "admin":
+                id = request.args.get("id")
+                url = base_url + url_for("siswa.generate_qc", id=id)
+                headers = {"Content-Type": "application/json"}
+                r = req.put(url, headers=headers)
+                if r.status_code == 200:
+                    flash(
+                        message=f"Generate QR kode berhasil. Status : {r.status_code}",
+                        category="success",
+                    )
+                    return redirect(url_for("admin2.getSiswa"))
+                    # return redirect(url_for("admin2.get_siswa"))
+                else:
+                    flash(
+                        message=f"Maaf terjadi kesalahan dalam generate QR CODE. Status : {r.status_code}",
+                        category="error",
+                    )
+                    return redirect(url_for("admin2.getSiswa"))
+                    # return redirect(url_for("admin2.get_siswa"))
+            else:
+                abort(404)
 
     # NOTE:  UPLOAD FOTO
     @admin2.post("/upload-photo")
     # @admin2.route('/upload-photo', methods=['GET','PUT','POST'])
+    @login_required
     def upload_foto():
-        id = request.args.get("id")
-        url = base_url + url_for("siswa.upload_photo", id=id)
+        if current_user.is_authenticated:
+            if current_user.group == "admin":
+                id = request.args.get("id")
+                url = base_url + url_for("siswa.upload_photo", id=id)
+                file = request.files["file"]
+                file_name = secure_filename(file.filename)
+                upload_folder = os.getcwd() + "/temp/"
+                path = upload_folder + file_name
+                file.save(path)
 
-        file = request.files["file"]
-        file_name = secure_filename(file.filename)
-        upload_folder = os.getcwd() + "/temp/"
-        path = upload_folder + file_name
-        file.save(path)
+                files = {"images": open(path, "rb+")}
+                response = req.post(url, files=files)
 
-        files = {"images": open(path, "rb+")}
-        response = req.post(url, files=files)
-
-        if response.status_code == 200:
-            files.get("images").close()
-            temp_file = upload_folder + file_name
-            os.remove(f"{temp_file}")
-            flash(
-                f"File foto siswa telah berhasil di upload. Status : {response.status_code}",
-                "success",
-            )
-            return redirect(url_for("admin2.getSiswa"))
-            # return redirect(url_for("admin2.get_siswa"))
-        else:
-            return f"<p>error : {response.status_code}</p>"
+                if response.status_code == 200:
+                    files.get("images").close()
+                    temp_file = upload_folder + file_name
+                    os.remove(f"{temp_file}")
+                    flash(
+                        f"File foto siswa telah berhasil di upload. Status : {response.status_code}",
+                        "success",
+                    )
+                    return redirect(url_for("admin2.getSiswa"))
+                    # return redirect(url_for("admin2.get_siswa"))
+                else:
+                    return f"<p>error : {response.status_code}</p>"
+            else:
+                abort(404)
 
     @admin2.errorhandler(413)
     def request_entity_too_large(error):
@@ -145,208 +159,235 @@ class PenggunaSiswa:
 
     # NOTE:  TAMBAH DATA SISWA
     @admin2.route("/add-siswa", methods=["GET", "POST"])
+    @login_required
     def add_siswa():
-
         # get kelas
-        url_kelas = base_url + f"/api/v2/master/kelas/get-all"
-        get_kelas = req.get(url_kelas)
-        data = get_kelas.json()
-        kelas = [("", "..::Select::..")]
-        for _ in data["data"]:
-            kelas.append((_["id"], _["kelas"]))
+        if current_user.is_authenticated:
+            if current_user.group == "admin":
+                url_kelas = base_url + f"/api/v2/master/kelas/get-all"
+                get_kelas = req.get(url_kelas)
+                data = get_kelas.json()
+                kelas = [("", "..::Select::..")]
+                for _ in data["data"]:
+                    kelas.append((_["id"], _["kelas"]))
 
-        url = base_url + f"/api/v2/auth/create"
-        form = FormAddSiswa(request.form)
-        form.kelas.choices = kelas
-        if request.method == "POST" and form.validate_on_submit():
-            username = form.username.data
-            password = form.password.data
-            group = form.tipe.data if form.tipe.data else "siswa"
-            fullname = form.fullname.data
-            first_name = ""
-            last_name = ""
-            first_name, *last_name = fullname.split()
-            if len(last_name) == 0:
-                last_name = first_name
-            elif len(last_name) != 0:
-                last_name = " ".join(last_name)
-            gender = form.jenisKelamin.data
-            agama = form.agama.data
-            kelas = form.kelas.data
-            telp = request.form.get("telp")
+                url = base_url + f"/api/v2/auth/create"
+                form = FormAddSiswa(request.form)
+                form.kelas.choices = kelas
+                if request.method == "POST" and form.validate_on_submit():
+                    username = form.username.data
+                    password = form.password.data
+                    group = form.tipe.data if form.tipe.data else "siswa"
+                    fullname = form.fullname.data
+                    first_name = ""
+                    last_name = ""
+                    first_name, *last_name = fullname.split()
+                    if len(last_name) == 0:
+                        last_name = first_name
+                    elif len(last_name) != 0:
+                        last_name = " ".join(last_name)
+                    gender = form.jenisKelamin.data
+                    agama = form.agama.data
+                    kelas = form.kelas.data
+                    telp = request.form.get("telp")
 
-            payload = json.dumps(
-                {
-                    "username": username,
-                    "password": password,
-                    "group": group,
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "gender": gender,
-                    "agama": agama,
-                    "kelas_id": kelas,
-                    "telp": telp,
-                }
-            )
-            headers = {"Content-Type": "application/json"}
-            response = req.post(url=url, headers=headers, data=payload)
-            msg = response.json()
-            if response.status_code == 201:
-                flash(
-                    message=f"{msg['msg']}. Status : {response.status_code}",
-                    category="success",
-                )
-                return redirect(url_for("admin2.getSiswa"))
-                # return redirect(url_for("admin2.get_siswa"))
-            elif response.status_code == 409:
-                flash(
-                    message="NISN sudah yang di input, telah terdaftar",
-                    category="error",
-                )
-            else:
+                    payload = json.dumps(
+                        {
+                            "username": username,
+                            "password": password,
+                            "group": group,
+                            "first_name": first_name,
+                            "last_name": last_name,
+                            "gender": gender,
+                            "agama": agama,
+                            "kelas_id": kelas,
+                            "telp": telp,
+                        }
+                    )
+                    headers = {"Content-Type": "application/json"}
+                    response = req.post(url=url, headers=headers, data=payload)
+                    msg = response.json()
+                    if response.status_code == 201:
+                        flash(
+                            message=f"{msg['msg']}. Status : {response.status_code}",
+                            category="success",
+                        )
+                        return redirect(url_for("admin2.getSiswa"))
+                        # return redirect(url_for("admin2.get_siswa"))
+                    elif response.status_code == 409:
+                        flash(
+                            message="NISN sudah yang di input, telah terdaftar",
+                            category="error",
+                        )
+                    else:
+                        return render_template(
+                            "admin/siswa/tambah_siswa.html", form=form
+                        )
                 return render_template("admin/siswa/tambah_siswa.html", form=form)
-        return render_template("admin/siswa/tambah_siswa.html", form=form)
+            else:
+                abort(404)
 
     # NOTE:  UPDATE DATA SISWA
     @admin2.route("/update-siswa/<int:id>", methods=["GET", "POST", "PUT"])
+    @login_required
     def update_siswa(id):
-        form = FormEditSiswa()
+        if current_user.is_authenticated:
+            if current_user.group == "admin":
+                form = FormEditSiswa()
+                # GET KELAS
+                url_kelas = base_url + f"/api/v2/master/kelas/get-all"
+                get_kelas = req.get(url_kelas)
+                list_kelas = get_kelas.json()["data"]
+                choices = [("", "..:: SELECT ::..")]
+                for _ in list_kelas:
+                    # form.kelas.choices.append((_["id"], _["kelas"]))
+                    choices.append((_["id"], _["kelas"]))
+                form.kelas.choices = choices
 
-        # GET KELAS
-        url_kelas = base_url + f"/api/v2/master/kelas/get-all"
-        get_kelas = req.get(url_kelas)
-        list_kelas = get_kelas.json()["data"]
-        choices = [("", "..:: SELECT ::..")]
-        for _ in list_kelas:
-            # form.kelas.choices.append((_["id"], _["kelas"]))
-            choices.append((_["id"], _["kelas"]))
-        form.kelas.choices = choices
-        # baseModel = BaseModel(SiswaModel)
-        # getOne = baseModel.get_one_or_none(user_id=id)
-        # GET SINGLE DATA
-        url_obj = base_url + f"api/v2/student/single/{id}"
+                url_obj = base_url + f"api/v2/student/single/{id}"
 
-        resp_obj = req.get(url=url_obj)
-        json_resp = resp_obj.json()
-        kelasId = json_resp["kelas_id"]
-        form.nisn.default = json_resp["nisn"]
-        form.fullname.default = json_resp["first_name"] + " " + json_resp["last_name"]
-        form.kelas.default = next(
-            obj["id"] for obj in list_kelas if json_resp["kelas"] in obj["kelas"]
-        )
-        form.jenisKelamin.default = json_resp["gender"].lower()
-        form.tempatLahir.default = json_resp["tempat_lahir"]
-        """
-        NOTE: Convert str to datetime.date
-        buat logika jika string tgl ada maka convert ke datetime.strptime(str_date, format).date
-        jika tidak maka tetapkan string tgl default '2000-10-10' agar tidak terjadi error
-        """
-        from_date = json_resp["tgl_lahir"] if json_resp["tgl_lahir"] else "2000-10-10"
-        to_date = datetime.strptime(from_date, "%Y-%m-%d").date()
-        """"""
-        form.tanggalLahir.default = to_date if json_resp["tgl_lahir"] else None
-        form.agama.default = json_resp["agama"].lower()
-        form.alamat.default = json_resp["alamat"]
-        form.namaOrtu.default = json_resp["nama_ortu"]
-        form.telp.default = json_resp["telp"]
-        form.process()
-        """
-        Cara for and if dari umum sampai tracky
-        ## cara umum
-        # nilai = None
-        # for item in list_kelas:
-        #     if json_resp['kelas'] in item['kelas']:
-        #         nilai = item['id']
-        ## cara 1
-        # item = next((item['id'] for item in list_kelas if json_resp['kelas'] in item['kelas']), None)
-        ## cara 2
-        # item = next(item['id'] for item in list_kelas if json_resp['kelas'] in item['kelas'])    
-        """
-        if request.method == "POST":
-            nisn = request.form.get("nisn")
-            fullname = request.form.get("fullname")
-            first_name = ""
-            last_name = ""
-            first_name, *last_name = fullname.split() if fullname else "None"
-            if len(last_name) == 0:
-                last_name = first_name
-            elif len(last_name) != 0:
-                last_name = " ".join(last_name)
-            kelas = request.form.get("kelas")
-            gender = request.form.get("jenisKelamin")
-            tempat_lahir = request.form.get("tempatLahir")
-            tgl_lahir = request.form.get("tanggalLahir")
-            agama = request.form.get("agama")
-            alamat = request.form.get("alamat")
-            nama_ortu = request.form.get("namaOrtu")
-            telp = request.form.get("telp")
-            headers = {"Content-Type": "application/json"}
-            payload = json.dumps(
-                {
-                    "nisn": nisn,
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "kelas": kelas,
-                    "gender": gender,
-                    "tempat": tempat_lahir,
-                    "tgl": tgl_lahir,
-                    "agama": agama,
-                    "alamat": alamat,
-                    "nama_ortu": nama_ortu,
-                    "telp": telp,
-                }
-            )
-            response_update = req.put(url_obj, headers=headers, data=payload)
-            if response_update.status_code == 200:
-                baseKelasAfter = base_url + f"api/v2/master/kelas/update-jumlah/{kelas}"
-                updateJumlahSiswaAfter = req.put(url=baseKelasAfter, headers=headers)
-                baseKelasBefore = (
-                    base_url + f"api/v2/master/kelas/update-jumlah/{kelasId}"
+                resp_obj = req.get(url=url_obj)
+                json_resp = resp_obj.json()
+                kelasId = json_resp["kelas_id"]
+                form.nisn.default = json_resp["nisn"]
+                form.fullname.default = (
+                    json_resp["first_name"] + " " + json_resp["last_name"]
                 )
-                updateJumlahSiswaAfter = req.put(url=baseKelasBefore, headers=headers)
-                flash(f"Data dari {first_name} telah berhasil diperbaharui.", "info")
+                form.kelas.default = next(
+                    obj["id"]
+                    for obj in list_kelas
+                    if json_resp["kelas"] in obj["kelas"]
+                )
+                form.jenisKelamin.default = json_resp["gender"].lower()
+                form.tempatLahir.default = json_resp["tempat_lahir"]
+                """
+                NOTE: Convert str to datetime.date
+                buat logika jika string tgl ada maka convert ke datetime.strptime(str_date, format).date
+                jika tidak maka tetapkan string tgl default '2000-10-10' agar tidak terjadi error
+                """
+                from_date = (
+                    json_resp["tgl_lahir"] if json_resp["tgl_lahir"] else "2000-10-10"
+                )
+                to_date = datetime.strptime(from_date, "%Y-%m-%d").date()
+                """"""
+                form.tanggalLahir.default = to_date if json_resp["tgl_lahir"] else None
+                form.agama.default = json_resp["agama"].lower()
+                form.alamat.default = json_resp["alamat"]
+                form.namaOrtu.default = json_resp["nama_ortu"]
+                form.telp.default = json_resp["telp"]
+                form.process()
+                """
+                Cara for and if dari umum sampai tracky
+                ## cara umum
+                # nilai = None
+                # for item in list_kelas:
+                #     if json_resp['kelas'] in item['kelas']:
+                #         nilai = item['id']
+                ## cara 1
+                # item = next((item['id'] for item in list_kelas if json_resp['kelas'] in item['kelas']), None)
+                ## cara 2
+                # item = next(item['id'] for item in list_kelas if json_resp['kelas'] in item['kelas'])    
+                """
+                if request.method == "POST":
+                    nisn = request.form.get("nisn")
+                    fullname = request.form.get("fullname")
+                    first_name = ""
+                    last_name = ""
+                    first_name, *last_name = fullname.split() if fullname else "None"
+                    if len(last_name) == 0:
+                        last_name = first_name
+                    elif len(last_name) != 0:
+                        last_name = " ".join(last_name)
+                    kelas = request.form.get("kelas")
+                    gender = request.form.get("jenisKelamin")
+                    tempat_lahir = request.form.get("tempatLahir")
+                    tgl_lahir = request.form.get("tanggalLahir")
+                    agama = request.form.get("agama")
+                    alamat = request.form.get("alamat")
+                    nama_ortu = request.form.get("namaOrtu")
+                    telp = request.form.get("telp")
+                    headers = {"Content-Type": "application/json"}
+                    payload = json.dumps(
+                        {
+                            "nisn": nisn,
+                            "first_name": first_name,
+                            "last_name": last_name,
+                            "kelas": kelas,
+                            "gender": gender,
+                            "tempat": tempat_lahir,
+                            "tgl": tgl_lahir,
+                            "agama": agama,
+                            "alamat": alamat,
+                            "nama_ortu": nama_ortu,
+                            "telp": telp,
+                        }
+                    )
+                    response_update = req.put(url_obj, headers=headers, data=payload)
+                    if response_update.status_code == 200:
+                        baseKelasAfter = (
+                            base_url + f"api/v2/master/kelas/update-jumlah/{kelas}"
+                        )
+                        updateJumlahSiswaAfter = req.put(
+                            url=baseKelasAfter, headers=headers
+                        )
+                        baseKelasBefore = (
+                            base_url + f"api/v2/master/kelas/update-jumlah/{kelasId}"
+                        )
+                        updateJumlahSiswaAfter = req.put(
+                            url=baseKelasBefore, headers=headers
+                        )
+                        flash(
+                            f"Data dari {first_name} telah berhasil diperbaharui.",
+                            "info",
+                        )
+                        return redirect(url_for("admin2.getSiswa"))
+                        # return redirect(url_for("admin2.get_siswa"))
+                    else:
+                        flash(
+                            f"Terjadi kesalahan dalam memuat data. statu : {response_update.status_code}",
+                            "error",
+                        )
+                        return render_template(
+                            "admin/siswa/edit_siswa.html",
+                            form=form,
+                            obj=json_resp,
+                        )
+
+                return render_template(
+                    "admin/siswa/edit_siswa.html", form=form, obj=json_resp
+                )
+            else:
+                abort(404)
+
+    # NOTE:  DELETE DATA SISWA
+    @admin2.route("/delete-siswa/<int:id>", methods=["GET", "POST", "DELETE"])
+    @login_required
+    def delete_siswa(id):
+        if current_user.group == "admin":
+            url = base_url + f"/api/v2/student/single/{id}"
+            respGetSiswa = req.get(url)
+            jsonResp = respGetSiswa.json()
+            kelasId = jsonResp["kelas_id"]
+
+            baseKelas = base_url + f"api/v2/master/kelas/update-jumlah/{kelasId}"
+            headers = {"Content-Type": "application/json"}
+
+            response = req.delete(url)
+            if response.status_code == 204:
+                respkelas = req.put(url=baseKelas, headers=headers)
+                flash(
+                    message=f"Data siswa telah berhasil di hapus. {response.status_code}",
+                    category="info",
+                )
                 return redirect(url_for("admin2.getSiswa"))
                 # return redirect(url_for("admin2.get_siswa"))
             else:
                 flash(
-                    f"Terjadi kesalahan dalam memuat data. statu : {response_update.status_code}",
+                    f"Ada tejadi kesalahan dalam menghapus data. Status : {response.status_code}",
                     "error",
                 )
-                return render_template(
-                    "admin/siswa/edit_siswa.html",
-                    form=form,
-                    obj=json_resp,
-                )
-
-        return render_template("admin/siswa/edit_siswa.html", form=form, obj=json_resp)
-
-    # NOTE:  DELETE DATA SISWA
-    @admin2.route("/delete-siswa/<int:id>", methods=["GET", "POST", "DELETE"])
-    def delete_siswa(id):
-        url = base_url + f"/api/v2/student/single/{id}"
-        respGetSiswa = req.get(url)
-        jsonResp = respGetSiswa.json()
-        kelasId = jsonResp["kelas_id"]
-
-        baseKelas = base_url + f"api/v2/master/kelas/update-jumlah/{kelasId}"
-        headers = {"Content-Type": "application/json"}
-
-        response = req.delete(url)
-        if response.status_code == 204:
-            respkelas = req.put(url=baseKelas, headers=headers)
-            flash(
-                message=f"Data siswa telah berhasil di hapus. {response.status_code}",
-                category="info",
-            )
-            return redirect(url_for("admin2.getSiswa"))
-            # return redirect(url_for("admin2.get_siswa"))
-        else:
-            flash(
-                f"Ada tejadi kesalahan dalam menghapus data. Status : {response.status_code}",
-                "error",
-            )
-            return redirect(url_for("admin2.getSiswa"))
-            # return redirect(url_for("admin2.get_siswa"))
+                return redirect(url_for("admin2.getSiswa"))
+                # return redirect(url_for("admin2.get_siswa"))
 
     # eksport data
     @admin2.route("/export-siswa")

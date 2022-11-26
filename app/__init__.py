@@ -30,7 +30,13 @@ def loginManager(app):
     from app.frontend.extensions import login_manager
 
     login_manager.init_app(app)
-    login_manager.session_protection = "strong"
+    # login_manager.session_protection = "strong"
+    login_manager.login_view = "login.masuk"
+    # login_manager.blueprint_login_views = {
+    #     "guru2": "login.index",
+    #     "admin2": "login.index",
+    # }
+    login_manager.login_message_category = "warning"
 
 
 def extended_admin():

@@ -116,8 +116,12 @@ def login():
                             "id": sql_user.id,
                             "username": sql_user.username,
                             "first_name": sql_guru.first_name,
+                            "last_name": sql_guru.last_name,
+                            "gender": sql_guru.gender,
+                            "alamat": sql_guru.alamat,
                             "acces_token": access_token,
                             "refresh_token": refresh_token,
+                            "group": sql_user.group,
                         }
                     ),
                     HTTP_200_OK,
@@ -145,7 +149,12 @@ def login():
                     HTTP_400_BAD_REQUEST,
                 )
         else:
-            return jsonify({"msg": "Password not valid."}), HTTP_401_UNAUTHORIZED
+            return (
+                jsonify(
+                    {"msg": "Password not valid. Please check your password login."}
+                ),
+                HTTP_401_UNAUTHORIZED,
+            )
 
 
 @auth.route("/logout", methods=["DELETE"])

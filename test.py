@@ -38,10 +38,80 @@
 # get_one = nama.split(sep=' ', maxsplit=1)[1]
 # print(get_one)
 
-data = {'username': 1}
+# data = {'username': 1}
 
-print(data.get('username'))
+# print(data.get('username'))
 
-data['nama'] = 'saya'
+# data['nama'] = 'saya'
 
-print(data)
+# print(data)
+
+import json
+import os
+
+# data = {"a": 1, "b": 2}
+
+# # data = {"c": 3}
+# with open("data.json", "a") as f:
+#     json.dump(data, f, ensure_ascii=False, indent=4)
+
+# # with open("data.json", "r") as f:
+# #     data = json.loads(f.read())
+# #     print(data.get('a'))
+
+# with open('data.json') as f:
+#     data = json.load(f)
+#     y = {'c': 3}
+#     data['c'] = y['c']
+
+#     json.dump(data, f)
+
+
+# def write_json(data, filename="data.json"):
+#     with open(filename, "w") as f:
+#         json.dump(data, f, indent=4)
+
+
+# with open("data.json") as json_file:
+#     data = json.load(json_file)
+#     temp = data
+#     print(temp)
+#     y = {"c": 3}
+#     temp["c"] = y["c"]
+
+
+def write_json(data, filename="data.json"):
+    file = open(filename, "w+")
+    to_json = json.dump(obj=data, fp=file)
+    file.write()
+    return to_json
+
+
+# # def delete_json(data, filename='data.json'):
+# #     file = open(filename, 'w')
+# #     delete = j
+
+# filename = open("data.json")
+# data = json.load(filename)
+# temp = data
+# y = {"c": 3}
+# temp["c"] = y["c"]
+data = {"a": 1}
+write_json(data)
+
+# # with open("data.json") as json_file:
+# #     data = json.load(json_file)
+# #     temp = data
+# #     print(temp)
+# #     y = {"d": 4}
+# #     temp["d"] = y["d"]
+# with open("data.json") as file_json:
+#     data = json.load(file_json)
+#     data.clear()
+# write_json(data)
+
+# json_file = os.getcwd() + "/data.json"
+# with open(json_file) as file_json:
+#     data = json.load(dict(file_json))
+
+# print(data)
