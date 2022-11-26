@@ -457,140 +457,153 @@ class PenggunaSiswa:
 # """NOTE: DATA GURU"""
 class PenggunaGuru:
     @admin2.route("data-guru")
+    @login_required
     def get_guru():
-        url = base_url + "api/v2/guru/get-all"
-        response = req.get(url)
-        json_resp = response.json()
-
-        return render_template("admin/guru/data_guru.html", model=json_resp)
+        if current_user.group == "admin":
+            url = base_url + "api/v2/guru/get-all"
+            response = req.get(url)
+            json_resp = response.json()
+            return render_template("admin/guru/data_guru.html", model=json_resp)
+        else:
+            abort(404)
 
     @admin2.route("tambah-data", methods=["GET", "POST"])
+    @login_required
     def add_guru():
-        form = FormAddGuru(request.form)
-        base = request.root_url
+        if current_user.group == "admin":
+            form = FormAddGuru(request.form)
+            base = request.root_url
 
-        if request.method == "POST" and form.validate_on_submit():
-            username = form.username.data
-            password = form.password.data
-            group = form.tipe.data if form.tipe.data else "guru"
-            fullname = form.fullname.data
-            first_name = ""
-            last_name = ""
-            first_name, *last_name = fullname.split() if fullname else "None"
-            if len(last_name) == 0:
-                last_name = first_name
-            elif len(last_name) != 0:
-                last_name = " ".join(last_name)
-            gender = form.jenisKelamin.data
-            agama = form.agama.data
-            alamat = form.alamat.data
-            telp = form.telp.data
+            if request.method == "POST" and form.validate_on_submit():
+                username = form.username.data
+                password = form.password.data
+                group = form.tipe.data if form.tipe.data else "guru"
+                fullname = form.fullname.data
+                first_name = ""
+                last_name = ""
+                first_name, *last_name = fullname.split() if fullname else "None"
+                if len(last_name) == 0:
+                    last_name = first_name
+                elif len(last_name) != 0:
+                    last_name = " ".join(last_name)
+                gender = form.jenisKelamin.data
+                agama = form.agama.data
+                alamat = form.alamat.data
+                telp = form.telp.data
 
-            url_create = base + "api/v2/auth/create"
-            payload = json.dumps(
-                {
-                    "username": username,
-                    "password": password,
-                    "group": group,
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "gender": gender,
-                    "alamat": alamat,
-                    "agama": agama,
-                    "telp": telp,
-                }
-            )
-            headers = {"Content-Type": "application/json"}
-            response = req.post(url=url_create, data=payload, headers=headers)
-            msg = response.json().get("msg")
+                url_create = base + "api/v2/auth/create"
+                payload = json.dumps(
+                    {
+                        "username": username,
+                        "password": password,
+                        "group": group,
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "gender": gender,
+                        "alamat": alamat,
+                        "agama": agama,
+                        "telp": telp,
+                    }
+                )
+                headers = {"Content-Type": "application/json"}
+                response = req.post(url=url_create, data=payload, headers=headers)
+                msg = response.json().get("msg")
 
-            if response.status_code == 201:
-                flash(f"{msg} Status : {response.status_code}", "success")
-                return redirect(url_for("admin2.get_guru"))
-            else:
-                flash(f"{msg}. Status : {response.status_code}", "error")
-                # return redirect(url_for('admin2.get_guru'))
-                return render_template("admin/guru/tambah_guru.html", form=form)
-        return render_template("admin/guru/tambah_guru.html", form=form)
+                if response.status_code == 201:
+                    flash(f"{msg} Status : {response.status_code}", "success")
+                    return redirect(url_for("admin2.get_guru"))
+                else:
+                    flash(f"{msg}. Status : {response.status_code}", "error")
+                    # return redirect(url_for('admin2.get_guru'))
+                    return render_template("admin/guru/tambah_guru.html", form=form)
+            return render_template("admin/guru/tambah_guru.html", form=form)
+        else:
+            abort(404)
 
     @admin2.route("update-guru/<int:id>", methods=["POST", "GET"])
+    @login_required
     def update_guru(id):
-        form = FormEditGuru(request.form)
+        if current_user.group == "admin":
+            form = FormEditGuru(request.form)
+            # NOTE: GET SINGLE OBJECT
+            url_obj = base_url + f"api/v2/guru/single/{id}"
+            resp_obj = req.get(url=url_obj)
+            jsonObj = resp_obj.json()
 
-        # NOTE: GET SINGLE OBJECT
-        url_obj = base_url + f"api/v2/guru/single/{id}"
-        resp_obj = req.get(url=url_obj)
-        jsonObj = resp_obj.json()
+            # FORM DEFAULT VALUE
+            form.nip.default = jsonObj["nip"]
+            form.fullname.default = jsonObj["first_name"] + " " + jsonObj["last_name"]
+            form.jenisKelamin.default = jsonObj["gender"].lower()
+            form.agama.default = jsonObj["agama"].lower()
+            form.alamat.default = jsonObj["alamat"]
+            form.telp.default = jsonObj["telp"]
+            form.process()
 
-        # FORM DEFAULT VALUE
-        form.nip.default = jsonObj["nip"]
-        form.fullname.default = jsonObj["first_name"] + " " + jsonObj["last_name"]
-        form.jenisKelamin.default = jsonObj["gender"].lower()
-        form.agama.default = jsonObj["agama"].lower()
-        form.alamat.default = jsonObj["alamat"]
-        form.telp.default = jsonObj["telp"]
-        form.process()
+            # NOTE: REQUEST FORM TO SAVE CHANGES
+            if request.method == "POST":
+                nip = request.form.get("nip")
+                fullname = request.form.get("fullname")
+                # NOTE : SPLIT FULLNAME TO FIRST_NAME and LAST_NAME
+                first_name = ""
+                last_name = ""
+                first_name, *last_name = fullname.split() if fullname else "None"
+                if len(last_name) == 0:
+                    last_name = first_name
+                elif len(last_name) != 0:
+                    last_name = " ".join(last_name)
+                # END
+                gender = request.form.get("jenisKelamin")
+                agama = request.form.get("agama")
+                alamat = request.form.get("alamat")
+                telp = request.form.get("telp")
 
-        # NOTE: REQUEST FORM TO SAVE CHANGES
-        if request.method == "POST":
-            nip = request.form.get("nip")
-            fullname = request.form.get("fullname")
-            # NOTE : SPLIT FULLNAME TO FIRST_NAME and LAST_NAME
-            first_name = ""
-            last_name = ""
-            first_name, *last_name = fullname.split() if fullname else "None"
-            if len(last_name) == 0:
-                last_name = first_name
-            elif len(last_name) != 0:
-                last_name = " ".join(last_name)
-            # END
-            gender = request.form.get("jenisKelamin")
-            agama = request.form.get("agama")
-            alamat = request.form.get("alamat")
-            telp = request.form.get("telp")
+                # HEADERS, DATA TO RESPONSE
+                payload = json.dumps(
+                    {
+                        "nip": nip,
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "gender": gender,
+                        "agama": agama,
+                        "alamat": alamat,
+                        "telp": telp,
+                    }
+                )
+                headers = {"Content-Type": "application/json"}
 
-            # HEADERS, DATA TO RESPONSE
-            payload = json.dumps(
-                {
-                    "nip": nip,
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "gender": gender,
-                    "agama": agama,
-                    "alamat": alamat,
-                    "telp": telp,
-                }
-            )
-            headers = {"Content-Type": "application/json"}
-
-            resp_obj = req.put(url=url_obj, data=payload, headers=headers)
-            msg = resp_obj.json()
-            if resp_obj.status_code == 200:
-                flash(f"{msg['msg']} Status : {resp_obj.status_code}", "success")
-                return redirect(url_for("admin2.get_guru"))
-            else:
-                flash(f"{msg['msg']}. Status : {resp_obj.status_code}", "error")
+                resp_obj = req.put(url=url_obj, data=payload, headers=headers)
+                msg = resp_obj.json()
+                if resp_obj.status_code == 200:
+                    flash(f"{msg['msg']} Status : {resp_obj.status_code}", "success")
+                    return redirect(url_for("admin2.get_guru"))
+                else:
+                    flash(f"{msg['msg']}. Status : {resp_obj.status_code}", "error")
+                return render_template("admin/guru/edit_guru.html", form=form)
             return render_template("admin/guru/edit_guru.html", form=form)
-        return render_template("admin/guru/edit_guru.html", form=form)
+        else:
+            abort(404)
 
     @admin2.route("delete-guru/<id>", methods=["GET", "DELETE", "POST"])
+    @login_required
     def delete_guru(id):
+        if current_user.group == "admin":
+            url = base_url + f"api/v2/guru/single/{id}"
+            response = req.delete(url=url)
 
-        url = base_url + f"api/v2/guru/single/{id}"
-        response = req.delete(url=url)
-
-        if response.status_code == 204:
-            flash(
-                message=f"Data guru telah berhasil di hapus. Status : {response.status_code}",
-                category="info",
-            )
-            return redirect(url_for("admin2.get_guru"))
+            if response.status_code == 204:
+                flash(
+                    message=f"Data guru telah berhasil di hapus. Status : {response.status_code}",
+                    category="info",
+                )
+                return redirect(url_for("admin2.get_guru"))
+            else:
+                flash(
+                    message=f"Terjadi kesalahan dalama memuat data. Status : {response.status_code}",
+                    category="info",
+                )
+                return redirect(url_for("admin2.get_guru"))
         else:
-            flash(
-                message=f"Terjadi kesalahan dalama memuat data. Status : {response.status_code}",
-                category="info",
-            )
-            return redirect(url_for("admin2.get_guru"))
+            abort(404)
 
 
 class PenggunaUser:
