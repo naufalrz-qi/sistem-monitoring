@@ -135,7 +135,7 @@ def update_password():
     guru = base.get_one(user_id=15)
     if request.method == "GET":
         return render_template("guru/modul/update_password.html", form=form)
-    elif request.method == "POST":
+    elif request.method == "POST" and form.validate_on_submit():
         password = form.password.data
         pswd_hash = generate_password_hash(password)
         guru.user.password = pswd_hash
