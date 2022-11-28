@@ -47,14 +47,26 @@
             <p>Jadwal Mengajar</p>
           </a>
         </li>
-        <!---- RPORT --->
-        <li class="nav-header">Letter & Report</li>
         <li class="nav-item">
           <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-print"></i>
-            <p>Surat Pernyataan</p>
+            <i class="nav-icon fas fa-clipboard-check "></i>
+            <p>Absensi
+              <i class="right fa fa-angle-left"></i>
+            </p>
           </a>
+          <ul class="nav nav-treeview">
+            {% for x in sqlToday %}
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="far fa-circle"></i>
+                <p>{{ x.kelas}}</p>
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
         </li>
+        <!---- RPORT --->
+        <li class="nav-header">Report</li>
         <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-print"></i>
@@ -77,6 +89,8 @@
                 <i class="far nav-icon fa-circle {{'fa-dot-circle' if filename=='update_profile' else ''}}"></i>
                 <p>Profil</p>
               </a>
+            </li>
+            <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Ubah Password</p>

@@ -9,12 +9,13 @@ from flask import (
     render_template,
 )
 from flask_login import current_user, login_required
-
+from ...backend.extensions import db
 from app.backend.lib.base_model import BaseModel
 from app.backend.models.user_details_model import GuruModel
 from app.frontend.forms.form_guru import FormGetProfileGuru
 from ..models.user_login_model import *
-from ...backend.models.master_model import MengajarModel
+from ...backend.models.master_model import KelasModel, MengajarModel, HariModel
+from ...backend.lib.date_time import day_now_indo, tomorrow_, today_
 
 guru2 = Blueprint(
     "guru2",
@@ -25,12 +26,45 @@ guru2 = Blueprint(
 )
 
 
+def get_kelas_today():
+    sql = (
+        db.session.query(MengajarModel)
+        .join(HariModel)
+        .filter(MengajarModel.guru_id == current_user.id)
+        .filter(MengajarModel.hari_id == HariModel.id)
+        .filter(HariModel.hari == today_())
+        .all()
+    )
+    return sql
+
+
+def get_kelas_tomorrow():
+    sql = (
+        db.session.query(MengajarModel)
+        .join(HariModel)
+        .filter(MengajarModel.guru_id == current_user.id)
+        .filter(MengajarModel.hari_id == HariModel.id)
+        .filter(HariModel.hari == tomorrow_())
+        .all()
+    )
+    return sql
+
+
 @guru2.route("/")
 @login_required
 def index():
     if current_user.is_authenticated:
         if current_user.group == "guru":
-            return render_template("guru/index_guru.html")
+            sqlToday = get_kelas_today()
+            baseJadwal = BaseModel(MengajarModel)
+            mengajar = baseJadwal.get_all_filter_by(
+                baseJadwal.model.hari_id.asc(), guru_id=current_user.id
+            )
+            return render_template(
+                "guru/index_guru.html",
+                sqlJadwal=mengajar,
+                sqlToday=sqlToday,
+            )
         else:
             abort(404)
 
@@ -38,6 +72,10 @@ def index():
 @guru2.route("/profile")
 @login_required
 def profile_guru():
+    baseJadwal = BaseModel(MengajarModel)
+    mengajar = baseJadwal.get_all_filter_by(
+        baseJadwal.model.hari_id.asc(), guru_id=current_user.id
+    )
     base = BaseModel(GuruModel)
     guru = base.get_one(user_id=current_user.id)
     form = FormGetProfileGuru()
@@ -47,7 +85,14 @@ def profile_guru():
     form.agama.data = guru.agama
     form.alamat.data = guru.alamat.title()
     form.telp.data = guru.telp
-    return render_template("guru/modul/profile_guru.html", sql=guru, form=form)
+    sqlToday = get_kelas_today()
+    return render_template(
+        "guru/modul/profile_guru.html",
+        sql=guru,
+        form=form,
+        sqlJadwal=mengajar,
+        sqlToday=sqlToday,
+    )
 
 
 @guru2.route("/profile/<int:id>", methods=["GET", "POST"])
@@ -86,4 +131,11 @@ def update_profile(id):
 def jadwal_mengajar():
     base = BaseModel(MengajarModel)
     mengajar = base.get_all_filter_by(base.model.hari_id.asc(), guru_id=current_user.id)
-    return render_template("guru/modul/jadwal_mengajar.html", sql=mengajar)
+    sqlToday = get_kelas_today()
+    sqlTomorrow = get_kelas_tomorrow()
+    return render_template(
+        "guru/modul/jadwal_mengajar.html",
+        sqlJadwal=mengajar,
+        sqlToday=sqlToday,
+        sqlTomorrow=sqlTomorrow,
+    )
