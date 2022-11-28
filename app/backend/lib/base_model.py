@@ -15,8 +15,8 @@ class BaseModel:
         query = self.model.query.all()
         return query
 
-    def get_all_filter(self, **kwargs):
-        query = self.model.query.filter(**kwargs).all()
+    def get_all_filter_by(self, *args, **kwargs):
+        query = self.model.query.filter_by(**kwargs).order_by(*args).all()
         return query
 
     def get_one(self, **kwargs):

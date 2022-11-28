@@ -259,7 +259,7 @@ class PenggunaSiswa:
                 url_kelas = base_url + f"/api/v2/master/kelas/get-all"
                 get_kelas = req.get(url_kelas)
                 list_kelas = get_kelas.json()["data"]
-                choices = [("", "..:: SELECT ::..")]
+                choices = [("", "- Pilih -")]
                 for _ in list_kelas:
                     # form.kelas.choices.append((_["id"], _["kelas"]))
                     choices.append((_["id"], _["kelas"]))

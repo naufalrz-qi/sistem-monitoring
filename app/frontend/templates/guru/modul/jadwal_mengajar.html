@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% set filename='jadwal_guru' %}
+{% block content %}
+<div class="row">
+    {% for i in sql %}
+    <div class="col-sm-4">
+        <div class="card card-purple card-outline">
+            <div class="card-header">
+                <h5 class="card-title">{{i.mapel.mapel}}</h5>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>Nama Guru : {{i.guru.first_name}} {{i.guru.last_name}}</li>
+                    <li>Hari : {{i.hari.hari}}</li>
+                    <li>Jam Ke : {{i.jam_ke}}</li>
+                    <li>Waktu : {{i.jam_mulai}}-{{i.jam_selesai}}</li>
+                    <li>Kelas : {{i.kelas.kelas}}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

@@ -73,16 +73,13 @@ def masuk():
         resp = req.post(url=url, data=payload, headers=headers)
         jsonResp = resp.json()
         t = JsonFileObject(JSON_FILE)
-        # t.get_json()
         t.write_json(data=jsonResp)
         session.update(jsonResp)
-        print(f"session : {session}")
         if resp.status_code == 200:
             user = UserLogin()
             user.id = session.get("id")
             # user.group = session.get("group")
             login_user(user, remember=remember)
-            print(current_user)
             if "next" in session and session["next"]:
                 if is_safe_url(session["next"]):
                     return redirect(session["next"])
@@ -94,16 +91,22 @@ def masuk():
                 )
                 time.sleep(1.5)
                 return redirect(url_for("admin2.index"))
-            if current_user.group == "guru" and group == "guru":
+            elif current_user.group == "guru" and group == "guru":
                 flash(
                     f"Login berhasil. Selamat datang {str(jsonResp['group']).upper()}. Status : {resp.status_code}",
                     "success",
                 )
                 time.sleep(1.5)
                 return redirect(url_for("guru2.index"))
+            else:
+                logout_user()
+                flash(
+                    f"Login gagal. anda salah memilih level pengguna. silahkan pilih level pengguna yang sesuai.",
+                    "error",
+                )
         else:
             flash(f'{jsonResp["msg"]} Status Code : {resp.status_code}', "error")
-            return render_template("auth/login.html", form=form)
+            # return render_template("auth/login.html", form=form)
     session["next"] = request.args.get("next")
     return render_template("auth/login.html", form=form)
 

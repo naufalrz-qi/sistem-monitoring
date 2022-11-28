@@ -165,10 +165,10 @@ class MengajarModel(db.Model):
         self.mapel_id = mapelId
         self.jam_ke = jamKe
 
-    def __repr__(self) -> str:
-        return "Kode Mengajar : {}, Nama Guru : {}, Mapel : {}".format(
-            self.kode_mengajar, self.guru.first_name, self
-        )
+    # def __repr__(self) -> str:
+    #     return "Kode Mengajar : {}, Nama Guru : {}, Mapel : {}".format(
+    #         self.kode_mengajar, self.guru.first_name, self
+    #     )
 
 
 class KepsekModel(db.Model):
