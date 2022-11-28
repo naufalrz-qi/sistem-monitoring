@@ -1,5 +1,4 @@
 import json
-from msvcrt import getwch
 import time
 from flask import (
     Blueprint,
@@ -8,7 +7,6 @@ from flask import (
     request,
     redirect,
     send_from_directory,
-    session,
     url_for,
     render_template,
     flash,
@@ -25,7 +23,8 @@ from app.frontend.forms.form_siswa import FormAddSiswa, FormEditSiswa
 from ..forms.form_auth import *
 from ..forms.form_guru import *
 from ..lib.base_url import base_url
-from flask_login import login_required, current_user, logout_user
+from flask_login import login_required, current_user
+from ..models.user_login_model import *
 import os
 import requests as req
 import io
@@ -34,6 +33,8 @@ import xlwt
 admin2 = Blueprint(
     "admin2", __name__, template_folder="../templates/", url_prefix="/admin"
 )
+
+file = os.getcwd() + "/data.json"
 
 
 @admin2.route("/admin/<path:filename>")
@@ -49,11 +50,7 @@ def index():
         if current_user.group == "admin":
             return render_template("admin/index_admin.html")
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
 
 class PenggunaSiswa:
@@ -79,7 +76,7 @@ class PenggunaSiswa:
                     f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
                     "error",
                 )
-                return redirect(url_for("login.logout"))
+                abort(404)
 
     @admin2.route("/data-siswa")
     @login_required
@@ -104,7 +101,7 @@ class PenggunaSiswa:
                     f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
                     "error",
                 )
-                return redirect(url_for("login.logout"))
+                abort(404)
 
     @admin2.route("/generate-qc", methods=["GET", "PUT"])
     @login_required
@@ -134,7 +131,7 @@ class PenggunaSiswa:
                     f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
                     "error",
                 )
-                return redirect(url_for("login.logout"))
+                abort(404)
 
     # NOTE:  UPLOAD FOTO
     @admin2.post("/upload-photo")
@@ -171,7 +168,7 @@ class PenggunaSiswa:
                     f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
                     "error",
                 )
-                return redirect(url_for("login.logout"))
+                abort(404)
 
     @admin2.errorhandler(413)
     def request_entity_too_large(error):
@@ -249,7 +246,7 @@ class PenggunaSiswa:
                     f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
                     "error",
                 )
-                return redirect(url_for("login.logout"))
+                abort(404)
 
     # NOTE:  UPDATE DATA SISWA
     @admin2.route("/update-siswa/<int:id>", methods=["GET", "POST", "PUT"])
@@ -385,7 +382,7 @@ class PenggunaSiswa:
                     f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
                     "error",
                 )
-                return redirect(url_for("login.logout"))
+                abort(404)
 
     # NOTE:  DELETE DATA SISWA
     @admin2.route("/delete-siswa/<int:id>", methods=["GET", "POST", "DELETE"])
@@ -493,11 +490,7 @@ class PenggunaGuru:
             json_resp = response.json()
             return render_template("admin/guru/data_guru.html", model=json_resp)
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("tambah-data", methods=["GET", "POST"])
     @login_required
@@ -550,11 +543,7 @@ class PenggunaGuru:
                     return render_template("admin/guru/tambah_guru.html", form=form)
             return render_template("admin/guru/tambah_guru.html", form=form)
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("update-guru/<int:id>", methods=["POST", "GET"])
     @login_required
@@ -617,11 +606,7 @@ class PenggunaGuru:
                 return render_template("admin/guru/edit_guru.html", form=form)
             return render_template("admin/guru/edit_guru.html", form=form)
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("delete-guru/<id>", methods=["GET", "DELETE", "POST"])
     @login_required
@@ -643,11 +628,7 @@ class PenggunaGuru:
                 )
                 return redirect(url_for("admin2.get_guru"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
 
 class PenggunaUser:
@@ -667,11 +648,7 @@ class PenggunaUser:
                 formPassword=formUpdatePassword,
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.post("/edit-status/<int:id>")
     @login_required
@@ -730,11 +707,7 @@ class PenggunaUser:
                     )
                     return redirect(url_for("admin2.get_user"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
 
 # NOTE: MASTER DATA
@@ -751,11 +724,7 @@ class MasterData:
                 "admin/master/mapel/data_mapel.html", model=jsonRespon
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("add-mapel", methods=["POST", "GET"])
     @login_required
@@ -785,11 +754,7 @@ class MasterData:
                     )
             return render_template("admin/master/mapel/tambah_mapel.html", form=form)
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("edit-mapel/<int:id>", methods=["GET", "POST"])
     @login_required
@@ -825,11 +790,7 @@ class MasterData:
                     )
             return render_template("admin/master/mapel/edit_mapel.html", form=form)
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("delete-mapel/<int:id>", methods=["GET", "DELETE"])
     @login_required
@@ -851,11 +812,7 @@ class MasterData:
                 )
                 return redirect(url_for("admin2.get_mapel"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     # NOTE: ================== MASTER DATA SESMESTER =====================================
     @admin2.get("data-semester")
@@ -869,11 +826,7 @@ class MasterData:
                 "admin/master/semester/data_semester.html", model=jsonResp
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("add-semester", methods=["GET", "POST"])
     @login_required
@@ -909,11 +862,7 @@ class MasterData:
                 "admin/master/semester/tambah_semester.html", form=form
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("edit-semester/<int:id>", methods=["GET", "POST"])
     @login_required
@@ -950,11 +899,7 @@ class MasterData:
                 "admin/master/semester/edit_semester.html", form=form
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("delete-semester/<int:id>", methods=["DELETE", "GET"])
     @login_required
@@ -969,11 +914,7 @@ class MasterData:
                 )
                 return redirect(url_for("admin2.get_semester"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     # NOTE: ================== MASTER DATA TAHUN AJARAN =====================================
     @admin2.route("data-tahun-ajaran")
@@ -987,11 +928,7 @@ class MasterData:
                 "admin/master/tahun_ajaran/data_tahun_ajaran.html", model=jsonResp
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("add-tahun-ajaran", methods=["GET", "POST"])
     @login_required
@@ -1027,11 +964,7 @@ class MasterData:
                 "admin/master/tahun_ajaran/tambah_tahun_ajaran.html", form=form
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("edit-tahun-ajaran/<int:id>", methods=["GET", "POST"])
     @login_required
@@ -1070,11 +1003,7 @@ class MasterData:
                 "admin/master/tahun_ajaran/edit_tahun_ajaran.html", form=form
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("delete-tahun-ajaran/<int:id>", methods=["GET", "DELETE"])
     @login_required
@@ -1089,11 +1018,7 @@ class MasterData:
                 )
                 return redirect(url_for("admin2.get_ajaran"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     # NOTE: ================== MASTER DATA KELAS =====================================
     @admin2.route("data-kelas")
@@ -1105,11 +1030,7 @@ class MasterData:
             jsonResp = response.json()
             return render_template("admin/master/kelas/data_kelas.html", model=jsonResp)
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("add-kelas", methods=["GET", "POST"])
     @login_required
@@ -1141,11 +1062,7 @@ class MasterData:
                     )
             return render_template("admin/master/kelas/tambah_kelas.html", form=form)
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("edit-kelas/<int:id>", methods=["GET", "POST"])
     @login_required
@@ -1190,11 +1107,7 @@ class MasterData:
                     )
             return render_template("admin/master/kelas/edit_kelas.html", form=form)
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("delete-kelas/<int:id>", methods=["GET", "DELETE"])
     @login_required
@@ -1209,11 +1122,7 @@ class MasterData:
                 )
                 return redirect(url_for("admin2.get_kelas"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     # NOTE: ================== MASTER DATA HARI =====================================
     @admin2.route("data-hari")
@@ -1225,11 +1134,7 @@ class MasterData:
             jsonResp = response.json()
             return render_template("admin/master/hari/data_hari.html", model=jsonResp)
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("add-hari", methods=["GET", "POST"])
     @login_required
@@ -1261,11 +1166,7 @@ class MasterData:
 
             return render_template("admin/master/hari/tambah_hari.html", form=form)
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("edit-hari/<int:id>", methods=["GET", "POST"])
     def edit_hari(id):
@@ -1284,11 +1185,7 @@ class MasterData:
                 )
                 return redirect(url_for("admin2.get_hari"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     # NOTE: ================== MASTER DATA JAM =====================================
     @admin2.route("data-jam")
@@ -1304,11 +1201,7 @@ class MasterData:
                 "admin/master/jam/data_jam.html", model=jsonResp, form=form
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("tambah-jam", methods=["GET", "POST"])
     @login_required
@@ -1339,7 +1232,7 @@ class MasterData:
                     f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
                     "error",
                 )
-                return redirect(url_for("login.logout"))
+                abort(404)
 
     @admin2.route("edit-jam/<int:id>", methods=["GET", "POST"])
     @login_required
@@ -1369,7 +1262,7 @@ class MasterData:
                     f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
                     "error",
                 )
-                return redirect(url_for("login.logout"))
+                abort(404)
 
     @admin2.route("delete-jam/<int:id>", methods=["GET", "POST"])
     @login_required
@@ -1390,11 +1283,7 @@ class MasterData:
                 )
                 return redirect(url_for("admin2.get_jam"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     # NOTE: ================== MASTER DATA WALI KELAS =====================================
     @admin2.route("data-wali-kelas")
@@ -1428,11 +1317,7 @@ class MasterData:
                 jsonKelas=jsonRespKelas["data"],
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("tambah-wali", methods=["GET", "POST"])
     @login_required
@@ -1464,7 +1349,7 @@ class MasterData:
                     f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
                     "error",
                 )
-                return redirect(url_for("login.logout"))
+                abort(404)
 
     @admin2.route("update-wali/<int:id>", methods=["GET", "POST"])
     @login_required
@@ -1485,11 +1370,7 @@ class MasterData:
                     flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
                     return redirect(url_for("admin2.get_wali"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("delete-wali/<int:id>", methods=["GET", "POST"])
     @login_required
@@ -1511,11 +1392,7 @@ class MasterData:
                 )
                 return redirect(url_for("admin2.get_wali"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     # NOTE: ================== MASTER DATA GURU BK=====================================
     @admin2.route("data-guru-bk", methods=["GET"])
@@ -1540,11 +1417,7 @@ class MasterData:
                 jsonGuru=jsonRespGuru,
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("add-guru-bk", methods=["GET", "POST"])
     @login_required
@@ -1564,11 +1437,7 @@ class MasterData:
                 flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
                 return redirect(url_for("admin2.get_bk"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("edit-guru-bk/<int:id>", methods=["GET", "POST"])
     @login_required
@@ -1588,11 +1457,7 @@ class MasterData:
                 flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
                 return redirect(url_for("admin2.get_bk"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("delete-guru-bk/<int:id>", methods=["GET", "DELETE"])
     @login_required
@@ -1611,11 +1476,7 @@ class MasterData:
                 flash(f"Gagal memuat data. Status : {resp.status_code}", "error")
                 return redirect(url_for("admin2.get_bk"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     # NOTE: ================== MASTER DATA KEPALA SEKOLAH =====================================
     @admin2.route("data-kepsek", methods=["GET"])
@@ -1648,11 +1509,7 @@ class MasterData:
                 status=status,
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("add-kepsek", methods=["GET", "POST"])
     @login_required
@@ -1672,11 +1529,7 @@ class MasterData:
                 flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
                 return redirect(url_for("admin2.get_kepsek"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("edit-kepsek/<int:id>", methods=["GET", "POST"])
     @login_required
@@ -1698,11 +1551,7 @@ class MasterData:
                 flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
                 return redirect(url_for("admin2.get_kepsek"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("delete-kepsek/<int:id>", methods=["GET", "DELETE"])
     @login_required
@@ -1721,11 +1570,7 @@ class MasterData:
                 flash(f"Gagal memuat data. Status : {resp.status_code}", "error")
                 return redirect(url_for("admin2.get_kepsek"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
 
 class JadwalMengajara:
@@ -1741,11 +1586,7 @@ class JadwalMengajara:
                 "admin/jadwal_mengajar/data_jadwal.html", model=jsonResp
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("tambah-jadwal-mengajar", methods=["GET", "POST"])
     @login_required
@@ -1844,11 +1685,7 @@ class JadwalMengajara:
                 "admin/jadwal_mengajar/tambah_jadwal.html", form=form
             )
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)
 
     @admin2.route("delete-jadwal/<int:id>", methods=["GET", "DELETE"])
     @login_required
@@ -1870,8 +1707,4 @@ class JadwalMengajara:
                 )
                 return redirect(url_for("admin2.get_jadwal"))
         else:
-            flash(
-                f"Hak akses anda telah dicabut/berakhir. Silahkan login kembali",
-                "error",
-            )
-            return redirect(url_for("login.logout"))
+            abort(404)

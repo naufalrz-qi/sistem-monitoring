@@ -6,7 +6,14 @@
   {% block head %}
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Halaman | Administrator</title>
+  <title>Halaman | {% if current_user.is_authenticated %}
+    {% if current_user.group == 'admin' %}
+    Admin
+    {% elif current_user.group == 'guru'  %}
+    Guru
+    {% endif %}
+    {% endif %} </title>
+
   <!-- <title>Halaman | {% block title %}{% endblock %}</title> -->
 
   <!-- Google Font: Source Sans Pro -->
@@ -37,9 +44,9 @@
 
     <!-- Main Sidebar Container -->
     {% if current_user.is_authenticated %}
-    {% if current_user.group == 'admin' %}
+    {% if session.group == 'admin' %}
     {% include 'layouts/sidebar.html' %}
-    {% elif current_user.group == 'guru' %}
+    {% elif session.group == 'guru' %}
     {% include 'layouts/sidebar_guru.html' %}
     {% else %}
     {% endif %}

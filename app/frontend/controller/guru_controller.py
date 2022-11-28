@@ -9,6 +9,7 @@ from flask import (
     render_template,
 )
 from flask_login import current_user, login_required
+from ..models.user_login_model import *
 
 guru2 = Blueprint("guru2", __name__, url_prefix="/guru-site")
 
@@ -16,7 +17,6 @@ guru2 = Blueprint("guru2", __name__, url_prefix="/guru-site")
 @guru2.route("/")
 @login_required
 def index():
-    # if session["group"] == "guru":
     if current_user.is_authenticated:
         if current_user.group == "guru":
             return render_template("guru/index_guru.html")

@@ -37,17 +37,15 @@ def is_safe_url(target):
 
 @login.get("/")
 def index():
-    t = JsonFileObject(JSON_FILE)
-    t.clear_json()
     return redirect(url_for("login.masuk"))
 
 
 # def index():
 #     form = FormLogin(request.form)
-#     if current_user.is_authenticated:
-#         if current_user.group == "admin":
+#     if session['is_au']thenticated:
+#         if session['group'] == "admin":
 #             return redirect(url_for("admin2.index"))
-#         if current_user.group == "guru":
+#         if session['group'] == "guru":
 #             return redirect(url_for("guru2.index"))
 #     # next = get_redirect_target()
 #     session["next"] = request.args.get("next")
@@ -57,7 +55,11 @@ def index():
 @login.route("sign-in", methods=["GET", "POST"])
 def masuk():
     if current_user.is_authenticated:
-        return redirect(url_for("admin2.index"))
+        if current_user.group == "admin":
+            return redirect(url_for("admin2.index"))
+        elif current_user.group == "guru":
+            return redirect(url_for("guru2.index"))
+
     url = base_url + "api/v2/auth/login"
     form = FormLogin(request.form)
     if request.method == "POST" and form.validate_on_submit():
@@ -70,28 +72,34 @@ def masuk():
         headers = {"Content-Type": "application/json"}
         resp = req.post(url=url, data=payload, headers=headers)
         jsonResp = resp.json()
-        print(jsonResp)
         t = JsonFileObject(JSON_FILE)
+        # t.get_json()
         t.write_json(data=jsonResp)
+        session.update(jsonResp)
+        print(f"session : {session}")
         if resp.status_code == 200:
             user = UserLogin()
-            user.username = username
+            user.id = session.get("id")
+            # user.group = session.get("group")
             login_user(user, remember=remember)
+            print(current_user)
             if "next" in session and session["next"]:
                 if is_safe_url(session["next"]):
                     return redirect(session["next"])
+
             if current_user.group == "admin" and group == "admin":
-                print(current_user)
                 flash(
                     f"Login berhasil. Selamat datang {str(jsonResp['group']).upper()}. Status : {resp.status_code}",
                     "success",
                 )
+                time.sleep(1.5)
                 return redirect(url_for("admin2.index"))
-            elif current_user.group == "guru" and group == "guru":
+            if current_user.group == "guru" and group == "guru":
                 flash(
                     f"Login berhasil. Selamat datang {str(jsonResp['group']).upper()}. Status : {resp.status_code}",
                     "success",
                 )
+                time.sleep(1.5)
                 return redirect(url_for("guru2.index"))
         else:
             flash(f'{jsonResp["msg"]} Status Code : {resp.status_code}', "error")
@@ -103,14 +111,14 @@ def masuk():
 #         if "next" in session and session["next"]:
 #             if is_safe_url(session["next"]):
 #                 return redirect(session["next"])
-#         if current_user.group == "admin" and group == "admin":
+#         if session['group'] == "admin" and group == "admin":
 #             flash(
 #                 f"Login berhasil. Selamat datang {str(jsonResp['group']).upper()}. Status : {resp.status_code}",
 #                 "success",
 #             )
 #             return redirect(url_for("admin2.index"))
 #             # return redirect_back("admin2.index")
-#         elif current_user.group == "guru" and group == "guru":
+#         elif session['group'] == "guru" and group == "guru":
 #             flash(
 #                 f"Login berhasil. Selamat datang {str(jsonResp['group']).upper()}. Status : {resp.status_code}",
 #                 "success",
@@ -127,6 +135,7 @@ def masuk():
 @login.route("sign-out")
 @login_required
 def logout():
+    session.clear()
     logout_user()
     t = JsonFileObject(JSON_FILE)
     t.clear_json()

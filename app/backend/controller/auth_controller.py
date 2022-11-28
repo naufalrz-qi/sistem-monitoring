@@ -43,6 +43,7 @@ def login():
     else:
         chk_pswd = UserModel.check_pswd(sql_user.password, password)
         if chk_pswd:
+            """NOTE: LOGIN SISWA"""
             if sql_user.group == "siswa" and sql_user.is_active == "1":
                 base_siswa = BaseModel(SiswaModel)
                 sql_siswa = base_siswa.get_one_or_none(user_id=sql_user.id)
@@ -94,7 +95,7 @@ def login():
                     ),
                     HTTP_200_OK,
                 )
-
+            # NOTE : LOGIN GURU
             elif sql_user.group == "guru" and sql_user.is_active == "1":
                 sql_user.user_last_login = utc_makassar()
                 base_guru = BaseModel(GuruModel)
@@ -122,6 +123,7 @@ def login():
                             "acces_token": access_token,
                             "refresh_token": refresh_token,
                             "group": sql_user.group,
+                            "is_active": True if sql_user.is_active == "1" else False,
                         }
                     ),
                     HTTP_200_OK,
@@ -140,6 +142,7 @@ def login():
                         last_name=admin.last_name,
                         gender=admin.gender,
                         alamat=admin.alamat,
+                        is_active=True if sql_user.is_active == "1" else False,
                     ),
                     HTTP_200_OK,
                 )

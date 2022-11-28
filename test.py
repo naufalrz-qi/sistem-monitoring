@@ -80,24 +80,24 @@ import os
 #     temp["c"] = y["c"]
 
 
-def write_json(data, filename="data.json"):
-    file = open(filename, "w+")
-    to_json = json.dump(obj=data, fp=file)
-    file.write()
-    return to_json
+# def write_json(data, filename="data.json"):
+#     file = open(filename, "w+")
+#     to_json = json.dump(obj=data, fp=file)
+#     file.write()
+#     return to_json
 
 
-# # def delete_json(data, filename='data.json'):
-# #     file = open(filename, 'w')
-# #     delete = j
+# # # def delete_json(data, filename='data.json'):
+# # #     file = open(filename, 'w')
+# # #     delete = j
 
-# filename = open("data.json")
-# data = json.load(filename)
-# temp = data
-# y = {"c": 3}
-# temp["c"] = y["c"]
-data = {"a": 1}
-write_json(data)
+# # filename = open("data.json")
+# # data = json.load(filename)
+# # temp = data
+# # y = {"c": 3}
+# # temp["c"] = y["c"]
+# data = {"a": 1}
+# write_json(data)
 
 # # with open("data.json") as json_file:
 # #     data = json.load(json_file)
@@ -115,3 +115,8 @@ write_json(data)
 #     data = json.load(dict(file_json))
 
 # print(data)
+root = os.path.realpath(os.path.dirname(__file__))
+print(os.path.join(root, "data.json"))
+data = os.path.join(root, "data.json")
+f = open(data)
+print(f.read())

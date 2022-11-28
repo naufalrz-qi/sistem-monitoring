@@ -1,4 +1,5 @@
-import json
+# import json
+from flask import json
 
 
 class JsonFileObject:
@@ -8,11 +9,13 @@ class JsonFileObject:
     def write_json(self, data):
         f = open(self.filename, "w+")
         toJsonFile = json.dump(data, f)
+        f.close()
         return toJsonFile
 
     def get_json(self):
-        f = open(self.filename)
+        f = open(self.filename, "r+")
         fromObject = json.load(f)
+        f.close()
         return fromObject
 
     def clear_json(self):
