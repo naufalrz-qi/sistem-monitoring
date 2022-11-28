@@ -12,10 +12,11 @@ from flask_login import current_user, login_required
 from ...backend.extensions import db
 from app.backend.lib.base_model import BaseModel
 from app.backend.models.user_details_model import GuruModel
-from app.frontend.forms.form_guru import FormGetProfileGuru
+from app.frontend.forms.form_guru import FormGetProfileGuru, FormUpdatePassword
 from ..models.user_login_model import *
 from ...backend.models.master_model import KelasModel, MengajarModel, HariModel
 from ...backend.lib.date_time import day_now_indo, tomorrow_, today_
+from werkzeug.security import generate_password_hash
 
 guru2 = Blueprint(
     "guru2",
@@ -124,6 +125,26 @@ def update_profile(id):
     base.edit()
     flash(f"Data profil anda terlah diperbaharui.", "info")
     return redirect(url_for("guru2.profile_guru"))
+
+
+@guru2.route("update-password", methods=["GET", "POST"])
+# @login_required
+def update_password():
+    form = FormUpdatePassword()
+    base = BaseModel(GuruModel)
+    guru = base.get_one(user_id=15)
+    if request.method == "GET":
+        return render_template("guru/modul/update_password.html", form=form)
+    elif request.method == "POST":
+        password = form.password.data
+        pswd_hash = generate_password_hash(password)
+        guru.user.password = pswd_hash
+        base.edit()
+        flash(f"Password akun anda telah berhasil di perbaharui", "info")
+
+        return redirect(url_for("guru2.index"))
+    else:
+        return render_template("guru/modul/update_password.html", form=form)
 
 
 @guru2.route("jadwal-mengajar")

@@ -106,3 +106,8 @@ class FormGetProfileGuru(FlaskForm):
     submit = SubmitField("Submit Data")
     submit2 = SubmitField("Ubah Data")
     cancel = SubmitField("Cancel")
+
+
+class FormUpdatePassword(FlaskForm):
+    password = PasswordField("Password Baru")
+    submit = SubmitField("Ganti Password")

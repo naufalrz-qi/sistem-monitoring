@@ -12,6 +12,7 @@ class Config(object):
 
     # SECRET KEY
     SECRET_KEY = str(os.getenv("SECRET_KEY"))
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=10)
 
     # DATABASE ENGINE WITH SQLALCHEMY
     ENGINE = str(os.getenv("ENGINE"))
