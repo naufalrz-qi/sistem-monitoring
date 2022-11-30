@@ -115,7 +115,7 @@ class FormUpdatePassword(FlaskForm):
     def validate_password(self, field):
         if field.data == "":
             raise ValidationError("** Password tidak boleh kosong.!")
-        elif len(field.data) <= 6:
+        if len(field.data) <= 6:
             raise ValidationError(
                 "** Panjang karakter password minimal 6 digit atau karakter.!"
             )

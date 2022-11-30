@@ -115,8 +115,19 @@ import os
 #     data = json.load(dict(file_json))
 
 # print(data)
-root = os.path.realpath(os.path.dirname(__file__))
-print(os.path.join(root, "data.json"))
-data = os.path.join(root, "data.json")
-f = open(data)
-print(f.read())
+# root = os.path.realpath(os.path.dirname(__file__))
+# print(os.path.join(root, "data.json"))
+# data = os.path.join(root, "data.json")
+# f = open(data)
+# print(f.read())
+
+# n = 1
+# while n <= 5:
+#     print(n)
+#     n += 1
+
+for n in range(1, 5 + 1):
+    siswa = f"sisa{n}"
+    sisa = f"u{n}"
+    print(siswa)
+    print(sisa)

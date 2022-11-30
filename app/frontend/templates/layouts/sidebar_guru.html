@@ -47,8 +47,8 @@
             <p>Jadwal Mengajar</p>
           </a>
         </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link">
+        <li class="nav-item {{'menu-open' if filename=='absen' else None}}">
+          <a href="#" class="nav-link {{'active' if filename=='absen' else None}}">
             <i class="nav-icon fas fa-clipboard-check "></i>
             <p>Absensi
               <i class="right fa fa-angle-left"></i>
@@ -57,8 +57,9 @@
           <ul class="nav nav-treeview">
             {% for x in sqlToday %}
             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle"></i>
+              <a href="{{url_for('guru2.absensi', kelas_id=x.kelas_id)}}"
+                class="nav-link {{'active' if filename=='absen' else None}}">
+                <i class="far fa-circle {{'fa-dot-circle' if filename=='absen' else None}}"></i>
                 <p>{{ x.kelas}}</p>
               </a>
             </li>
@@ -91,7 +92,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ url_for('guru2.update_password') }}"
+              <a href="{{ url_for('guru2.update_pswd') }}"
                 class="nav-link {{'active' if filename=='password' else None}}">
                 <i class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='password' else None}}"></i>
                 <p>Ubah Password</p>

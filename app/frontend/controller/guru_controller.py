@@ -7,16 +7,20 @@ from flask import (
     flash,
     session,
     render_template,
+    escape,
 )
 from flask_login import current_user, login_required
+from app.frontend.forms.form_absen import AbsensiForm
 from ...backend.extensions import db
 from app.backend.lib.base_model import BaseModel
-from app.backend.models.user_details_model import GuruModel
+from app.backend.models.user_details_model import GuruModel, SiswaModel
 from app.frontend.forms.form_guru import FormGetProfileGuru, FormUpdatePassword
 from ..models.user_login_model import *
 from ...backend.models.master_model import KelasModel, MengajarModel, HariModel
-from ...backend.lib.date_time import day_now_indo, tomorrow_, today_
-from werkzeug.security import generate_password_hash
+from ...backend.lib.date_time import tomorrow_, today_
+from werkzeug.security import generate_password_hash, check_password_hash
+from ...backend.models.data_model import AbsensiModel
+from datetime import datetime
 
 guru2 = Blueprint(
     "guru2",
@@ -25,6 +29,8 @@ guru2 = Blueprint(
     static_folder="../static/",
     template_folder="../templates/",
 )
+
+day = lambda sql: sql
 
 
 def get_kelas_today():
@@ -56,7 +62,20 @@ def get_kelas_tomorrow():
 def index():
     if current_user.is_authenticated:
         if current_user.group == "guru":
-            sqlToday = get_kelas_today()
+            """With general function"""
+            # sqlToday = get_kelas_today()
+
+            """get With Lambda function"""
+            sqlToday = day(
+                sql=(
+                    db.session.query(MengajarModel)
+                    .join(HariModel)
+                    .filter(MengajarModel.guru_id == current_user.id)
+                    .filter(MengajarModel.hari_id == HariModel.id)
+                    .filter(HariModel.hari == today_())
+                    .all()
+                )
+            )
             baseJadwal = BaseModel(MengajarModel)
             mengajar = baseJadwal.get_all_filter_by(
                 baseJadwal.model.hari_id.asc(), guru_id=current_user.id
@@ -88,7 +107,7 @@ def profile_guru():
     form.telp.data = guru.telp
     sqlToday = get_kelas_today()
     return render_template(
-        "guru/modul/profile_guru.html",
+        "guru/modul/akun/profile_guru.html",
         sql=guru,
         form=form,
         sqlJadwal=mengajar,
@@ -127,24 +146,28 @@ def update_profile(id):
     return redirect(url_for("guru2.profile_guru"))
 
 
-@guru2.route("update-password", methods=["GET", "POST"])
-# @login_required
-def update_password():
-    form = FormUpdatePassword()
+@guru2.route("update-password", methods=["POST", "GET", "PUT"])
+@login_required
+def update_pswd():
     base = BaseModel(GuruModel)
-    guru = base.get_one(user_id=15)
-    if request.method == "GET":
-        return render_template("guru/modul/update_password.html", form=form)
-    elif request.method == "POST" and form.validate_on_submit():
-        password = form.password.data
-        pswd_hash = generate_password_hash(password)
-        guru.user.password = pswd_hash
-        base.edit()
-        flash(f"Password akun anda telah berhasil di perbaharui", "info")
+    guru = base.get_one(user_id=current_user.id)
+    form = FormUpdatePassword()
+    if form.validate_on_submit() and request.method == "POST":
+        password = request.form.get("password")
+        check_pswd = check_password_hash(guru.user.password, password)
+        if check_pswd:
+            flash(
+                f"Pastikan password baru anda tidak boleh sama dengan password sebelumnya.!",
+                "error",
+            )
+        else:
+            pswd_hash = generate_password_hash(password)
+            guru.user.password = pswd_hash
+            base.edit()
+            flash(f"Password akun anda telah berhasil di perbaharui.!", "info")
 
-        return redirect(url_for("guru2.index"))
-    else:
-        return render_template("guru/modul/update_password.html", form=form)
+            return redirect(url_for("guru2.index"))
+    return render_template("guru/modul/akun/update_password.html", form=form)
 
 
 @guru2.route("jadwal-mengajar")
@@ -152,11 +175,122 @@ def update_password():
 def jadwal_mengajar():
     base = BaseModel(MengajarModel)
     mengajar = base.get_all_filter_by(base.model.hari_id.asc(), guru_id=current_user.id)
-    sqlToday = get_kelas_today()
-    sqlTomorrow = get_kelas_tomorrow()
+    """GET WITH GENERAL FUNCTION"""
+    # sqlToday = get_kelas_today()
+    # sqlTomorrow = get_kelas_tomorrow()
+
+    """GET WITH LAMBDA FUNCTION"""
+    sqlToday = day(
+        sql=(
+            db.session.query(MengajarModel)
+            .join(HariModel)
+            .filter(MengajarModel.guru_id == current_user.id)
+            .filter(MengajarModel.hari_id == HariModel.id)
+            .filter(HariModel.hari == today_())
+            .all()
+        )
+    )
+    sqlTomorrow = day(
+        sql=(
+            db.session.query(MengajarModel)
+            .join(HariModel)
+            .filter(MengajarModel.guru_id == current_user.id)
+            .filter(MengajarModel.hari_id == HariModel.id)
+            .filter(HariModel.hari == tomorrow_())
+            .all()
+        )
+    )
+
     return render_template(
-        "guru/modul/jadwal_mengajar.html",
+        "guru/modul/jadwal_mengajar/jadwal_mengajar.html",
         sqlJadwal=mengajar,
         sqlToday=sqlToday,
         sqlTomorrow=sqlTomorrow,
+    )
+
+
+@guru2.route("/absens-pelajaran/<int:kelas_id>", methods=["GET", "POST"])
+def absensi(kelas_id):
+    form = AbsensiForm()
+    base_siswa = BaseModel(SiswaModel)
+    siswa = base_siswa.get_all_filter_by(kelas_id=kelas_id)
+    sqlToday = day(
+        sql=(
+            db.session.query(MengajarModel)
+            .join(HariModel)
+            .filter(MengajarModel.guru_id == current_user.id)
+            .filter(MengajarModel.hari_id == HariModel.id)
+            .filter(HariModel.hari == today_())
+            .all()
+        )
+    )
+    data = {}
+    for i in siswa:
+        data["kelas"] = i.kelas.kelas
+
+    for i in sqlToday:
+        data["mengajar_id"] = i.id
+        data["mapel"] = i.mapel.mapel
+    sqlCountPertemuan = day(
+        sql=db.session.query(AbsensiModel)
+        .filter(AbsensiModel.mengajar_id == data["mengajar_id"])
+        .group_by(AbsensiModel.pertemuan_ke)
+        .order_by(AbsensiModel.pertemuan_ke.desc())
+        .limit(1)
+        .first()
+    )
+    # print(sqlCountPertemuan.pertemuan_ke)
+    date = datetime.date(datetime.today())
+
+    if sqlCountPertemuan is not None:
+        data["pertemuan"] = int(sqlCountPertemuan.pertemuan_ke) + 1
+
+    else:
+        data["pertemuan"] = 1
+
+    if request.method == "POST":
+
+        for n in range(1, len(siswa) + 1):
+            siswa_id = request.form.get(f"userId-{n}")
+            mengajar_id = request.form.get(f"mengajarId")
+            tgl_absen = request.form["today"]
+            ket = request.form.get(f"ket-{n}")
+            pertemuan_ke = request.form["pertemuan"]
+            # print(siswa_id)
+            # print(mengajar_id)
+            # print(ket)
+            sqlPertemuan = day(
+                sql=db.session.query(AbsensiModel)
+                .filter(AbsensiModel.mengajar_id == mengajar_id)
+                .filter(AbsensiModel.tgl_absen == datetime.date(datetime.today()))
+                .filter(AbsensiModel.siswa_id == siswa_id)
+                .count()
+            )
+            if sqlPertemuan > 0:
+                flash("Absen hari in telah di input", "error")
+            else:
+                base_absesn = BaseModel(
+                    AbsensiModel(
+                        mengajar_id=mengajar_id,
+                        siswa_id=siswa_id,
+                        tgl_absen=tgl_absen,
+                        ket=ket,
+                        pertemuan=pertemuan_ke,
+                    )
+                )
+                base_absesn.create()
+
+                flash(
+                    f"Kelas : {data.get('kelas')} telah selesai melaukan absen kehadiran. untuk mengubah kehadiran",
+                    "success",
+                )
+        # return redirect(url_for("guru2.index"))
+
+    return render_template(
+        "guru/modul/absen/absensi.html",
+        model=siswa,
+        sqlToday=sqlToday,
+        data=data,
+        form=form,
+        today=date,
     )
