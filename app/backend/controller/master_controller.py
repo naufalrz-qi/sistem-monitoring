@@ -710,17 +710,17 @@ class JadwalMengajar:
     @master.route("jadwal-mengajar/create", endpoint="create-jadwal", methods=["POST"])
     def create():
         # kodeMengajar = "MPL-" + str(time.time()).rsplit(".", 1)[1]
-        kodeMengajar = request.json.get('kode_mengajar')
+        kodeMengajar = request.json.get("kode_mengajar")
         tahunAjaranId = request.json.get("tahun_ajaran_id")
         semesterId = request.json.get("semeter_id")
         guruId = request.json.get("guru_id")
-        mapel_id = request.json.get('mapel_id')
+        mapel_id = request.json.get("mapel_id")
         hariId = request.json.get("hari_id")
         kelasId = request.json.get("kelas_id")
         jamMulai = request.json.get("jam_mulai")
         jamSelesai = request.json.get("jam_selesai")
         jamKe = request.json.get("jam_ke")
-        
+
         base = BaseModel(
             MengajarModel(
                 kodeMengajar=kodeMengajar,
@@ -732,7 +732,7 @@ class JadwalMengajar:
                 semesterId=semesterId,
                 tahunAjaranId=tahunAjaranId,
                 mapelId=mapel_id,
-                jamKe=jamKe
+                jamKe=jamKe,
             )
         )
 
@@ -787,21 +787,29 @@ class JadwalMengajar:
     def get_one(id):
         base = BaseModel(MengajarModel)
         model = base.get_one(id=id)
-        
+
         if not model:
-            return jsonify(msg=f'Data yang maksud tidak ditemukan/belum ada.'), HTTP_404_NOT_FOUND
+            return (
+                jsonify(msg=f"Data yang maksud tidak ditemukan/belum ada."),
+                HTTP_404_NOT_FOUND,
+            )
 
         if request.method == "GET":
             return (
                 jsonify(
                     id=model.id,
+                    kode_mengajar=model.kode_mengajar,
+                    guru_id=model.guru_id,
                     first_name=model.guru.first_name,
                     last_name=model.guru.last_name,
                     mapel=model.mapel.mapel,
+                    mapel_id=model.mapel_id,
                     jam_ke=model.jam_ke,
+                    hari_id=model.hari_id,
                     hari=model.hari.hari,
                     jam_mulai=model.jam_mulai,
                     jam_selesai=model.jam_selesai,
+                    kelas_id=model.kelas_id,
                     kelas=model.kelas.kelas,
                     semester=model.semester.semester,
                     tahun_ajaran=model.tahun_ajaran.th_ajaran,
@@ -812,20 +820,23 @@ class JadwalMengajar:
         elif request.method == "PUT":
             guruId = request.json.get("guru_id")
             hariId = request.json.get("hari_id")
+            mapelId = request.json.get("mapel_id")
             jamMulai = request.json.get("jam_mulai")
             jamSelesai = request.json.get("jam_selesai")
             kelasId = request.json.get("kelas_id")
-            semesterId = request.json.get("semeter_id")
-            tahunAjaranId = request.json.get("tahun_ajaran_id")
+            # semesterId = request.json.get("semeter_id")
+            # tahunAjaranId = request.json.get("tahun_ajaran_id")
+            jamKe = request.json.get("jam_ke")
 
             model.guru_id = guruId
+            model.mapel_id = mapelId
             model.hari_id = hariId
             model.jam_mulai = jamMulai
             model.jam_selesai = jamSelesai
             model.kelas_id = kelasId
-            model.semester_id = semesterId
-            model.tahun_ajaran_id = tahunAjaranId
-
+            # model.semester_id = semesterId
+            # model.tahun_ajaran_id = tahunAjaranId
+            model.jam_ke = jamKe
             base.edit()
 
             return (
@@ -834,7 +845,7 @@ class JadwalMengajar:
                 ),
                 HTTP_200_OK,
             )
-        
-        elif request.method == 'DELETE':
+
+        elif request.method == "DELETE":
             base.delete(model)
-            return jsonify(msg='Data has been deleted.'),HTTP_204_NO_CONTENT
+            return jsonify(msg="Data has been deleted."), HTTP_204_NO_CONTENT

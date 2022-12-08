@@ -55,9 +55,13 @@
           <td>{{_.kelas }}</td>
           <td>{{_.tahun_ajaran }}/{{_.semester | title}}</td>
           <td>
+            <a href="{{ url_for('admin2.edit_jadwal', id=_.id) }}" class="btn btn-warning btn-flat btn-xs">
+              <i class="fa fa-edit"></i>
+              Edit
+            </a>
             <a href="{{ url_for('admin2.delete_jadwal', id=_.id)}}" class="btn btn-danger btn-flat btn-xs">
               <i class="fas fa-times"></i>
-               Batal
+              Batal
             </a>
           </td>
         </tr>

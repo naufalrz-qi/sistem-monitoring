@@ -126,8 +126,43 @@ import os
 #     print(n)
 #     n += 1
 
-for n in range(1, 5 + 1):
-    siswa = f"sisa{n}"
-    sisa = f"u{n}"
-    print(siswa)
-    print(sisa)
+# for n in range(1, 5 + 1):
+#     siswa = f"sisa{n}"
+#     sisa = f"u{n}"
+#     print(siswa)
+#     print(sisa)
+
+# from app.backend.lib.date_time import today_
+# import time
+# import calendar
+import datetime
+
+# # print(today_())
+
+# # time = time.localtime()
+
+# # print(time.tm_wday)
+
+# # call = calendar
+# # print(call.calendar(2022, 3))
+
+# dt = datetime.datetime.date(datetime.datetime.today())
+# week = datetime.datetime.today().weekday()
+# print(dt)
+# print(week)
+
+from math import ceil
+
+
+def week_of_month(dt):
+    """Returns the week of the month for the specified date."""
+
+    first_day = dt.replace(day=1)
+
+    dom = dt.day
+    adjusted_dom = dom + first_day.weekday()
+
+    return int(ceil(adjusted_dom / 7.0))
+
+
+print(week_of_month(datetime.datetime.date(datetime.datetime.today())))

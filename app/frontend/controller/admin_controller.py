@@ -1687,6 +1687,94 @@ class JadwalMengajara:
         else:
             abort(404)
 
+    @admin2.route("edit-jadwal/<int:id>", methods=["GET", "POST"])
+    def edit_jadwal(id):
+        if current_user.group == "admin":
+            form = FormJadwalMengajar(request.form)
+            url = base_url + f"api/v2/master/jadwal-mengajar/get-one/{id}"
+            respGet = req.get(url)
+            jsonResp = respGet.json()
+
+            urlGuru = base_url + "api/v2/guru/get-all"
+            respGuru = req.get(urlGuru)
+            jsonRespGuru = respGuru.json()
+            for i in jsonRespGuru:
+                form.namaGuru.choices.append(
+                    (i["id"], i["first_name"] + " " + i["last_name"])
+                )
+
+            urlMapel = base_url + "api/v2/master/mapel/get-all"
+            respMapel = req.get(urlMapel)
+            for i in respMapel.json()["data"]:
+                form.namaMapel.choices.append((i["id"], i["mapel"].title()))
+
+            urlHari = base_url + "api/v2/master/hari/get-all"
+            respHari = req.get(urlHari)
+            for i in respHari.json()["data"]:
+                form.hari.choices.append((i["id"], i["hari"].title()))
+
+            urlKelas = base_url + "api/v2/master/kelas/get-all"
+            respKelas = req.get(urlKelas)
+            for i in respKelas.json()["data"]:
+                form.kelas.choices.append((i["id"], i["kelas"]))
+
+            urlJam = base_url + "api/v2/master/jam/get-all"
+            respJam = req.get(urlJam)
+            for i in respJam.json()["data"]:
+                form.waktuMulai.choices.append((i["jam"], i["jam"]))
+                form.waktuSelesai.choices.append((i["jam"], i["jam"]))
+
+            form.kode.default = jsonResp["kode_mengajar"]
+            form.tahunAjaran.default = jsonResp["tahun_ajaran"]
+            form.namaGuru.default = jsonResp["guru_id"]
+            form.semester.default = jsonResp["semester"].upper()
+            form.namaMapel.default = jsonResp["mapel_id"]
+            form.hari.default = jsonResp["hari_id"]
+            form.kelas.default = jsonResp["kelas_id"]
+            form.waktuMulai.default = jsonResp["jam_mulai"]
+            form.waktuSelesai.default = jsonResp["jam_selesai"]
+            form.jamKe.default = jsonResp["jam_ke"]
+            form.process()
+
+            if request.method == "POST":
+                guru_id = request.form.get("namaGuru")
+                mapel_id = request.form.get("namaMapel")
+                hari_id = request.form.get("hari")
+                jam_mulai = request.form.get("waktuMulai")
+                jam_selesai = request.form.get("waktuSelesai")
+                kelas_id = request.form.get("kelas")
+                jam_ke = request.form.get("jamKe")
+
+                payload = json.dumps(
+                    {
+                        "guru_id": guru_id,
+                        "hari_id": hari_id,
+                        "mapel_id": mapel_id,
+                        "jam_mulai": jam_mulai,
+                        "jam_selesai": jam_selesai,
+                        "kelas_id": kelas_id,
+                        "jam_ke": jam_ke,
+                    }
+                )
+
+                headers = {"Content-Type": "application/json"}
+
+                resp = req.put(url=url, data=payload, headers=headers)
+
+                jsonRespPut = resp.json()
+
+                if resp.status_code == 200:
+                    flash(f'{jsonRespPut["msg"]} Status : {resp.status_code}', "info")
+                    return redirect(url_for("admin2.get_jadwal"))
+                else:
+                    flash(
+                        f"Terjadi kesalahan dalam perbaharui data. Status : {resp.status_code}"
+                    )
+
+            return render_template(
+                "admin/jadwal_mengajar/edit_jadwal.html", model=jsonResp, form=form
+            )
+
     @admin2.route("delete-jadwal/<int:id>", methods=["GET", "DELETE"])
     @login_required
     def delete_jadwal(id):
