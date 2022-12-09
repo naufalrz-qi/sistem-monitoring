@@ -165,17 +165,17 @@
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="{{ url_for('admin2.getSiswa') }}"
-                class="nav-link  {{'active' if filename=='get-siswa' else ''}}">
-                <i class="far fa-circle nav-icon  {{'fa-dot-circle' if filename=='get-siswa' else ''}}"></i>
-                <p>Daftar Siswa</p>
-              </a>
-            </li>
-            <li class="nav-item">
               <a href="{{ url_for('admin2.add_siswa')}}"
                 class="nav-link {{'active' if filename=='tambah-siswa' else ''}}">
                 <i class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='tambah-siswa' else ''}}"></i>
                 <p>Tambah Siswa</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ url_for('admin2.getSiswa') }}"
+                class="nav-link  {{'active' if filename=='get-siswa' else ''}}">
+                <i class="far fa-circle nav-icon  {{'fa-dot-circle' if filename=='get-siswa' else ''}}"></i>
+                <p>Daftar Siswa</p>
               </a>
             </li>
           </ul>
@@ -192,17 +192,17 @@
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="{{ url_for('admin2.get_guru') }}"
-                class="nav-link  {{'active' if filename=='data-guru' else ''}}">
-                <i class="far fa-circle nav-icon  {{'fa-dot-circle' if filename=='data-guru' else ''}}"></i>
-                <p>Daftar Guru</p>
-              </a>
-            </li>
-            <li class="nav-item">
               <a href="{{ url_for('admin2.add_guru') }}"
                 class="nav-link {{'active' if filename=='tambah-guru' else ''}}">
                 <i class="far fa-circle nav-icon {{'fa-dot-circle' if filename=='tambah-guru' else ''}}"></i>
                 <p>Tambah Guru</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ url_for('admin2.get_guru') }}"
+                class="nav-link  {{'active' if filename=='data-guru' else ''}}">
+                <i class="far fa-circle nav-icon  {{'fa-dot-circle' if filename=='data-guru' else ''}}"></i>
+                <p>Daftar Guru</p>
               </a>
             </li>
           </ul>
