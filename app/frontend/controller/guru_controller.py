@@ -231,19 +231,30 @@ def absensi(kelas_id):
     for i in sqlToday:
         data["mengajar_id"] = i.id
         data["mapel"] = i.mapel.mapel
+    # sqlCountPertemuan = day(
+    #     sql=db.session.query(AbsensiModel)
+    #     .filter(AbsensiModel.mengajar_id == data["mengajar_id"])
+    #     .group_by(AbsensiModel.pertemuan_ke)
+    #     .order_by(AbsensiModel.pertemuan_ke.desc())
+    #     .limit(1)
+    #     .first()
+    # )
     sqlCountPertemuan = day(
         sql=db.session.query(AbsensiModel)
         .filter(AbsensiModel.mengajar_id == data["mengajar_id"])
-        .group_by(AbsensiModel.pertemuan_ke)
         .order_by(AbsensiModel.pertemuan_ke.desc())
         .limit(1)
-        .first()
+        .count()
+        # .filter(AbsensiModel.tgl_absen == date)
     )
     # print(sqlCountPertemuan.pertemuan_ke)
     date = datetime.date(datetime.today())
 
-    if sqlCountPertemuan is not None:
-        data["pertemuan"] = int(sqlCountPertemuan.pertemuan_ke) + 1
+    print(data["mengajar_id"])
+
+    if sqlCountPertemuan != 0:
+        # data["pertemuan"] = int(sqlCountPertemuan.pertemuan_ke) + 1
+        data["pertemuan"] = sqlCountPertemuan + 1
 
     else:
         data["pertemuan"] = 1
@@ -284,7 +295,7 @@ def absensi(kelas_id):
                     f"Kelas : {data.get('kelas')} telah selesai melaukan absen kehadiran. untuk mengubah kehadiran",
                     "success",
                 )
-        # return redirect(url_for("guru2.index"))
+        return redirect(url_for("guru2.absensi"))
 
     return render_template(
         "guru/modul/absen/absensi.html",
@@ -294,3 +305,9 @@ def absensi(kelas_id):
         form=form,
         today=date,
     )
+
+
+@guru2.route("report-absen", methods=["GET"])
+def report_absen():
+    base = BaseModel(AbsensiModel)
+    return render_template("")

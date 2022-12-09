@@ -3,14 +3,14 @@
   <a href="#" class="brand-link">
     <img src="{{ url_for('admin2.static', filename='img/logo.png') }}" alt="Admin2LTE Logo"
       class="brand-image img-circle elevation-3" style="opacity: 0.8" />
-    <span class="brand-text font-weight-light">UPT SPF SMPN2 MKS</span>
+    <span class="brand-text font-weight-normal">E-Monitoring Siswa</span>
   </a>
 
   <!-- Sidebar -->
   {% block sideBar %}
   <div class="sidebar">
     <!-- Sidebar user (optional) -->
-    <div class="user-panel mt-2 pb-1 mb-3 d-flex align-items-center">
+    {# <div class="user-panel mt-2 pb-1 mb-3 d-flex align-items-center">
       <div class="image">
         <img src="{{ url_for('admin2.static', filename='img/avatar.png')}}" class="img-circle elevation-2"
           alt="User Image" />
@@ -26,9 +26,9 @@
           {% endif %}
         </a>
       </div>
-    </div>
+    </div> #}
     <!-- Sidebar Menu -->
-    <nav class="mt-1">
+    <nav class="mt-3">
       <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent nav-compact" data-widget="treeview" role="menu"
         data-accordion="false">
         <!-- Add icons to the links using the .nav-icon class
@@ -131,23 +131,23 @@
             class="nav-link {{'active' if filename=='data-jadwal' or filename=='tambah-jadwal' or filename=='edit-jadwal'  else ''}} ">
             <i class="nav-icon fas fa-clipboard-list"></i>
             <p>
-              Jadwal Mengajar
+              Data Pembelajaran
               <i class="right fas fa-angle-left"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="{{ url_for('admin2.get_jadwal')}}"
-                class="nav-link {{'active' if filename == 'data-jadwal' else ''}} ">
-                <i class="nav-icon far fa-circle {{'fa-dot-circle' if filename=='data-jadwal' else ''}} "></i>
-                <p>Datar Mengajar</p>
-              </a>
-            </li>
-            <li class="nav-item">
               <a href="{{ url_for('admin2.add_jadwal') }}"
                 class="nav-link {{'active' if filename=='tambah-jadwal' else ''}} ">
                 <i class="nav-icon far fa-circle {{'fa-dot-circle' if filename=='tambah-jadwal' else ''}} "></i>
-                <p>Tambah Jadwal</p>
+                <p>Tambah Pembelajaran</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ url_for('admin2.get_jadwal')}}"
+                class="nav-link {{'active' if filename == 'data-jadwal' else ''}} ">
+                <i class="nav-icon far fa-circle {{'fa-dot-circle' if filename=='data-jadwal' else ''}} "></i>
+                <p>Daftar Pembelajaran</p>
               </a>
             </li>
           </ul>
@@ -232,7 +232,7 @@
             <p>Rekap Pelanggaran</p>
           </a>
         </li>
-        <li class="nav-header">Profile</li>
+        {# <li class="nav-header">Profile</li> #}
         {#
         <li
           class="nav-item {{'menu-open' if filename=='data-siswa' or filename=='tambah-siswa' or filename == 'data-guru' or filename == 'edit-guru' or filename == 'edit-siswa' or filename == 'tambah-guru' else None}}"
@@ -279,7 +279,7 @@
           </ul>
         </li>
         #}
-        <li class="nav-item">
+        {# <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-user-cog"> </i>
             <p>
@@ -305,7 +305,7 @@
             <i class="nav-icon fas fa-sign-out-alt"></i>
             <p>Logout</p>
           </a>
-        </li>
+        </li> #}
       </ul>
     </nav>
     <!-- /.sidebar-menu -->

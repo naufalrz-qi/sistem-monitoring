@@ -1631,11 +1631,11 @@ class JadwalMengajara:
             for i in respKelas.json()["data"]:
                 form.kelas.choices.append((i["id"], i["kelas"]))
 
-            urlJam = base_url + "api/v2/master/jam/get-all"
-            respJam = req.get(urlJam)
-            for i in respJam.json()["data"]:
-                form.waktuMulai.choices.append((i["jam"], i["jam"]))
-                form.waktuSelesai.choices.append((i["jam"], i["jam"]))
+            # urlJam = base_url + "api/v2/master/jam/get-all"
+            # respJam = req.get(urlJam)
+            # for i in respJam.json()["data"]:
+            #     form.waktuMulai.choices.append((i["jam"], i["jam"]))
+            #     form.waktuSelesai.choices.append((i["jam"], i["jam"]))
 
             form.kode.data = kodeMengajar
             form.semester.data = sms.title()
@@ -1651,8 +1651,10 @@ class JadwalMengajara:
                 mapel_id = request.form.get("namaMapel")
                 hari_id = request.form.get("hari")
                 kelas_id = request.form.get("kelas")
-                jam_mulai = request.form.get("waktuMulai")
-                jam_selesai = request.form.get("waktuSelesai")
+                # jam_mulai = request.form.get("waktuMulai")
+                # jam_selesai = request.form.get("waktuSelesai")
+                jam_mulai2 = request.form.get("waktuMulai2")
+                jam_selesai2 = request.form.get("waktuSelesai2")
                 jam_ke = request.form.get("jamKe")
 
                 url = base_url + "api/v2/master/jadwal-mengajar/create"
@@ -1665,8 +1667,8 @@ class JadwalMengajara:
                         "mapel_id": mapel_id,
                         "hari_id": hari_id,
                         "kelas_id": kelas_id,
-                        "jam_mulai": jam_mulai,
-                        "jam_selesai": jam_selesai,
+                        "jam_mulai": jam_mulai2,
+                        "jam_selesai": jam_selesai2,
                         "jam_ke": jam_ke,
                     }
                 )
@@ -1718,11 +1720,11 @@ class JadwalMengajara:
             for i in respKelas.json()["data"]:
                 form.kelas.choices.append((i["id"], i["kelas"]))
 
-            urlJam = base_url + "api/v2/master/jam/get-all"
-            respJam = req.get(urlJam)
-            for i in respJam.json()["data"]:
-                form.waktuMulai.choices.append((i["jam"], i["jam"]))
-                form.waktuSelesai.choices.append((i["jam"], i["jam"]))
+            # urlJam = base_url + "api/v2/master/jam/get-all"
+            # respJam = req.get(urlJam)
+            # for i in respJam.json()["data"]:
+            #     form.waktuMulai.choices.append((i["jam"], i["jam"]))
+            #     form.waktuSelesai.choices.append((i["jam"], i["jam"]))
 
             form.kode.default = jsonResp["kode_mengajar"]
             form.tahunAjaran.default = jsonResp["tahun_ajaran"]
@@ -1731,8 +1733,8 @@ class JadwalMengajara:
             form.namaMapel.default = jsonResp["mapel_id"]
             form.hari.default = jsonResp["hari_id"]
             form.kelas.default = jsonResp["kelas_id"]
-            form.waktuMulai.default = jsonResp["jam_mulai"]
-            form.waktuSelesai.default = jsonResp["jam_selesai"]
+            form.waktuMulai2.default = jsonResp["jam_mulai"]
+            form.waktuSelesai2.default = jsonResp["jam_selesai"]
             form.jamKe.default = jsonResp["jam_ke"]
             form.process()
 

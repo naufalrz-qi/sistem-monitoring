@@ -151,18 +151,25 @@ import datetime
 # print(dt)
 # print(week)
 
-from math import ceil
+# from math import ceil
 
 
-def week_of_month(dt):
-    """Returns the week of the month for the specified date."""
+# def week_of_month(dt):
+#     """Returns the week of the month for the specified date."""
 
-    first_day = dt.replace(day=1)
+#     first_day = dt.replace(day=1)
 
-    dom = dt.day
-    adjusted_dom = dom + first_day.weekday()
+#     dom = dt.day
+#     adjusted_dom = dom + first_day.weekday()
 
-    return int(ceil(adjusted_dom / 7.0))
+#     return int(ceil(adjusted_dom / 7.0))
 
 
-print(week_of_month(datetime.datetime.date(datetime.datetime.today())))
+# print(week_of_month(datetime.datetime.date(datetime.datetime.today())))
+for i in range(1, 5 + 1):
+    # print(i * "*")
+    # print((2 * i - 1) * "*")
+    # print((2 * i) * "*")
+    # print((5 - i + 1) * "*")
+    # print((5 - i) * " " + (2 * i - 1) * "*")
+    print((5 - i + 1) * "*")

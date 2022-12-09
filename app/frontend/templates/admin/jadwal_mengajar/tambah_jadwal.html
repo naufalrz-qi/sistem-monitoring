@@ -18,7 +18,7 @@
   <!-- /.card-header -->
   <div class="card-body">
     <form action="" method="post">
-      {{ form.hidden_tag() }}
+      {{ form.csrf_token }}
       <div class="col-md-8 ml-3">
         <div class="row">
           <div class="col-md-4">
@@ -109,6 +109,38 @@
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
+              {{ form.waktuMulai2.label}}
+              {% if form.waktuMulai2.errors %}
+              {{ form.waktuMulai2(class="form-control is-invalid", aria_invalid=true, placeholder="_:_") }}
+              {% for msg in form.waktuMulai2.errors %}
+              <span class="error invalid-feedback">{{msg}}</span>
+              {% endfor %}
+              {% elif form.waktuMulai2.data %}
+              {{ form.waktuMulai2(class="form-control", aria_invalid=false) }}
+              {% else %}
+              {{ form.waktuMulai2(class="form-control", placeholder="_:_") }}
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              {{ form.waktuSelesai2.label}}
+              {% if form.waktuSelesai2.errors %}
+              {{ form.waktuSelesai2(class="form-control is-invalid", aria_invalid=true, placeholder="_:_") }}
+              {% for msg in form.waktuSelesai2.errors %}
+              <span class="error invalid-feedback">{{msg}}</span>
+              {% endfor %}
+              {% elif form.waktuSelesai2.data %}
+              {{ form.waktuSelesai2(class="form-control", aria_invalid=false) }}
+              {% else %}
+              {{ form.waktuSelesai2(class="form-control", placeholder="_:_") }}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {# <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
               {{ form.waktuMulai.label}}
               {% if form.waktuMulai.errors %}
               {{ form.waktuMulai(class="form-control is-invalid", aria_invalid=true) }}
@@ -137,7 +169,7 @@
               {% endif %}
             </div>
           </div>
-        </div>
+        </div> #}
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
