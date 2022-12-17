@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block head %}
 {{super()}}
+<style>
+  input[type='radio'] {
+    display: none;
+  }
+</style>
 {% endblock %}
 {% set filename='absen' %}
 {% block content %}
@@ -26,7 +31,7 @@
               {{form.today(class="form-control form-control-sm form-control-border text-bold", value=today, hidden=true )}}
             </div>
           </div>
-          <table id="tabel" class="table table-bordered table-striped table-sm">
+          <table id="tabel" class="table table-bordered table-striped table-sm table-responsive-sm">
             <thead>
               <tr>
                 <th>#</th>
@@ -43,19 +48,19 @@
               <tr>
                 <td>{{ loop.index }}</td>
                 <td>{{ i.first_name }} {{ i.last_name }}</td>
-                <td style="width: 200px;" class="text-center">
+                <td class="text-center ">
                   <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-outline-info rounded-circle btn-sm text-center mr-2">
-                      <input type="radio" name="ket-{{loop.index}}" value="H">H
+                    <label class="btn btn-outline-success rounded-circle btn-sm text-center mr-2">
+                      <input type="radio" name="ket-{{loop.index}}" value="H">&nbsp;H&nbsp;
+                    </label>
+                    <label class="btn btn-outline-warning rounded-circle btn-sm text-center mr-2">
+                      <input type="radio" name="ket-{{loop.index}}" value="S">&nbsp;S&nbsp;
                     </label>
                     <label class="btn btn-outline-info rounded-circle btn-sm text-center mr-2">
-                      <input type="radio" name="ket-{{loop.index}}" value="S">S
+                      <input type="radio" name="ket-{{loop.index}}" value="I">&nbsp;I&nbsp;
                     </label>
-                    <label class="btn btn-outline-info rounded-circle btn-sm text-center mr-2">
-                      <input type="radio" name="ket-{{loop.index}}" value="I">I
-                    </label>
-                    <label class="btn btn-outline-info rounded-circle btn-sm text-center">
-                      <input type="radio" name="ket-{{loop.index}}" value="A">A
+                    <label class="btn btn-outline-danger rounded-circle btn-sm text-center">
+                      <input type="radio" name="ket-{{loop.index}}" value="A">&nbsp;A&nbsp;
                     </label>
                   </div>
                 </td>
@@ -91,7 +96,7 @@
     </form>
   </div>
 </div>
-</div>
+
 {% endblock content %}
 {% block js %}
 <!-- DataTables  & Plugins -->
