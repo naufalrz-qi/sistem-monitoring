@@ -13,6 +13,7 @@ from flask import (
 )
 from app.backend.lib.status_code import HTTP_413_REQUEST_ENTITY_TOO_LARGE
 from app.backend.models.user_model import *
+from app.backend.models.master_model import *
 from app.backend.models.user_details_model import *
 from app.backend.lib.base_model import BaseModel
 from werkzeug.utils import secure_filename
@@ -43,12 +44,36 @@ def static(filename):
     return dir
 
 
+sql = lambda x: x
+
+
 @admin2.route("/")
 @login_required
 def index():
     if current_user.is_authenticated:
         if current_user.group == "admin":
-            return render_template("admin/index_admin.html")
+            jml_siswa = sql(
+                x=db.session.query(UserModel).filter(UserModel.group == "siswa").count()
+            )
+            jml_guru = sql(
+                x=db.session.query(UserModel).filter(UserModel.group == "guru").count()
+            )
+            jml_admin = sql(
+                x=db.session.query(UserModel).filter(UserModel.group == "admin").count()
+            )
+
+            jml_mapel = sql(x=db.session.query(MapelModel).count())
+
+            jml_kelas = sql(x=db.session.query(KelasModel).count())
+
+            return render_template(
+                "admin/index_admin.html",
+                jml_siswa=jml_siswa,
+                jml_guru=jml_guru,
+                jml_admin=jml_admin,
+                jml_mapel=jml_mapel,
+                jml_kelas=jml_kelas,
+            )
         else:
             abort(404)
 
@@ -1139,7 +1164,7 @@ class MasterData:
     @admin2.route("add-hari", methods=["GET", "POST"])
     @login_required
     def add_hari():
-        if current_user.grop == "admin":
+        if current_user.group == "admin":
             URL = base_url + "api/v2/master/hari/create"
             form = FormHari(request.form)
             if request.method == "POST" and form.validate_on_submit():

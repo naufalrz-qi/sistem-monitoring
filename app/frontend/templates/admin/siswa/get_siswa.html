@@ -29,8 +29,9 @@
             {% for object in kelas['data'] %}
             {% if object.jum_seluruh != 0 %}
             <li class="nav-item">
-                <a class="nav-link {{'active' if 'VIII-1' in object.kelas else ''}}" id="custom-tabs-three-home-tab" data-toggle="pill" href="#{{object.kelas}}"
-                    role="tab" aria-controls="custom-tabs-three-home" aria-selected="true">KELAS {{object.kelas}}</a>
+                <a class="nav-link {{'active' if 'VIII-1' in object.kelas else ''}}" id="custom-tabs-three-home-tab"
+                    data-toggle="pill" href="#{{object.kelas}}" role="tab" aria-controls="custom-tabs-three-home"
+                    aria-selected="true">KELAS {{object.kelas}}</a>
             </li>
             {% endif %}
             {% endfor %}
@@ -166,7 +167,7 @@
             searching: false,
             lengthChange: false,
             paging: false,
-            info:false
+            info: false
         });
         $('#reservationdate').datetimepicker({
             format: 'L'

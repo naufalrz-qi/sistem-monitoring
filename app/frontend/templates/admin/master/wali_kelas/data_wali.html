@@ -29,11 +29,12 @@
             <i class="fas fa-plus"></i>
             Tambah Data
         </a>
-        <div class="col-md-6">
+        <div class="col-8 col-md-8 col-sm-8">
             <table id="tabel" class="table table-bordered table-striped table-sm">
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>NIP</th>
                         <th>Nama Wali Kelas</th>
                         <th>Kelas</th>
                         <th>Aksi</th>
@@ -43,6 +44,7 @@
                     {% for _ in model['data'] %}
                     <tr>
                         <td class="align-middle text-center" style="width: 12px;">{{ loop.index}}</td>
+                        <td class="align-middle">{{ _.nip }}</td>
                         <td class="align-middle">{{ _.first_name | title }} {{ _.last_name | title}}</td>
                         <td class="align-middle">{{ _.kelas }}</td>
                         <!-- AKSI -->

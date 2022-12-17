@@ -10,52 +10,82 @@
 {% block title %}Beranda Staff{% endblock %}
 {% block content %}
 <div class="row">
-  <div class="col-lg-3 col-6">
-    <div class="small-box bg-info">
-      <div class="inner">
-        <h3>20</h3>
-        <p>Jumlah Siswa</p>
+  <div class="col col-12 col-md-12 col-xs-12">
+    <div class="card card-info">
+      <div class="card-header">
+        <h3 class="card-title text-lg">e-monitoring Siswa SMPN2 Makassar</h3>
       </div>
-      <div class="icon">
-        <i class="ion ion-person"></i>
-      </div>
-      <a href="#" class="small-box-footer">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-gradient-red">
+              <div class="inner">
+                <p class="mt-2">Jumlah Siswa Aktif</p>
+                <h3>{{jml_siswa}} Orang</h3>
+              </div>
+              <div class="icon align-middle">
+                <i class="fas fa-users"></i>
+              </div>
+              <p></p>
+              {# <a href="{{ url_for('admin2.getSiswa') }}" class="small-box-footer">
         "More Data"
         <i class="fas fa-arrow-alt-circle-right"></i>
-      </a>
-    </div>
-  </div>
-  <div class="col-lg-3 col-6">
-    <div class="small-box bg-success">
-      <div class="inner">
-        <h3>20</h3>
-        <p>Jumlah Guru</p>
-      </div>
-      <div class="icon">
-        <i class="ion ion-person"></i>
-      </div>
-      <a href="#" class="small-box-footer">
+      </a> #}
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-gradient-cyan">
+              <div class="inner">
+                <p class="mt-2">Jumlah Guru Aktif</p>
+                <h3>{{jml_guru}} Orang</h3>
+              </div>
+              <div class="icon">
+                <i class="fas fa-users"></i>
+              </div>
+              {# <a href="{{ url_for('admin2.get_guru') }}" class="small-box-footer">
         "More Data"
         <i class="fas fa-arrow-alt-circle-right"></i>
-      </a>
-    </div>
-  </div>
-  <div class="col-lg-3 col-6">
-    <div class="small-box bg-warning">
-      <div class="inner">
-        <h3>20</h3>
-        <p>Jumlah Siswa</p>
-      </div>
-      <div class="icon">
-        <i class="ion ion-person"></i>
-      </div>
-      <a href="#" class="small-box-footer">
+      </a> #}
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-gradient-green">
+              <div class="inner">
+                <p class="mt-2">Jumlah Rombel</p>
+                <h3>{{jml_kelas}} Kelas</h3>
+              </div>
+              <div class="icon">
+                <i class="fas fa-list"></i>
+              </div>
+              {# <a href="#" class="small-box-footer">
         "More Data"
         <i class="fas fa-arrow-alt-circle-right"></i>
-      </a>
+      </a> #}
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-gradient-purple">
+              <div class="inner">
+                <p class="mt-2">Jumlah Mapel</p>
+                <h3>{{jml_mapel}} Pelajaran</h3>
+              </div>
+              <div class="icon">
+                <i class="fas fa-book"></i>
+              </div>
+              {# <a href="#" class="small-box-footer">
+        "More Data"
+        <i class="fas fa-arrow-alt-circle-right"></i>
+      </a> #}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-<div class="row">
+{# <div class="row">
+  <div class="col">
+    <button class="btn btn-primary rounded-pill btn-sm">H</button>
+  </div> #}
 </div>
 {% endblock %}

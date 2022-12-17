@@ -61,6 +61,12 @@
             </div>
             <div class="tab-pane" id="tomorrow">
                 <div class="row">
+                    {% if not sqlTomorrow %}
+                    <div class="col">
+                        <p class="card-text text-center">Ma'af tidak ada jadwal untuk besok.
+                    </div>
+                    </p>
+                    {% else %}
                     {% for i in sqlTomorrow %}
                     <div class="col-sm-4">
                         <div class="card card-blue">
@@ -79,6 +85,7 @@
                         </div>
                     </div>
                     {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>

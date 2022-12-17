@@ -500,6 +500,7 @@ class WaliKelas(object):
             data.append(
                 {
                     "id": wali.id,
+                    "nip": wali.guru.user.username,
                     "first_name": wali.guru.first_name,
                     "last_name": wali.guru.last_name,
                     "kelas": wali.kelas.kelas,

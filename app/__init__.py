@@ -3,6 +3,7 @@ from app.backend.register_app import register_app
 from app.frontend.register_app import register_app_site
 from settings import Config
 from app.frontend.models.user_login_model import UserLogin
+from app.backend.lib.date_time import *
 
 
 def create_app():
@@ -14,6 +15,8 @@ def create_app():
     register_app(app)
     register_app_site(app)
     loginManager(app)
+
+    app.jinja_env.filters["date_indo"] = format_indo
     return app
 
 

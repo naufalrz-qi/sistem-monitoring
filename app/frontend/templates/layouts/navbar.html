@@ -26,17 +26,43 @@
       <a href="#" class="nav-link" data-toggle="dropdown">
         <i class="fas fa-user-cog mr-1"></i>
         {{ current_user.first_name | title }} {{ current_user.last_name | title}}
-        ( {{'Administrator' if current_user.group == 'admin' else current_user.group | title}})
+        {% if current_user.group == 'admin' %}
+        (Administrator)
+        {% elif current_user.group == 'guru' %}
+        {% if wali_controller %}
+        (Wali Kelas)
+        {% else %}
+        (Guru Mapel)
+        {% endif %}
+        {% endif %}
       </a>
       <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-        <span class="dropdown-header dropdown-item">Atur Profil</span>
+        {% if current_user.group == 'guru' and wali_kelas %}
+        <span class="dropdown-header dropdown-item">AKSES SEBAGAI</span>
+        <div class="dropdown-divider"></div>
+        <a href="{{ url_for('wali_kelas.index_wali') }}" class="dropdown-item">
+          <i class="fas fa-user-tie mr-1"></i>
+          Wali Kelas
+        </a>
+        <div class="dropdown-divider"></div>
+        {% endif %}
+        {% if current_user.group == 'guru' and wali_controller %}
+        <span class="dropdown-header dropdown-item">AKSES SEBAGAI</span>
+        <div class="dropdown-divider"></div>
+        <a href="{{ url_for('guru2.index') }}" class="dropdown-item">
+          <i class="fas fa-user-tie mr-1"></i>
+          Guru Mapel
+        </a>
+        <div class="dropdown-divider"></div>
+        {% endif %}
+        <span class="dropdown-header dropdown-item">ATUR PROFIL</span>
         <div class="dropdown-divider"></div>
         {% if current_user.group == 'admin' %}
         <a href="#" class="dropdown-item">
           {% elif current_user.group == 'guru' %}
           <a href="{{ url_for('guru2.profile_guru') }}" class="dropdown-item">
             {% endif %}
-            <i class="fas fa-user-edit"></i>
+            <i class="fas fa-user-edit mr-1"></i>
             Ubah Data
           </a>
           <div class="dropdown-divider"></div>
@@ -45,7 +71,7 @@
             {% elif current_user.group == 'guru' %}
             <a href="{{ url_for('guru2.update_pswd') }}" class="dropdown-item">
               {% endif %}
-              <i class="fas fa-user-lock"></i>
+              <i class="fas fa-user-lock mr-1"></i>
               Ubah Password
             </a>
             <div class="dropdown-divider"></div>

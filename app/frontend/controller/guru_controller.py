@@ -16,8 +16,13 @@ from app.backend.lib.base_model import BaseModel
 from app.backend.models.user_details_model import GuruModel, SiswaModel
 from app.frontend.forms.form_guru import FormGetProfileGuru, FormUpdatePassword
 from ..models.user_login_model import *
-from ...backend.models.master_model import KelasModel, MengajarModel, HariModel
-from ...backend.lib.date_time import tomorrow_, today_
+from ...backend.models.master_model import (
+    KelasModel,
+    MengajarModel,
+    HariModel,
+    WaliKelasModel,
+)
+from ...backend.lib.date_time import format_indo, tomorrow_, today_
 from werkzeug.security import generate_password_hash, check_password_hash
 from ...backend.models.data_model import AbsensiModel
 from datetime import datetime
@@ -31,6 +36,7 @@ guru2 = Blueprint(
 )
 
 day = lambda sql: sql
+query = lambda sql: sql
 
 
 def get_kelas_today():
@@ -53,6 +59,15 @@ def get_kelas_tomorrow():
         .filter(MengajarModel.hari_id == HariModel.id)
         .filter(HariModel.hari == tomorrow_())
         .all()
+    )
+    return sql
+
+
+def check_wali():
+    sql = query(
+        sql=db.session.query(WaliKelasModel)
+        .filter(WaliKelasModel.guru_id == current_user.id)
+        .first()
     )
     return sql
 
@@ -80,10 +95,13 @@ def index():
             mengajar = baseJadwal.get_all_filter_by(
                 baseJadwal.model.hari_id.asc(), guru_id=current_user.id
             )
+            wali_kelas = check_wali()
+
             return render_template(
                 "guru/index_guru.html",
                 sqlJadwal=mengajar,
                 sqlToday=sqlToday,
+                wali_kelas=wali_kelas,
             )
         else:
             abort(404)
@@ -209,7 +227,7 @@ def jadwal_mengajar():
     )
 
 
-@guru2.route("/absens-pelajaran/<int:kelas_id>", methods=["GET", "POST"])
+@guru2.route("/absensi-pelajaran/<int:kelas_id>", methods=["GET", "POST"])
 def absensi(kelas_id):
     form = AbsensiForm()
     base_siswa = BaseModel(SiswaModel)
@@ -226,6 +244,7 @@ def absensi(kelas_id):
     )
     data = {}
     for i in siswa:
+        data["kelas_id"] = i.kelas_id
         data["kelas"] = i.kelas.kelas
 
     for i in sqlToday:
@@ -250,8 +269,6 @@ def absensi(kelas_id):
     # print(sqlCountPertemuan.pertemuan_ke)
     date = datetime.date(datetime.today())
 
-    print(data["mengajar_id"])
-
     if sqlCountPertemuan != 0:
         # data["pertemuan"] = int(sqlCountPertemuan.pertemuan_ke) + 1
         data["pertemuan"] = sqlCountPertemuan + 1
@@ -260,42 +277,45 @@ def absensi(kelas_id):
         data["pertemuan"] = 1
 
     if request.method == "POST":
-
         for n in range(1, len(siswa) + 1):
             siswa_id = request.form.get(f"userId-{n}")
             mengajar_id = request.form.get(f"mengajarId")
             tgl_absen = request.form["today"]
             ket = request.form.get(f"ket-{n}")
             pertemuan_ke = request.form["pertemuan"]
-            # print(siswa_id)
-            # print(mengajar_id)
-            # print(ket)
-            sqlPertemuan = day(
-                sql=db.session.query(AbsensiModel)
-                .filter(AbsensiModel.mengajar_id == mengajar_id)
-                .filter(AbsensiModel.tgl_absen == datetime.date(datetime.today()))
-                .filter(AbsensiModel.siswa_id == siswa_id)
-                .count()
-            )
-            if sqlPertemuan > 0:
-                flash("Absen hari in telah di input", "error")
-            else:
-                base_absesn = BaseModel(
-                    AbsensiModel(
-                        mengajar_id=mengajar_id,
-                        siswa_id=siswa_id,
-                        tgl_absen=tgl_absen,
-                        ket=ket,
-                        pertemuan=pertemuan_ke,
-                    )
-                )
-                base_absesn.create()
 
-                flash(
-                    f"Kelas : {data.get('kelas')} telah selesai melaukan absen kehadiran. untuk mengubah kehadiran",
-                    "success",
+            if ket is not None:
+                sqlPertemuan = day(
+                    sql=db.session.query(AbsensiModel)
+                    .filter(AbsensiModel.mengajar_id == mengajar_id)
+                    .filter(AbsensiModel.tgl_absen == datetime.date(datetime.today()))
+                    .filter(AbsensiModel.siswa_id == siswa_id)
+                    .count()
                 )
-        return redirect(url_for("guru2.absensi"))
+                if sqlPertemuan > 0:
+                    flash("Absen hari in telah di input", "error")
+                else:
+                    base_absesn = BaseModel(
+                        AbsensiModel(
+                            mengajar_id=mengajar_id,
+                            siswa_id=siswa_id,
+                            tgl_absen=tgl_absen,
+                            ket=ket,
+                            pertemuan=pertemuan_ke,
+                        )
+                    )
+                    base_absesn.create()
+
+                    flash(
+                        f"Kelas : {data.get('kelas')} telah selesai melaukan absen kehadiran. untuk mengubah kehadiran",
+                        "success",
+                    )
+            else:
+                flash(
+                    f"Keterangan Kehadiran siswa wajib dipilih secara menyeluruh dengan sesuai keadaan siswa.",
+                    "error",
+                )
+        return redirect(url_for("guru2.absensi", kelas_id=data["kelas_id"]))
 
     return render_template(
         "guru/modul/absen/absensi.html",
@@ -307,7 +327,8 @@ def absensi(kelas_id):
     )
 
 
-@guru2.route("report-absen", methods=["GET"])
-def report_absen():
-    base = BaseModel(AbsensiModel)
-    return render_template("")
+@guru2.route("/daftar-hadir", methods=["GET", "POST"])
+@login_required
+def daftar_kehadiran():
+
+    return render_template("guru/modul/absen/daftar_hadir.html")
