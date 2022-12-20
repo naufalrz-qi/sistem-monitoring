@@ -218,6 +218,7 @@ def jadwal_mengajar():
             .all()
         )
     )
+    print(tomorrow_())
 
     return render_template(
         "guru/modul/jadwal_mengajar/jadwal_mengajar.html",

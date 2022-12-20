@@ -207,6 +207,23 @@
             </li>
           </ul>
         </li>
+        <li class="nav-item {{ 'menu-open' if filename=='daftar_hadir' else '' }}">
+          <a href="#" class="nav-link {{ 'active' if filename=='daftar_hadir' else ''}}">
+            <i class="nav-icon fas fa-list"></i>
+            <p>Data Kehadiran
+              <i class="right fas fa-angle-left"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{{ url_for('admin2.data_kehadiran') }}"
+                class="nav-link {{ 'active' if filename=='daftar_hadir' else '' }}">
+                <i class="nav-icon far fa-circle  {{ 'fa-dot-circle' if filename=='daftar_hadir' else '' }}"></i>
+                <p>Daftar Hadir Siswa</p>
+              </a>
+            </li>
+          </ul>
+        </li>
         <li class="nav-item">
           <a href="{{url_for('admin2.get_user')}}" class="nav-link {{ 'active' if filename=='data-user' else None }}">
             <i class="fas fa-users nav-icon"></i>

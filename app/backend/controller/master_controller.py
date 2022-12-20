@@ -850,3 +850,62 @@ class JadwalMengajar:
         elif request.method == "DELETE":
             base.delete(model)
             return jsonify(msg="Data has been deleted."), HTTP_204_NO_CONTENT
+
+
+class MonthName:
+    @master.get("/month/get-all", endpoint="get-month")
+    def get_all():
+        base = BaseModel(NamaBulanModel)
+        month = base.get_all()
+
+        data = []
+        for i in month:
+            data.append({"id": i.id, "bulan": i.nama_bulan})
+        # for i in month:
+        #     data.append(month=i.nama_bulan)
+
+        return jsonify(data), HTTP_200_OK
+
+    @master.route("/month/add", methods=["GET", "POST"])
+    def add_month():
+        nama_bulan = request.json.get("bulan")
+
+        base = BaseModel(NamaBulanModel(bulan=nama_bulan))
+        check_duplicate = base.get_one(nama_bulan=nama_bulan)
+
+        if check_duplicate:
+            return (
+                jsonify(
+                    msg=f"Data nama bulan : {nama_bulan} yang di input sudah ada.!"
+                ),
+                HTTP_409_CONFLICT,
+            )
+        else:
+            base.create()
+            return (
+                jsonify(msg=f"Data bulan {nama_bulan} telah berhasil di input."),
+                HTTP_201_CREATED,
+            )
+
+    @master.route("/month/get-single/<int:id>", methods=["GET", "PUT", "DELETE"])
+    def get_single(id):
+        base = BaseModel(NamaBulanModel)
+        bulan = base.get_one(id=id)
+
+        if request.method == "GET":
+            return jsonify(id=bulan.id, bulan=bulan.nama_bulan), HTTP_200_OK
+
+        elif request.method == "PUT":
+            nama_bulan = request.json.get("bulan")
+
+            bulan.nama_bulan = nama_bulan
+            base.edit()
+
+            return (
+                jsonify(msg=f"Data bulan {bulan.nama_bulan} telah diperbaharui.!"),
+                HTTP_200_OK,
+            )
+
+        elif request.method == "DELETE":
+            base.delete(bulan)
+            return jsonify(msg=f'Data has been deleted.!'),HTTP_204_NO_CONTENT

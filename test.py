@@ -166,10 +166,14 @@ import datetime
 
 
 # print(week_of_month(datetime.datetime.date(datetime.datetime.today())))
-for i in range(1, 5 + 1):
-    # print(i * "*")
-    # print((2 * i - 1) * "*")
-    # print((2 * i) * "*")
-    # print((5 - i + 1) * "*")
-    # print((5 - i) * " " + (2 * i - 1) * "*")
-    print((5 - i + 1) * "*")
+# for i in range(1, 5 + 1):
+#     # print(i * "*")
+#     # print((2 * i - 1) * "*")
+#     # print((2 * i) * "*")
+#     # print((5 - i + 1) * "*")
+#     # print((5 - i) * " " + (2 * i - 1) * "*")
+#     print((5 - i + 1) * "*")
+import calendar
+
+for i in range(1, 13):
+    bulan = calendar.month_name[i]

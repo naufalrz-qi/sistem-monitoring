@@ -201,3 +201,15 @@ class GuruBKModel(db.Model):
 
     def __repr__(self) -> str:
         return "Nama Guru : {}".format(self.guru.first_name)
+
+
+class NamaBulanModel(db.Model):
+    __tablename__ = "master_nama_bulan"
+    id = sa.Column(sa.Integer, primary_key=True)
+    nama_bulan = sa.Column(sa.String(32))
+
+    def __init__(self, bulan=None) -> None:
+        self.nama_bulan = bulan
+
+    def __repr__(self) -> str:
+        return "Bulan :".format(self.nama_bulan)

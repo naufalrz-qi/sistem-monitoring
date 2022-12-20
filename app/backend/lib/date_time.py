@@ -1,6 +1,7 @@
 from datetime import datetime
 import pytz
 import time
+import calendar
 
 
 def utc_makassar():
@@ -21,7 +22,8 @@ def tomorrow_():
     week_days = ["senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"]
     local_time = time.localtime()
     tomorrow = local_time.tm_wday
-    return week_days[tomorrow + 1]
+    return week_days[tomorrow - 6] if tomorrow == 6 else week_days[tomorrow + 1]
+    # return week_days[tomorrow + 1]
 
 
 def day_now_indo():
@@ -113,6 +115,25 @@ def format_datetime_id(datetime):
         + f"{hour}:{minute}:{second}"
     )
     return format_indo
+
+
+def nama_bulan():
+    MONTHLIST = (
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+    )
+
+    return MONTHLIST
 
 
 def string_format(date_string):

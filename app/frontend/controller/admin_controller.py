@@ -26,6 +26,8 @@ from ..forms.form_guru import *
 from ..lib.base_url import base_url
 from flask_login import login_required, current_user
 from ..models.user_login_model import *
+from ...backend.models.data_model import *
+from sqlalchemy import func
 import os
 import requests as req
 import io
@@ -1823,3 +1825,42 @@ class JadwalMengajara:
                 return redirect(url_for("admin2.get_jadwal"))
         else:
             abort(404)
+
+
+"""
+NOTE : DATABASE DIRECT NO API
+"""
+
+
+@admin2.route("/data-kehadiran", methods=["GET", "POST"])
+def data_kehadiran():
+    base_kelas = BaseModel(KelasModel)
+    kelas = base_kelas.get_all()
+    base_bulan = BaseModel(NamaBulanModel)
+    bulan = base_bulan.get_all()
+    base_mapel = BaseModel(MapelModel)
+    mapel = base_mapel.get_all()
+
+    absen_filter = (
+        db.session.query(AbsensiModel)
+        .join(SiswaModel)
+        .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
+        .filter(func.month(AbsensiModel.tgl_absen) == 11)
+        .filter(SiswaModel.kelas_id == 9)
+        # .group_by(AbsensiModel.tgl_absen, SiswaModel.kelas_id)
+        # .filter(func.extract("month", AbsensiModel.tgl_absen) == 12)
+        .all()
+    )
+    # if absen_filter:
+    #     print("ada")
+    # else:
+    #     print("tidak ada")
+    for i in absen_filter:
+        print(i.id)
+
+    return render_template(
+        "admin/daftar_hadir/daftar_hadir_siswa.html",
+        kelas=kelas,
+        bulan=bulan,
+        mapel=mapel,
+    )
