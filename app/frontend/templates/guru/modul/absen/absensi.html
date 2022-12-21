@@ -22,7 +22,7 @@
           <div class="row mb-0 align-items-center">
             <div class="col-md-6">
               <h6 class="text-bold">Kelas : {{data.kelas}}</h6>
-              <h6 class="text-bold">Mapel : {{data.mapel}}</h6>
+              <h6 class="text-bold">Mapel : {{data_mengajar.mapel}}</h6>
             </div>
             <div class="col-md-6">
               {{form.pertemuan(value=data.pertemuan)}}
@@ -42,7 +42,7 @@
             <tbody>
               {% for i in model %}
               <div class="from-group">
-                <input type="hidden" value="{{data.mengajar_id}}" name="mengajarId">
+                <input type="hidden" value="{{data_mengajar.mengajar_id}}" name="mengajarId">
                 <input type="hidden" value="{{i.user_id}}" name="userId-{{loop.index}}">
               </div>
               <tr>

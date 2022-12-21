@@ -9,6 +9,7 @@ from flask import (
     render_template,
     escape,
 )
+import asyncio
 from flask_login import current_user, login_required
 from sqlalchemy import func
 from app.frontend.forms.form_absen import AbsensiForm
@@ -229,6 +230,7 @@ def jadwal_mengajar():
 
 
 @guru2.route("/absensi-pelajaran/<int:mengajar_id>", methods=["GET", "POST"])
+@login_required
 def absensi(mengajar_id):
     form = AbsensiForm()
     """
@@ -242,7 +244,7 @@ def absensi(mengajar_id):
     for i in mengajar:
         data_mengajar["kelas_id"] = i.kelas_id
         data_mengajar["mengajar_id"] = i.id
-
+        data_mengajar["mapel"] = i.mapel.mapel
     """
         mengambil semua data siswa dengan filter kelas id pada tabel siswa
         dan di join dengan kelas id pada tabel master mengajar. Dan data
@@ -274,13 +276,6 @@ def absensi(mengajar_id):
             .all()
         )
     )
-    """
-        menyimpan ID MENGAJAR dan nama MAPEL pada variabel data
-    """
-    for i in sqlToday:
-        data["mengajar_id"] = i.id
-        data["mapel"] = i.mapel.mapel
-
     date = datetime.date(datetime.today())
 
     """
@@ -328,8 +323,15 @@ def absensi(mengajar_id):
             tgl_absen = request.form["today"]
             ket = request.form.get(f"ket-{n}")
             pertemuan_ke = request.form["pertemuan"]
+            print(ket)
 
-            if ket is not None:
+            if not ket:
+                flash(
+                    # f"Ma'af keterangan Kehadiran siswa wajib dipilih secara menyeluruh dengan sesuai keadaan siswa.",
+                    f"Ma'af.! keterangan Kehadiran siswa wajib dipilih sebelum menyelesaikan absen hari ini.",
+                    "error",
+                )
+            else:
                 sqlPertemuan = day(
                     sql=db.session.query(AbsensiModel)
                     .filter(AbsensiModel.mengajar_id == mengajar_id)
@@ -355,12 +357,6 @@ def absensi(mengajar_id):
                         f"Kelas : {data.get('kelas')} telah selesai melaukan absen kehadiran. untuk mengubah kehadiran",
                         "success",
                     )
-            else:
-                flash(
-                    # f"Ma'af keterangan Kehadiran siswa wajib dipilih secara menyeluruh dengan sesuai keadaan siswa.",
-                    f"Ma'af.! keterangan Kehadiran siswa wajib dipilih sebelum menyelesaikan absen hari ini.",
-                    "error",
-                )
         return redirect(
             url_for("guru2.absensi", mengajar_id=data_mengajar["mengajar_id"])
         )
@@ -395,16 +391,16 @@ def update_absen(mengajar_id):
         )
     )
 
+    base_mengjar = BaseModel(MengajarModel)
+    sql_mengajar = base_mengjar.get_all_filter_by(id=mengajar_id)
+    for i in sql_mengajar:
+        data["mengajar_id"] = i.id
+        data["kelas_id"] = i.kelas.kelas
+        data["kelas"] = i.kelas.kelas
+
     base_absensi = BaseModel(AbsensiModel)
-    # sql_absensi = db.session.query(AbsensiModel).filter(AbsensiModel.mengajar_id==mengajar_id)
     sql_absensi = base_absensi.get_all_filter_by(mengajar_id=mengajar_id)
 
-    for i in sql_absensi:
-        data["kelas_id"] = i.siswa.kelas_id
-        data["kelas"] = i.siswa.kelas.kelas
-
-    base_kelas = BaseModel(KelasModel)
-    # sql_kelas = base_kelas.get_one()
     return render_template(
         "guru/modul/absen/update_absensi.html",
         sqlToday=sqlToday,
@@ -415,6 +411,6 @@ def update_absen(mengajar_id):
 
 @guru2.route("/daftar-hadir", methods=["GET", "POST"])
 @login_required
-def daftar_kehadiran():
+async def daftar_kehadiran():
 
     return render_template("guru/modul/absen/daftar_hadir.html")
