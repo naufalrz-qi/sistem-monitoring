@@ -259,6 +259,7 @@ def absensi(kelas_id):
     #     .limit(1)
     #     .first()
     # )
+    date = datetime.date(datetime.today())
     sqlCountPertemuan = day(
         sql=db.session.query(AbsensiModel)
         .filter(AbsensiModel.mengajar_id == data["mengajar_id"])
@@ -267,12 +268,21 @@ def absensi(kelas_id):
         .count()
         # .filter(AbsensiModel.tgl_absen == date)
     )
+    sqlTglAbsen = day(
+        sql=db.session.query(AbsensiModel)
+        .filter(AbsensiModel.tgl_absen == date)
+        .order_by(AbsensiModel.pertemuan_ke.desc())
+        .first()
+    )
+
+    # print(sqlTglAbsen)
     # print(sqlCountPertemuan.pertemuan_ke)
-    date = datetime.date(datetime.today())
 
     if sqlCountPertemuan != 0:
         # data["pertemuan"] = int(sqlCountPertemuan.pertemuan_ke) + 1
-        data["pertemuan"] = sqlCountPertemuan + 1
+        data["pertemuan"] = (
+            sqlCountPertemuan + 1 if sqlTglAbsen is None else sqlCountPertemuan
+        )
 
     else:
         data["pertemuan"] = 1

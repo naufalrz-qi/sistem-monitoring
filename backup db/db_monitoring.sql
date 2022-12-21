@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 21, 2022 at 11:07 AM
+-- Generation Time: Dec 21, 2022 at 03:01 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 7.4.30
 
@@ -74,9 +74,9 @@ CREATE TABLE `auth_user` (
 --
 
 INSERT INTO `auth_user` (`id`, `username`, `password`, `group`, `join_date`, `update_date`, `is_active`, `user_last_login`, `user_logout`) VALUES
-(5, 'admin', 'pbkdf2:sha256:260000$ppQCAb9XeA0ySjUp$ec7695e8ca5c83fdf7a3a7198862af70c31cadce3a3b96287fd65e2555bc9826', 'admin', '2022-11-21 08:59:26', NULL, '1', '2022-12-21 10:29:55', NULL),
+(5, 'admin', 'pbkdf2:sha256:260000$ppQCAb9XeA0ySjUp$ec7695e8ca5c83fdf7a3a7198862af70c31cadce3a3b96287fd65e2555bc9826', 'admin', '2022-11-21 08:59:26', NULL, '1', '2022-12-21 21:02:25', NULL),
 (6, '196606271996022001', 'pbkdf2:sha256:260000$NS1yfMhyPjaf792v$19ecfb1c7a645732ee6c0767128b282763629ecf4b8a03f770dcca2d3cee5d95', 'guru', '2022-11-23 10:45:46', '2022-12-17 21:58:41', '1', '2022-12-17 21:58:57', NULL),
-(7, '196204141987032019', 'pbkdf2:sha256:260000$MMeaDwSNRQ3ARN4U$e44985c1d72630be619674e95c137060cb16ae3d1d3c43f3dcdea8f0b8957cbd', 'guru', '2022-11-23 11:08:44', NULL, '1', '2022-12-18 13:06:59', NULL),
+(7, '196204141987032019', 'pbkdf2:sha256:260000$MMeaDwSNRQ3ARN4U$e44985c1d72630be619674e95c137060cb16ae3d1d3c43f3dcdea8f0b8957cbd', 'guru', '2022-11-23 11:08:44', NULL, '1', '2022-12-21 19:25:04', NULL),
 (8, '196910171992032008', 'pbkdf2:sha256:260000$6ZY9butqm04lQJBT$007ff3307c52fa684482fb24d4d9a9866e19530e1207f895a15ef6058d038b68', 'guru', '2022-11-23 11:08:44', NULL, '1', '2022-12-13 11:50:07', NULL),
 (9, '196501021987032021', 'pbkdf2:sha256:260000$ciDiGmznZ6r9LyqS$57b7487d7f19b9b918c94358c91de9afac0cef2c907af4da0752dd48b6072245', 'guru', '2022-11-23 11:08:44', NULL, '1', NULL, NULL),
 (10, '196905041998022004', 'pbkdf2:sha256:260000$5CCTPpKEwU4uxlek$1e036fd3e8a23aba35d8057445c3a41a77e91098cc264c5d446182943c8bf79b', 'guru', '2022-11-23 11:08:44', NULL, '1', NULL, NULL),
@@ -105,7 +105,11 @@ INSERT INTO `auth_user` (`id`, `username`, `password`, `group`, `join_date`, `up
 (33, '0083083027', 'pbkdf2:sha256:260000$obSCRkge0aCgToLi$68d66ec4019e5b5591bfaa21cba5370a2009b878b0c50817df3cdcb07d6833fc', 'siswa', '2022-12-01 00:18:15', NULL, '1', NULL, NULL),
 (34, '0099631922', 'pbkdf2:sha256:260000$up3QPN9hgOSj6Z67$c53daca0c82c704c8d5295b4765bfa22bfba667f12b42689001f6cf8f48a5f83', 'siswa', '2022-12-01 00:18:15', NULL, '1', NULL, NULL),
 (35, '0095459342', 'pbkdf2:sha256:260000$gYDnabg5ky8XHn8v$554f6856c28572550019c64f00789bc75a03221f52cef31ec4822a525dad6d26', 'siswa', '2022-12-01 00:18:15', NULL, '1', NULL, NULL),
-(36, '0091604225', 'pbkdf2:sha256:260000$rBBOl2DoD7PBpocT$47985d62393ffd6671d37785ad18469624d9e3f53994cca81269315022bd4dfa', 'siswa', '2022-12-01 00:18:15', NULL, '1', NULL, NULL);
+(36, '0091604225', 'pbkdf2:sha256:260000$rBBOl2DoD7PBpocT$47985d62393ffd6671d37785ad18469624d9e3f53994cca81269315022bd4dfa', 'siswa', '2022-12-01 00:18:15', NULL, '1', NULL, NULL),
+(37, '0091746861', 'pbkdf2:sha256:260000$dEmD4yWdFE0JmcHo$0d2a8e6fff9e28c961b5b0a6ea8c7dacf093d320464d33d354cd7f918eabf10a', 'siswa', '2022-12-21 21:01:38', NULL, '1', NULL, NULL),
+(38, '0094595250', 'pbkdf2:sha256:260000$Zs5NouVQmGciuPlf$24ab81a22cc9aafd3e2e422ce53c97b873f8154b0b54edaf9ea5461241807884', 'siswa', '2022-12-21 21:01:38', NULL, '1', NULL, NULL),
+(39, '0087800776', 'pbkdf2:sha256:260000$3DNixgIqHpUbXTfw$e20bf32b2686bb8c960105f20c6d3409cce46562564cb85453f332336088777e', 'siswa', '2022-12-21 21:01:38', NULL, '1', NULL, NULL),
+(40, '0096678822', 'pbkdf2:sha256:260000$4FFtcbqrQdjSZK8f$4513c3c7e2507c6a3cd79f26915a0c4c2c01975c023a741f1c5b4550b1cb7d89', 'siswa', '2022-12-21 21:01:38', NULL, '1', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -121,6 +125,17 @@ CREATE TABLE `data_absensi` (
   `ket` varchar(16) NOT NULL,
   `pertemuan_ke` varchar(2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `data_absensi`
+--
+
+INSERT INTO `data_absensi` (`id`, `mengajar_id`, `siswa_id`, `tgl_absen`, `ket`, `pertemuan_ke`) VALUES
+(117, 74, 31, '2022-12-21', 'H', '1'),
+(118, 74, 33, '2022-12-21', 'S', '1'),
+(119, 74, 34, '2022-12-21', 'S', '1'),
+(120, 74, 35, '2022-12-21', 'H', '2'),
+(121, 74, 36, '2022-12-21', 'H', '2');
 
 -- --------------------------------------------------------
 
@@ -225,7 +240,11 @@ INSERT INTO `detail_siswa` (`id`, `first_name`, `last_name`, `gender`, `tempat_l
 (22, 'AHMAD', 'AL FAHREZI', 'laki-laki', NULL, NULL, 'islam', NULL, '', NULL, NULL, NULL, 33, 12),
 (23, 'Andi', 'Wafiqah Raidah Khamilah', 'perempuan', NULL, NULL, 'islam', NULL, '', NULL, NULL, NULL, 34, 12),
 (24, 'Muh.', 'Rifqy Athaillah Hamran', 'laki-laki', NULL, NULL, 'islam', NULL, '', NULL, NULL, NULL, 35, 12),
-(25, 'SARIFA', 'ALIFIYAH ISWANDI', 'perempuan', NULL, NULL, 'islam', NULL, '', NULL, NULL, NULL, 36, 12);
+(25, 'SARIFA', 'ALIFIYAH ISWANDI', 'perempuan', NULL, NULL, 'islam', NULL, '', NULL, NULL, NULL, 36, 12),
+(26, 'Andini', 'Nur Rahmania', 'perempuan', NULL, NULL, 'islam', NULL, '', NULL, NULL, NULL, 37, 13),
+(27, 'Fadlan', 'Nurrahman', 'laki-laki', NULL, NULL, 'islam', NULL, '', NULL, NULL, NULL, 38, 13),
+(28, 'MUH.', 'SUPOMO GUNTUR IRWAN', 'laki-laki', NULL, NULL, 'islam', NULL, '', NULL, NULL, NULL, 39, 13),
+(29, 'Nur', 'Aini Indira Rihaz', 'perempuan', NULL, NULL, 'islam', NULL, '', NULL, NULL, NULL, 40, 13);
 
 -- --------------------------------------------------------
 
@@ -417,7 +436,7 @@ INSERT INTO `master_kelas` (`id`, `kelas`, `jml_laki`, `jml_perempuan`, `jml_sel
 (10, 'VIII-2', 2, 3, 5),
 (11, 'VIII-3', 2, 3, 5),
 (12, 'VIII-4', 2, 3, 5),
-(13, 'VIII-5', 1, 0, 1);
+(13, 'VIII-5', 3, 2, 5);
 
 -- --------------------------------------------------------
 
@@ -723,13 +742,13 @@ ALTER TABLE `auth_token_block`
 -- AUTO_INCREMENT for table `auth_user`
 --
 ALTER TABLE `auth_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `data_absensi`
 --
 ALTER TABLE `data_absensi`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
 
 --
 -- AUTO_INCREMENT for table `detail_admin`
@@ -747,7 +766,7 @@ ALTER TABLE `detail_guru`
 -- AUTO_INCREMENT for table `detail_siswa`
 --
 ALTER TABLE `detail_siswa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `master_guru_bk`
