@@ -3,6 +3,7 @@ from ..extensions import db
 import sqlalchemy.orm as rs
 from sqlalchemy.orm import backref
 from .user_details_model import *
+from typing import Any, Optional
 
 
 class KelasModel(db.Model):
@@ -26,7 +27,7 @@ class KelasModel(db.Model):
 class MapelModel(db.Model):
     __tablename__ = "master_mapel"
     id = sa.Column(sa.Integer, primary_key=True)
-    mapel = sa.Column(sa.String(32), nullable=False)
+    mapel = sa.Column(sa.String(64), nullable=False)
 
     def __repr__(self) -> str:
         return self.mapel
@@ -213,3 +214,19 @@ class NamaBulanModel(db.Model):
 
     def __repr__(self) -> str:
         return "Bulan :".format(self.nama_bulan)
+
+
+class TahunModel(db.Model):
+    __tablename__ = "master_tahun"
+    id = sa.Column(sa.Integer, primary_key=True)
+    tahun = sa.Column(sa.String(4), nullable=False, unique=True)
+    status = sa.Column(sa.String(6), nullable=False)
+
+    def __init__(
+        self, tahun: Optional[str] = None, status: Optional[str] = None
+    ) -> None:
+        self.tahun = tahun
+        self.status = status
+
+    def __repr__(self) -> str:
+        return "id : {} | tahun {} | status {}".format(self.id, self.tahun, self.status)

@@ -1769,8 +1769,8 @@ class JadwalMengajara:
                 guru_id = request.form.get("namaGuru")
                 mapel_id = request.form.get("namaMapel")
                 hari_id = request.form.get("hari")
-                jam_mulai = request.form.get("waktuMulai")
-                jam_selesai = request.form.get("waktuSelesai")
+                jam_mulai = request.form.get("waktuMulai2")
+                jam_selesai = request.form.get("waktuSelesai2")
                 kelas_id = request.form.get("kelas")
                 jam_ke = request.form.get("jamKe")
 

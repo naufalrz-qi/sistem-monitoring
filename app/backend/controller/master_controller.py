@@ -908,4 +908,79 @@ class MonthName:
 
         elif request.method == "DELETE":
             base.delete(bulan)
-            return jsonify(msg=f'Data has been deleted.!'),HTTP_204_NO_CONTENT
+            return jsonify(msg=f"Data has been deleted.!"), HTTP_204_NO_CONTENT
+
+
+class TahunData:
+    @master.route("year/get-all")
+    def get_all_tahun():
+        base = BaseModel(TahunModel)
+        tahun = base.get_all()
+
+        data = []
+        for i in tahun:
+            data.append(
+                {
+                    "id": i.id,
+                    "tahun": i.tahun,
+                    "status": i.status,
+                }
+            )
+
+        return jsonify(data), HTTP_200_OK
+
+    @master.route("year/add", methods=["GET", "POST"])
+    def add_tahun():
+        tahun = request.json.get("tahun")
+        status = request.json.get("status")
+
+        base = BaseModel(TahunModel(tahun=tahun, status=status))
+        check_year = base.get_one(tahun=tahun)
+        if check_year:
+            return (
+                jsonify(
+                    msg=f"Data tahun {tahun} telah ada dalam database, silah input tahun lainnya."
+                ),
+                HTTP_409_CONFLICT,
+            )
+        else:
+            base.create()
+
+            return (
+                jsonify(
+                    msg=f'Data tahun {base.model.tahun}, dengan status {"aktif" if base.model.status =="1" else "tidak aktif"} telah ditambahkan.!'
+                ),
+                HTTP_201_CREATED,
+            )
+
+    @master.route("year/get-single/<int:id>", methods=["GET", "PUT", "DELETE"])
+    def get_single_tahun(id):
+        base = BaseModel(TahunModel)
+        sql = base.get_one(id=id)
+
+        if sql:
+            if request.method == "GET":
+                return (
+                    jsonify(id=sql.id, tahun=sql.tahun, status=sql.status),
+                    HTTP_200_OK,
+                )
+            elif request.method == "PUT":
+                status = request.json.get("status")
+                sql.status = status
+
+                base.edit()
+
+                return (
+                    jsonify(msg=f"Status tahun {sql.tahun} telah diperbaharui!"),
+                    HTTP_200_OK,
+                )
+            elif request.method == "DELETE":
+                base.delete(sql)
+                return jsonify(msg="Data has been deleted!"), HTTP_204_NO_CONTENT
+        else:
+            return (
+                jsonify(
+                    msg=f"Data dengan ID yang dimaksud tidak ditemukan dalam database!"
+                ),
+                HTTP_404_NOT_FOUND,
+            )

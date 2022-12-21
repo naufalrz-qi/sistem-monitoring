@@ -2,3 +2,5 @@ env/
 __pycache__/
 alchemydumps/
 migrations/
+test.py
+test_json.py
