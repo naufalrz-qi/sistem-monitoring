@@ -32,6 +32,10 @@ class BaseModel:
     def edit(self):
         return db.session.commit()
 
+    def update(self):
+        self.model.verified = True
+        return db.session.commit()
+
     def delete(self, *args):
         db.session.delete(*args)
         db.session.commit()

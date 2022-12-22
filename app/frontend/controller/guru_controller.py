@@ -323,7 +323,6 @@ def absensi(mengajar_id):
             tgl_absen = request.form["today"]
             ket = request.form.get(f"ket-{n}")
             pertemuan_ke = request.form["pertemuan"]
-            print(ket)
 
             if not ket:
                 flash(
@@ -400,6 +399,9 @@ def update_absen(mengajar_id):
 
     base_absensi = BaseModel(AbsensiModel)
     sql_absensi = base_absensi.get_all_filter_by(mengajar_id=mengajar_id)
+
+    for i in sql_absensi:
+        print(i.siswa.first_name and i.siswa.last_name)
 
     return render_template(
         "guru/modul/absen/update_absensi.html",
