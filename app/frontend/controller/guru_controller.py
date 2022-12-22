@@ -10,6 +10,7 @@ from flask import (
     escape,
 )
 from flask_login import current_user, login_required
+from sqlalchemy import func
 from app.frontend.forms.form_absen import AbsensiForm
 from ...backend.extensions import db
 from app.backend.lib.base_model import BaseModel
@@ -218,7 +219,6 @@ def jadwal_mengajar():
             .all()
         )
     )
-    print(tomorrow_())
 
     return render_template(
         "guru/modul/jadwal_mengajar/jadwal_mengajar.html",
@@ -228,11 +228,42 @@ def jadwal_mengajar():
     )
 
 
-@guru2.route("/absensi-pelajaran/<int:kelas_id>", methods=["GET", "POST"])
-def absensi(kelas_id):
+@guru2.route("/absensi-pelajaran/<int:mengajar_id>", methods=["GET", "POST"])
+def absensi(mengajar_id):
     form = AbsensiForm()
+    """
+        mengambil smua data pada tabel master mengajar dengan filter by mengajar id
+        sebagai parameter, dan menyimpan data mengajar pada dictionary data mengajar
+    """
+    base_mengajar = BaseModel(MengajarModel)
+    mengajar = base_mengajar.get_all_filter_by(id=mengajar_id)
+
+    data_mengajar = {}
+    for i in mengajar:
+        data_mengajar["kelas_id"] = i.kelas_id
+        data_mengajar["mengajar_id"] = i.id
+
+    """
+        mengambil semua data siswa dengan filter kelas id pada tabel siswa
+        dan di join dengan kelas id pada tabel master mengajar. Dan data
+    """
     base_siswa = BaseModel(SiswaModel)
-    siswa = base_siswa.get_all_filter_by(kelas_id=kelas_id)
+    siswa = base_siswa.get_all_filter_by(kelas_id=data_mengajar["kelas_id"])
+
+    """
+        mengambil semua id dan nama kelas pada tabel kelas melalui tabel siswa
+        yang sudah di relasikan dengan tabel kelas, lalu di simpan dalam
+        variabel dictionoary data.
+    """
+    data = {}
+    for i in siswa:
+        data["kelas_id"] = i.kelas_id
+        data["kelas"] = i.kelas.kelas
+
+    """
+        Mengambil semua data pada Tabel Mengajar
+        dengan filter berdasarkan hari dan guru id
+    """
     sqlToday = day(
         sql=(
             db.session.query(MengajarModel)
@@ -243,43 +274,46 @@ def absensi(kelas_id):
             .all()
         )
     )
-    data = {}
-    for i in siswa:
-        data["kelas_id"] = i.kelas_id
-        data["kelas"] = i.kelas.kelas
-
+    """
+        menyimpan ID MENGAJAR dan nama MAPEL pada variabel data
+    """
     for i in sqlToday:
         data["mengajar_id"] = i.id
         data["mapel"] = i.mapel.mapel
-    # sqlCountPertemuan = day(
-    #     sql=db.session.query(AbsensiModel)
-    #     .filter(AbsensiModel.mengajar_id == data["mengajar_id"])
-    #     .group_by(AbsensiModel.pertemuan_ke)
-    #     .order_by(AbsensiModel.pertemuan_ke.desc())
-    #     .limit(1)
-    #     .first()
-    # )
+
     date = datetime.date(datetime.today())
+
+    """
+    Menghitung jumlah pertemuan dengan filter berdasarkan tabel MENGAJAR ID
+    """
     sqlCountPertemuan = day(
         sql=db.session.query(AbsensiModel)
-        .filter(AbsensiModel.mengajar_id == data["mengajar_id"])
+        .filter(AbsensiModel.mengajar_id == data_mengajar["mengajar_id"])
         .order_by(AbsensiModel.pertemuan_ke.desc())
         .limit(1)
         .count()
-        # .filter(AbsensiModel.tgl_absen == date)
     )
+
+    """
+        MENAMBIL DATA ABSEN PERHARI DENGAN FILTER BERDASARKAN TANGGAL PERHARI
+        UNTUK FILTER PERTEMUAN-KE N JIKA TANGGALNYA MASIH SAMA ATAU DI HARI YANG
+        SAMA PADA ABSEN MAKA PERTEMUAN KE TIDAK AKAN BERUBAH
+    """
     sqlTglAbsen = day(
         sql=db.session.query(AbsensiModel)
+        .join(SiswaModel)
         .filter(AbsensiModel.tgl_absen == date)
+        .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
         .order_by(AbsensiModel.pertemuan_ke.desc())
         .first()
     )
 
-    # print(sqlTglAbsen)
-    # print(sqlCountPertemuan.pertemuan_ke)
-
+    """
+        MENGHITUNG PERTEMUAN SETIAP SUDAH MELAKUKAN ABSEN, DAN HASIL
+        KALKULASI DARI PERTEMUAN AKAN TER-TAMBAH SECARA OTOMATIS
+        ZDI PERTEMUAN SELANJUTNYA
+    """
     if sqlCountPertemuan != 0:
-        # data["pertemuan"] = int(sqlCountPertemuan.pertemuan_ke) + 1
         data["pertemuan"] = (
             sqlCountPertemuan + 1 if sqlTglAbsen is None else sqlCountPertemuan
         )
@@ -304,7 +338,7 @@ def absensi(kelas_id):
                     .count()
                 )
                 if sqlPertemuan > 0:
-                    flash("Absen hari in telah di input", "error")
+                    flash("Ma'af.! Absen kehadiran hari ini telah di input", "error")
                 else:
                     base_absesn = BaseModel(
                         AbsensiModel(
@@ -323,10 +357,13 @@ def absensi(kelas_id):
                     )
             else:
                 flash(
-                    f"Keterangan Kehadiran siswa wajib dipilih secara menyeluruh dengan sesuai keadaan siswa.",
+                    # f"Ma'af keterangan Kehadiran siswa wajib dipilih secara menyeluruh dengan sesuai keadaan siswa.",
+                    f"Ma'af.! keterangan Kehadiran siswa wajib dipilih sebelum menyelesaikan absen hari ini.",
                     "error",
                 )
-        return redirect(url_for("guru2.absensi", kelas_id=data["kelas_id"]))
+        return redirect(
+            url_for("guru2.absensi", mengajar_id=data_mengajar["mengajar_id"])
+        )
 
     return render_template(
         "guru/modul/absen/absensi.html",
@@ -335,6 +372,44 @@ def absensi(kelas_id):
         data=data,
         form=form,
         today=date,
+        data_mengajar=data_mengajar,
+    )
+
+
+@guru2.route("update-absensi/<int:mengajar_id>", methods=["GET", "PUT"])
+@login_required
+def update_absen(mengajar_id):
+    data = {}
+    """
+    Mengambil semua data pada Tabel Mengajar
+    dengan filter berdasarkan hari dan guru id
+    """
+    sqlToday = day(
+        sql=(
+            db.session.query(MengajarModel)
+            .join(HariModel)
+            .filter(MengajarModel.guru_id == current_user.id)
+            .filter(MengajarModel.hari_id == HariModel.id)
+            .filter(HariModel.hari == today_())
+            .all()
+        )
+    )
+
+    base_absensi = BaseModel(AbsensiModel)
+    # sql_absensi = db.session.query(AbsensiModel).filter(AbsensiModel.mengajar_id==mengajar_id)
+    sql_absensi = base_absensi.get_all_filter_by(mengajar_id=mengajar_id)
+
+    for i in sql_absensi:
+        data["kelas_id"] = i.siswa.kelas_id
+        data["kelas"] = i.siswa.kelas.kelas
+
+    base_kelas = BaseModel(KelasModel)
+    # sql_kelas = base_kelas.get_one()
+    return render_template(
+        "guru/modul/absen/update_absensi.html",
+        sqlToday=sqlToday,
+        sql_absensi=sql_absensi,
+        data=data,
     )
 
 

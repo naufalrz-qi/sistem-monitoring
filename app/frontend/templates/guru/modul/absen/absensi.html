@@ -11,7 +11,7 @@
 {% block content %}
 
 <div class="row">
-  <div class="col-md-10">
+  <div class="col-md-8">
     <div class="card card-blue">
       <div class="card-header">
         <h3 class="card-title">Absen Kehadiran</h3>
@@ -24,7 +24,7 @@
               <h6 class="text-bold">Kelas : {{data.kelas}}</h6>
               <h6 class="text-bold">Mapel : {{data.mapel}}</h6>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
               {{form.pertemuan(value=data.pertemuan)}}
               <h6 class="text-bold">Pertemuan Ke : {{data.pertemuan}}</h6>
               <h6 class="text-bold ">Hari : {{today | date_indo }}</h6>
@@ -47,7 +47,7 @@
               </div>
               <tr>
                 <td>{{ loop.index }}</td>
-                <td>{{ i.first_name }} {{ i.last_name }}</td>
+                <td>{{ i.first_name | title }} {{ i.last_name | title }}</td>
                 <td class="text-center ">
                   <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     <label class="btn btn-outline-success rounded-circle btn-sm text-center mr-2">
@@ -68,35 +68,49 @@
               {% endfor %}
             </tbody>
           </table>
-          <div class="form-group mt-2 mb-0">
-            <h6 class="text-bold mb-0">Keterangan: </h6>
-            <span class="badge bg-success">- H : Hadir</span> <br>
-            <span class="badge bg-warning">- S : Sakit</span> <br>
-            <span class="badge bg-info">- I : Izin</span> <br>
-            <span class="badge bg-danger">- A : Alpha</span> <br>
-            <span class="text-secondary mt-1">Note: *Harap periksa kembali sebelum menekan tombol selesai.</span>
+
+        </div>
+        <div class="card-footer">
+          <div class="form-group ml-auto mr-auto pl-5 pr-5 text-center d-flex">
+            <button type="submit" class="btn btn-sm btn-primary form-control mr-2">
+              <i class="fas fa-check"></i>
+              <span>Selesai</span>
+            </button>
+            {# <button type="button" onclick="ref()" class="btn btn-sm btn-danger form-control">
+              <i class="fas fa-times"></i>
+              <span>Batal</span>
+            </button> #}
+            <a href="{{ url_for('guru2.update_absen', mengajar_id=data_mengajar.mengajar_id) }}"
+              class="btn btn-warning form-control">
+              <i class="fas fa-edit"></i>
+              <span>Update Absensi</span>
+            </a>
+            <div class="form-group">
+            </div>
           </div>
         </div>
+      </form>
     </div>
-    <div class="card-footer">
-      <div class="form-group ml-auto mr-auto pl-5 pr-5 text-center d-flex">
-        <button type="submit" class="btn btn-sm btn-primary form-control mr-2">
-          <i class="fas fa-check"></i>
-          <span>Selesai</span>
-        </button>
-        <button type="button" onclick="ref()" class="btn btn-sm btn-danger form-control">
-          <i class="fas fa-times"></i>
-          <span>Batal</span>
-        </button>
-        <div class="form-group">
+  </div>
+  <div class="col col-md-4 col-sm-4">
+    <div class="card card-blue">
+      <div class="card-header">
+        <h3 class="card-title">Keterangan</h3>
+      </div>
+      <div class="card-body">
+        <div class="form-group mb-0">
+          <h6 class="text-bold mb-1">Keterangan: </h6>
+          <span class="badge bg-success ml-4 text-sm">- H : Hadir</span> <br>
+          <span class="badge bg-warning ml-4 text-sm">- S : Sakit</span> <br>
+          <span class="badge bg-info ml-4 text-sm">- I : Izin</span> <br>
+          <span class="badge bg-danger ml-4 text-sm mb-2">- A : Alpha</span> <br>
+          <span class="text-secondary mt-2"><strong>Note:</strong> *Harap periksa kembali sebelum menekan tombol
+            selesai.</span>
         </div>
       </div>
     </div>
-
-    </form>
   </div>
 </div>
-
 {% endblock content %}
 {% block js %}
 <!-- DataTables  & Plugins -->

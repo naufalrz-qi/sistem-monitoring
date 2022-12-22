@@ -174,6 +174,11 @@ import datetime
 #     # print((5 - i) * " " + (2 * i - 1) * "*")
 #     print((5 - i + 1) * "*")
 import calendar
+from datetime import datetime
 
 for i in range(1, 13):
     bulan = calendar.month_name[i]
+
+# dt = datetime.datetime.date(datetime.datetime.today())
+dt = datetime.date(datetime.today())
+print(dt)

@@ -42,13 +42,13 @@
         <li class="nav-header">Main Menu</li>
         <li class="nav-item">
           <a href="{{ url_for('guru2.jadwal_mengajar') }}"
-            class="nav-link {{'active' if filename=='jadwal_guru' else None}}">
+            class="nav-link {{'active' if filename=='jadwal_guru'  else None}}">
             <i class="nav-icon fas fa-clipboard-list"></i>
             <p>Jadwal Mengajar</p>
           </a>
         </li>
-        <li class="nav-item {{'menu-open' if filename=='absen' else None}}">
-          <a href="#" class="nav-link {{'active' if filename=='absen' else None}}">
+        <li class="nav-item {{'menu-open' if filename=='absen' or filename=='update-absensi' else None}}">
+          <a href="#" class="nav-link {{'active' if filename=='absen' or filename=='update-absensi' else None}}">
             <i class="nav-icon fas fa-clipboard-check "></i>
             <p>Absens Siswa
               <i class="right fa fa-angle-left"></i>
@@ -58,9 +58,10 @@
             {% if sqlToday %}
             {% for x in sqlToday %}
             <li class="nav-item">
-              <a href="{{url_for('guru2.absensi', kelas_id=x.kelas_id)}}"
-                class="nav-link {{'active' if filename=='absen' else None}}">
-                <i class="far fa-circle {{'fa-dot-circle' if filename=='absen' else None}}"></i>
+              <a href="{{url_for('guru2.absensi', mengajar_id=x.id)}}"
+                class="nav-link {{'active' if filename=='absen' or filename=='update-absensi' else None}}">
+                <i
+                  class="far fa-circle {{'fa-dot-circle' if filename=='absen' or filename=='update-absensi' else None}}"></i>
                 <p>{{ x.kelas}}</p>
               </a>
             </li>
