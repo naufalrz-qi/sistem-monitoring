@@ -71,17 +71,17 @@
 
         </div>
         <div class="card-footer">
-          <div class="form-group ml-auto mr-auto pl-5 pr-5 text-center d-flex">
-            <button type="submit" class="btn btn-sm btn-primary form-control mr-2">
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn  btn-primary mr-2">
               <i class="fas fa-check"></i>
-              <span>Selesai</span>
+              <span>Submit Absen</span>
             </button>
             {# <button type="button" onclick="ref()" class="btn btn-sm btn-danger form-control">
               <i class="fas fa-times"></i>
               <span>Batal</span>
             </button> #}
             <a href="{{ url_for('guru2.update_absen', mengajar_id=data_mengajar.mengajar_id) }}"
-              class="btn btn-warning form-control">
+              class="btn btn-warning">
               <i class="fas fa-edit"></i>
               <span>Update Absensi</span>
             </a>
