@@ -11,7 +11,7 @@
 {% block content %}
 
 <div class="row">
-  <div class="col-md-10">
+  <div class="col-md-8">
     <div class="card card-blue">
       <div class="card-header">
         <h3 class="card-title">Update Absensi Kelas: {{ data.kelas if data.kelas else '-' }}</h3>
@@ -24,7 +24,6 @@
 
 
       <form action method="post">
-        {# {{ form.csrf_token }} #}
         <div class="card-body">
           <div class="row mb-0 align-items-center">
             <div class="col-md-6">
@@ -50,7 +49,7 @@
               {% for i in sql_absensi %}
               <div class="from-group">
                 <input type="hidden" value="{{data.mengajar_id}}" name="mengajarId">
-                <input type="hidden" value="{{i.siswa_id}}" name="userId-{{loop.index}}">
+                <input type="hidden" value="{{i.siswa_id}}" name="siswaID-{{loop.index}}">
               </div>
               <tr>
                 <td>{{ loop.index }}</td>

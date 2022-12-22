@@ -371,7 +371,7 @@ def absensi(mengajar_id):
     )
 
 
-@guru2.route("update-absensi/<int:mengajar_id>", methods=["GET", "PUT"])
+@guru2.route("update-absensi/<int:mengajar_id>", methods=["GET", "POST"])
 @login_required
 def update_absen(mengajar_id):
     data = {}
@@ -401,8 +401,26 @@ def update_absen(mengajar_id):
     base_absensi = BaseModel(AbsensiModel)
     sql_absensi = base_absensi.get_all_filter_by(mengajar_id=mengajar_id)
 
-    for i in sql_absensi:
-        print(i.siswa.first_name and i.siswa.last_name)
+    if request.method == "POST":
+
+        for i in range(1, len(sql_absensi) + 1):
+            ket = request.form.get(f"ket-{i}")
+            siswa_id = request.form.get(f"siswaID-{i}")
+
+            sql_update_absen = (
+                db.session.query(AbsensiModel)
+                .filter(AbsensiModel.mengajar_id == mengajar_id)
+                .filter(AbsensiModel.siswa_id == siswa_id)
+                .scalar()
+            )
+
+            sql_update_absen.ket = ket
+
+            db.session.commit()
+
+        flash(f"Anda telah melakukan perubahan absensi siswa.", "info")
+
+        return redirect(url_for("guru2.absensi", mengajar_id=mengajar_id))
 
     return render_template(
         "guru/modul/absen/update_absensi.html",
