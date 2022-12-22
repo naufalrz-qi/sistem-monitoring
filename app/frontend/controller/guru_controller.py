@@ -396,6 +396,7 @@ def update_absen(mengajar_id):
         data["mengajar_id"] = i.id
         data["kelas_id"] = i.kelas.kelas
         data["kelas"] = i.kelas.kelas
+        data["mapel"] = i.mapel.mapel
 
     base_absensi = BaseModel(AbsensiModel)
     sql_absensi = base_absensi.get_all_filter_by(mengajar_id=mengajar_id)
