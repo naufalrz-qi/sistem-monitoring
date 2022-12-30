@@ -16,13 +16,18 @@
       <div class="card-header">
         <h3 class="card-title">Update Absensi Kelas: {{ data.kelas if data.kelas else '-' }}</h3>
       </div>
-      {% if not sql_absensi %}
+      {% if not sql_absensi  %}
       <div class="card-body">
         <p class="card-text text-center">Silahkan lakukan absensi untuk hari ini terlebih dahulu!</p>
       </div>
+      {# {% elif sql_absensi|length  < sql_siswa|length %}
+      <div class="card-body">
+        <p class="card-text text-center">
+          <span class="bg-danger p-1 rounded-bottom rounded-top">Absensi belum lengkap. Silahkan lakukan kembali
+            absensi.!</span>
+        </p>
+      </div> #}
       {% else %}
-
-
       <form action method="post">
         <div class="card-body">
           <div class="row mb-0 align-items-center">

@@ -11,7 +11,7 @@ from flask import (
 )
 import asyncio
 from flask_login import current_user, login_required
-from sqlalchemy import func
+from sqlalchemy import and_, func
 from app.frontend.forms.form_absen import AbsensiForm
 from ...backend.extensions import db
 from app.backend.lib.base_model import BaseModel
@@ -28,6 +28,8 @@ from ...backend.lib.date_time import format_indo, tomorrow_, today_
 from werkzeug.security import generate_password_hash, check_password_hash
 from ...backend.models.data_model import AbsensiModel
 from datetime import datetime
+from sqlalchemy import exists
+
 
 guru2 = Blueprint(
     "guru2",
@@ -250,8 +252,22 @@ def absensi(mengajar_id):
         dan di join dengan kelas id pada tabel master mengajar. Dan data
     """
     base_siswa = BaseModel(SiswaModel)
-    siswa = base_siswa.get_all_filter_by(kelas_id=data_mengajar["kelas_id"])
-
+    # siswa = base_siswa.get_all_filter_by(kelas_id=data_mengajar["kelas_id"])
+    siswa = (
+        db.session.query(SiswaModel)
+        # .join(AbsensiModel)
+        # .filter(AbsensiModel.tgl_absen == AbsensiModel.tgl_absen)
+        .filter(SiswaModel.kelas_id == data_mengajar["kelas_id"])
+        .filter(
+            ~exists(AbsensiModel.siswa_id).where(
+                and_(
+                    SiswaModel.user_id == AbsensiModel.siswa_id,
+                    AbsensiModel.tgl_absen == datetime.date(datetime.today()),
+                )
+            )
+        )
+        .all()
+    )
     """
         mengambil semua id dan nama kelas pada tabel kelas melalui tabel siswa
         yang sudah di relasikan dengan tabel kelas, lalu di simpan dalam
@@ -315,6 +331,7 @@ def absensi(mengajar_id):
 
     else:
         data["pertemuan"] = 1
+    absen = []
 
     if request.method == "POST":
         for n in range(1, len(siswa) + 1):
@@ -324,12 +341,24 @@ def absensi(mengajar_id):
             ket = request.form.get(f"ket-{n}")
             pertemuan_ke = request.form["pertemuan"]
 
-            if not ket:
-                flash(
-                    # f"Ma'af keterangan Kehadiran siswa wajib dipilih secara menyeluruh dengan sesuai keadaan siswa.",
-                    f"Ma'af.! keterangan Kehadiran siswa wajib dipilih sebelum menyelesaikan absen hari ini.",
-                    "error",
+            absen.append(ket)
+            base_absesn = BaseModel(
+                AbsensiModel(
+                    mengajar_id=mengajar_id,
+                    siswa_id=siswa_id,
+                    tgl_absen=tgl_absen,
+                    ket=ket,
+                    pertemuan=pertemuan_ke,
                 )
+            )
+
+            if None in absen:
+                # flash(
+                #     # f"Ma'af keterangan Kehadiran siswa wajib dipilih secara menyeluruh dengan sesuai keadaan siswa.",
+                #     f"Ma'af.! keterangan Kehadiran siswa wajib dipilih sebelum menyelesaikan absen hari ini.",
+                #     "error",
+                # )
+                pass
             else:
                 sqlPertemuan = day(
                     sql=db.session.query(AbsensiModel)
@@ -341,17 +370,8 @@ def absensi(mengajar_id):
                 if sqlPertemuan > 0:
                     flash("Ma'af.! Absen kehadiran hari ini telah di input", "error")
                 else:
-                    base_absesn = BaseModel(
-                        AbsensiModel(
-                            mengajar_id=mengajar_id,
-                            siswa_id=siswa_id,
-                            tgl_absen=tgl_absen,
-                            ket=ket,
-                            pertemuan=pertemuan_ke,
-                        )
-                    )
-                    base_absesn.create()
 
+                    base_absesn.create()
                     flash(
                         f"Kelas : {data.get('kelas')} telah selesai melaukan absen kehadiran. untuk mengubah kehadiran",
                         "success",
@@ -359,7 +379,7 @@ def absensi(mengajar_id):
         return redirect(
             url_for("guru2.absensi", mengajar_id=data_mengajar["mengajar_id"])
         )
-
+    print(absen)
     return render_template(
         "guru/modul/absen/absensi.html",
         model=siswa,
@@ -394,9 +414,12 @@ def update_absen(mengajar_id):
     sql_mengajar = base_mengjar.get_all_filter_by(id=mengajar_id)
     for i in sql_mengajar:
         data["mengajar_id"] = i.id
-        data["kelas_id"] = i.kelas.kelas
+        data["kelas_id"] = i.kelas_id
         data["kelas"] = i.kelas.kelas
         data["mapel"] = i.mapel.mapel
+
+    base_siswa = BaseModel(SiswaModel)
+    sql_siswa = base_siswa.get_all_filter_by(kelas_id=data["kelas_id"])
 
     base_absensi = BaseModel(AbsensiModel)
     sql_absensi = base_absensi.get_all_filter_by(mengajar_id=mengajar_id)
@@ -427,6 +450,7 @@ def update_absen(mengajar_id):
         sqlToday=sqlToday,
         sql_absensi=sql_absensi,
         data=data,
+        sql_siswa=sql_siswa,
     )
 
 
