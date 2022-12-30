@@ -245,6 +245,7 @@ def absensi(mengajar_id):
     data_mengajar = {}
     for i in mengajar:
         data_mengajar["kelas_id"] = i.kelas_id
+        data_mengajar["kelas"] = i.kelas.kelas
         data_mengajar["mengajar_id"] = i.id
         data_mengajar["mapel"] = i.mapel.mapel
     """
@@ -259,12 +260,10 @@ def absensi(mengajar_id):
         # .filter(AbsensiModel.tgl_absen == AbsensiModel.tgl_absen)
         .filter(SiswaModel.kelas_id == data_mengajar["kelas_id"])
         .filter(
-            ~exists(AbsensiModel.siswa_id).where(
-                and_(
-                    SiswaModel.user_id == AbsensiModel.siswa_id,
-                    AbsensiModel.tgl_absen == datetime.date(datetime.today()),
-                )
-            )
+            ~exists(AbsensiModel.siswa_id)
+            .where(SiswaModel.user_id == AbsensiModel.siswa_id)
+            .where(AbsensiModel.tgl_absen == datetime.date(datetime.today()))
+            .where(AbsensiModel.mengajar_id == mengajar_id)
         )
         .all()
     )

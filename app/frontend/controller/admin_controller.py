@@ -1845,7 +1845,7 @@ def data_kehadiran():
 
     if request.method == "POST":
         kelas_id = request.form.get("kelas")
-        mapel_id = request.form.get("mapel")
+        # mapel_id = request.form.get("mapel")
         bulan_id = request.form.get("bulan")
 
         # print(kelas_id)
@@ -1893,7 +1893,6 @@ def data_kehadiran():
         )
         data["month_range"] = date_in_month[1]
 
-        print(data)
         return render_template(
             "admin/absensi/result_daftar_hadir.html",
             sql_kehadiran=sql_kehadiran,

@@ -83,8 +83,7 @@
               <td class="text-center">{{ 'L' if i.siswa.gender =='laki-laki' else 'P'}}</td>
               {% for n in range(1, data.month_range+1) %}
               <td class="text-center align-middle bg-gradient-gray-dark">
-                {% for ket in sql_ket %}
-                {% if ket.tgl_absen | tgl== n and ket.siswa_id==i.siswa_id %}
+                {% for ket in sql_ket.filter(AbsensiModel.siswa_id==i.siswa_id).filter(func.day(AbsensiModel.tgl_absen)==n).group_by(func.day(AbsensiModel.tgl_absen)) %}
                 {% if ket.ket=='H' %}
                 <div class="bg-gradient-green">{{ ket.ket }}</div>
                 {% elif ket.ket=='S' %}
@@ -92,9 +91,7 @@
                 {% elif ket.ket=='I' %}
                 <div class="bg-gradient-blue">{{ ket.ket }}</div>
                 {% elif ket.ket=='A' %}
-                <div class="bg-gradient-red">{{ ket.ket }}</div>
-
-                {% endif %}
+                <div class="bg-gradient-red">{{ ket.ket }}</div> #}
                 {% endif %}
                 {% endfor %}
               </td>

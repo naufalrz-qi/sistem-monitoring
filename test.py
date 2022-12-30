@@ -178,7 +178,7 @@ from datetime import datetime
 
 for i in range(1, 13):
     bulan = calendar.month_name[i]
-
+    print(bulan)
 # dt = datetime.datetime.date(datetime.datetime.today())
 dt = datetime.date(datetime.today())
 print(dt)
