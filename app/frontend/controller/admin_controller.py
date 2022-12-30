@@ -1859,7 +1859,7 @@ def data_kehadiran():
         print(i.id)
 
     return render_template(
-        "admin/daftar_hadir/daftar_hadir_siswa.html",
+        "admin/absensi/daftar_hadir_siswa.html",
         kelas=kelas,
         bulan=bulan,
         mapel=mapel,
