@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+{% block content %}
+
+<div class="card card-info card-outline">
+  {# <div class="card-header">
+    <h3 class="card-title">Daftar Hadir Kelas : {{data.kelas}}</h3>
+  </div> #}
+  <div class="card-body">
+    <div class="row mb-2">
+      {# <div class="col-md-4">
+        <h6 class="card-text text-bold">Daftar Hadir Kelas : {{ data.kelas }}</h6>
+        <h6 class="card-text text-bold">Bulan : {{ data.bulan | title }} {{ data.tahun }}</h6>
+      </div>
+      <div class="col-md-4">
+        <h6 class="card-text text-bold">Semester : {{ data.semester | title }}</h6>
+        <h6 class="card-text text-bold">Tahun Aajaran : {{ data.tahun_ajaran | title }}</h6>
+      </div> #}
+      <div class="col-md-6">
+        <table width="100%" class="table-responsive card-text text-bold">
+          <tr>
+            <td>Daftar Hadir Kelas</td>
+            <td>&nbsp;</td>
+            <td>:</td>
+            <td>&nbsp;</td>
+            <td>{{ data.kelas }}</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</td>
+            <td>Semester</td>
+            <td>&nbsp;</td>
+            <td>:</td>
+            <td>&nbsp;</td>
+            <td>{{ data.semester | title }}</td>
+
+          </tr>
+          <tr>
+            <td>Bulan</td>
+            <td>&nbsp;</td>
+            <td>:</td>
+            <td>&nbsp;</td>
+            <td>{{ data.bulan | title }}</td>
+            <td>{{ data.tahun }}</td>
+            <td>&nbsp;</td>
+            <td>&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;</td>
+            <td>Tahun Ajaran</td>
+            <td>&nbsp;</td>
+            <td>:</td>
+            <td>&nbsp;</td>
+            <td>{{ data.tahun_ajaran }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <table id="example" class="table-bordered table-striped text-md table-responsive-md" cellspacing="2"
+          width="100%">
+          <tbody>
+            <tr>
+              <th rowspan="2" class="text-center align-middle">NO</th>
+              <th rowspan="2" colspan="5" class="text-center align-middle">Nama Siswa</th>
+              <th rowspan="2" class="text-center align-middle">L/P</th>
+              <th colspan="{{ data.month_range }}" class="text-center">Tanggal</th>
+              <th colspan="5" class="text-center">Jumlah</th>
+            </tr>
+            <tr>
+              {% for i in range(data.month_range) %}
+              <td class="text-center" style="width: 2%;">{{ loop.index }}</td>
+              {% endfor %}
+              {# <td class="text-center align-middle bg-gradient-green" style="width: 2%;">H</td> #}
+              <td class="text-center align-middle bg-gradient-yellow" style="width: 2%;">S</td>
+              <td class="text-center align-middle bg-gradient-blue" style="width: 2%;">I</td>
+              <td class="text-center align-middle bg-gradient-red" style="width: 2%;">A</td>
+            </tr>
+
+            {% for i in sql_kehadiran %}
+            <tr>
+              <td class="text-center align-middle">{{ loop.index }}</td>
+              <td colspan="5">{{ i.siswa.first_name | title}} {{ i.siswa.last_name | title }}</td>
+              <td class="text-center">{{ 'L' if i.siswa.gender =='laki-laki' else 'P'}}</td>
+              {% for n in range(1, data.month_range+1) %}
+              <td class="text-center align-middle bg-gradient-gray-dark">
+                {% for ket in sql_ket %}
+                {% if ket.tgl_absen | tgl== n and ket.siswa_id==i.siswa_id %}
+                {% if ket.ket=='H' %}
+                <div class="bg-gradient-green">{{ ket.ket }}</div>
+                {% elif ket.ket=='S' %}
+                <div class="bg-gradient-yellow">{{ ket.ket }}</div>
+                {% elif ket.ket=='I' %}
+                <div class="bg-gradient-blue">{{ ket.ket }}</div>
+                {% elif ket.ket=='A' %}
+                <div class="bg-gradient-red">{{ ket.ket }}</div>
+
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+              </td>
+              {% endfor %}
+              <td class="text-center align-middle">
+                {{ sql_ket.filter(AbsensiModel.siswa_id==i.siswa_id).filter(AbsensiModel.ket=='S').count() }}
+              </td>
+              <td class="text-center align-middle">
+                {{ sql_ket.filter(AbsensiModel.siswa_id==i.siswa_id).filter(AbsensiModel.ket=='I').count() }}
+              </td>
+              <td class="text-center align-middle">
+                {{ sql_ket.filter(AbsensiModel.siswa_id==i.siswa_id).filter(AbsensiModel.ket=='A').count() }}
+              </td>
+            </tr>
+            {% endfor %}
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+<!-- DataTables  & Plugins -->
+<script src="{{ url_for('.static', filename='plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('.static', filename='plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ url_for('.static', filename='plugins/datatables-responsive/js/dataTables.responsive.min.js') }}">
+</script>
+<script src="{{ url_for('.static', filename='plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}">
+</script>
+<script src="{{ url_for('.static', filename='plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ url_for('.static', filename='plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+<script src="{{ url_for('.static', filename='plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+<script src="{{ url_for('.static', filename='plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+<script src="{{ url_for('.static', filename='plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+<!-- Page specific script -->
+<script>
+  $(function () {
+
+    $('#example1').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+
+    });
+  });
+</script>
+{% endblock js %}

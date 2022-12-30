@@ -32,6 +32,7 @@ import os
 import requests as req
 import io
 import xlwt
+from calendar import calendar, monthrange
 
 admin2 = Blueprint(
     "admin2", __name__, template_folder="../templates/", url_prefix="/admin"
@@ -1833,6 +1834,7 @@ NOTE : DATABASE DIRECT NO API
 
 
 @admin2.route("/data-kehadiran", methods=["GET", "POST"])
+@login_required
 def data_kehadiran():
     base_kelas = BaseModel(KelasModel)
     kelas = base_kelas.get_all()
@@ -1841,22 +1843,65 @@ def data_kehadiran():
     base_mapel = BaseModel(MapelModel)
     mapel = base_mapel.get_all()
 
-    absen_filter = (
-        db.session.query(AbsensiModel)
-        .join(SiswaModel)
-        .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
-        .filter(func.month(AbsensiModel.tgl_absen) == 11)
-        .filter(SiswaModel.kelas_id == 9)
-        # .group_by(AbsensiModel.tgl_absen, SiswaModel.kelas_id)
-        # .filter(func.extract("month", AbsensiModel.tgl_absen) == 12)
-        .all()
-    )
-    # if absen_filter:
-    #     print("ada")
-    # else:
-    #     print("tidak ada")
-    for i in absen_filter:
-        print(i.id)
+    if request.method == "POST":
+        kelas_id = request.form.get("kelas")
+        mapel_id = request.form.get("mapel")
+        bulan_id = request.form.get("bulan")
+
+        # print(kelas_id)
+        # print(bulan_id)
+
+        sql_kehadiran = (
+            db.session.query(AbsensiModel)
+            .join(SiswaModel)
+            .join(MengajarModel)
+            .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
+            .filter(func.month(AbsensiModel.tgl_absen) == bulan_id)
+            .filter(SiswaModel.kelas_id == kelas_id)
+            .group_by(AbsensiModel.siswa_id)
+            .order_by(AbsensiModel.siswa_id.asc())
+            # .filter(MengajarModel.mapel_id == mapel_id)
+            .all()
+        )
+        sql_keterangan = db.session.query(AbsensiModel)
+
+        data = {}
+        data["bulan"] = base_bulan.get_one(id=bulan_id).nama_bulan
+        for i in sql_kehadiran:
+            data["kelas"] = i.siswa.kelas.kelas
+            data["tahun_ajaran"] = i.mengajar.tahun_ajaran.th_ajaran
+            data["semester"] = i.mengajar.semester.semester
+            # print(f"tgl_absen : {i.tgl_absen.day}")
+            # print(
+            #     i.siswa.first_name
+            #     + " "
+            #     + i.siswa.last_name
+            #     + " Kelas: "
+            #     + i.siswa.kelas.kelas
+            #     + " Mapel :"
+            #     + i.mengajar.mapel.mapel
+            # )
+
+        # this_year = data.get("tahun_ajaran").split("-")[0]
+        this_year = datetime.date(datetime.today())
+        data["tahun"] = this_year.year
+        date_in_month = monthrange(
+            int(
+                this_year.year,
+            ),
+            int(bulan_id),
+        )
+        data["month_range"] = date_in_month[1]
+
+        print(data)
+        return render_template(
+            "admin/absensi/result_daftar_hadir.html",
+            sql_kehadiran=sql_kehadiran,
+            data=data,
+            sql_ket=sql_keterangan,
+            func=func,
+            AbsensiModel=AbsensiModel,
+        )
 
     return render_template(
         "admin/absensi/daftar_hadir_siswa.html",
@@ -1864,3 +1909,6 @@ def data_kehadiran():
         bulan=bulan,
         mapel=mapel,
     )
+
+
+# @admin2.route()

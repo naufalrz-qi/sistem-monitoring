@@ -17,6 +17,7 @@ def create_app():
     loginManager(app)
 
     app.jinja_env.filters["date_indo"] = format_indo
+    app.jinja_env.filters["tgl"] = day_in_date
     return app
 
 

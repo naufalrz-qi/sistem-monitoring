@@ -53,6 +53,10 @@ def day_now_indo():
     return format_indo
 
 
+def day_in_date(date):
+    return date.day
+
+
 def format_indo(date):
     WEEKDAYSLIST = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
     MONTHLIST = (
