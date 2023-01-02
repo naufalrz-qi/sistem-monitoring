@@ -17,8 +17,10 @@ from app.backend.models.master_model import *
 from app.backend.models.user_details_model import *
 from app.backend.lib.base_model import BaseModel
 from werkzeug.utils import secure_filename
+from app.frontend.forms.form_absen import FormSelectAbsensi
 from app.frontend.forms.form_auth import FormEditStatus
 from app.frontend.forms.form_jadwal import FormJadwalMengajar
+from app.frontend.forms.form_letter_report import FormSelectKelas
 from app.frontend.forms.form_master import *
 from app.frontend.forms.form_siswa import FormAddSiswa, FormEditSiswa
 from ..forms.form_auth import *
@@ -512,66 +514,68 @@ class PenggunaGuru:
     @admin2.route("data-guru")
     @login_required
     def get_guru():
-        if current_user.group == "admin":
-            url = base_url + "api/v2/guru/get-all"
-            response = req.get(url)
-            json_resp = response.json()
-            return render_template("admin/guru/data_guru.html", model=json_resp)
-        else:
-            abort(404)
+        if current_user.is_authenticated:
+            if current_user.group == "admin":
+                url = base_url + "api/v2/guru/get-all"
+                response = req.get(url)
+                json_resp = response.json()
+                return render_template("admin/guru/data_guru.html", model=json_resp)
+            else:
+                abort(404)
 
     @admin2.route("tambah-data", methods=["GET", "POST"])
     @login_required
     def add_guru():
-        if current_user.group == "admin":
-            form = FormAddGuru(request.form)
-            base = request.root_url
+        if current_user.is_authenticated:
+            if current_user.group == "admin":
+                form = FormAddGuru(request.form)
+                base = request.root_url
 
-            if request.method == "POST" and form.validate_on_submit():
-                username = form.username.data
-                password = form.password.data
-                group = form.tipe.data if form.tipe.data else "guru"
-                fullname = form.fullname.data
-                first_name = ""
-                last_name = ""
-                first_name, *last_name = fullname.split() if fullname else "None"
-                if len(last_name) == 0:
-                    last_name = first_name
-                elif len(last_name) != 0:
-                    last_name = " ".join(last_name)
-                gender = form.jenisKelamin.data
-                agama = form.agama.data
-                alamat = form.alamat.data
-                telp = form.telp.data
+                if request.method == "POST" and form.validate_on_submit():
+                    username = form.username.data
+                    password = form.password.data
+                    group = form.tipe.data if form.tipe.data else "guru"
+                    fullname = form.fullname.data
+                    first_name = ""
+                    last_name = ""
+                    first_name, *last_name = fullname.split() if fullname else "None"
+                    if len(last_name) == 0:
+                        last_name = first_name
+                    elif len(last_name) != 0:
+                        last_name = " ".join(last_name)
+                    gender = form.jenisKelamin.data
+                    agama = form.agama.data
+                    alamat = form.alamat.data
+                    telp = form.telp.data
 
-                url_create = base + "api/v2/auth/create"
-                payload = json.dumps(
-                    {
-                        "username": username,
-                        "password": password,
-                        "group": group,
-                        "first_name": first_name,
-                        "last_name": last_name,
-                        "gender": gender,
-                        "alamat": alamat,
-                        "agama": agama,
-                        "telp": telp,
-                    }
-                )
-                headers = {"Content-Type": "application/json"}
-                response = req.post(url=url_create, data=payload, headers=headers)
-                msg = response.json().get("msg")
+                    url_create = base + "api/v2/auth/create"
+                    payload = json.dumps(
+                        {
+                            "username": username,
+                            "password": password,
+                            "group": group,
+                            "first_name": first_name,
+                            "last_name": last_name,
+                            "gender": gender,
+                            "alamat": alamat,
+                            "agama": agama,
+                            "telp": telp,
+                        }
+                    )
+                    headers = {"Content-Type": "application/json"}
+                    response = req.post(url=url_create, data=payload, headers=headers)
+                    msg = response.json().get("msg")
 
-                if response.status_code == 201:
-                    flash(f"{msg} Status : {response.status_code}", "success")
-                    return redirect(url_for("admin2.get_guru"))
-                else:
-                    flash(f"{msg}. Status : {response.status_code}", "error")
-                    # return redirect(url_for('admin2.get_guru'))
-                    return render_template("admin/guru/tambah_guru.html", form=form)
-            return render_template("admin/guru/tambah_guru.html", form=form)
-        else:
-            abort(404)
+                    if response.status_code == 201:
+                        flash(f"{msg} Status : {response.status_code}", "success")
+                        return redirect(url_for("admin2.get_guru"))
+                    else:
+                        flash(f"{msg}. Status : {response.status_code}", "error")
+                        # return redirect(url_for('admin2.get_guru'))
+                        return render_template("admin/guru/tambah_guru.html", form=form)
+                return render_template("admin/guru/tambah_guru.html", form=form)
+            else:
+                abort(404)
 
     @admin2.route("update-guru/<int:id>", methods=["POST", "GET"])
     @login_required
@@ -1606,20 +1610,21 @@ class JadwalMengajara:
     @admin2.route("data-jawdwal-mengajar")
     @login_required
     def get_jadwal():
-        if current_user.group == "admin":
-            url = base_url + "api/v2/master/jadwal-mengajar/get-all"
-            resp = req.get(url)
-            jsonResp = resp.json()
-            return render_template(
-                "admin/jadwal_mengajar/data_jadwal.html", model=jsonResp
-            )
-        else:
-            abort(404)
+        if current_user.is_authenticated:
+            if current_user.group == "admin":
+                url = base_url + "api/v2/master/jadwal-mengajar/get-all"
+                resp = req.get(url)
+                jsonResp = resp.json()
+                return render_template(
+                    "admin/jadwal_mengajar/data_jadwal.html", model=jsonResp
+                )
+            else:
+                abort(404)
 
     @admin2.route("tambah-jadwal-mengajar", methods=["GET", "POST"])
     @login_required
     def add_jadwal():
-        if current_user.group == "admin":
+        if current_user.group == "admin" and current_user.is_authenticated:
             form = FormJadwalMengajar(request.form)
             kodeMengajar = "MPL-" + str(time.time()).rsplit(".", 1)[1]
             urlSemester = base_url + "api/v2/master/semester/get-all"
@@ -1840,16 +1845,23 @@ def data_kehadiran():
     kelas = base_kelas.get_all()
     base_bulan = BaseModel(NamaBulanModel)
     bulan = base_bulan.get_all()
-    base_mapel = BaseModel(MapelModel)
-    mapel = base_mapel.get_all()
+    sql_absen = AbsensiModel.query.group_by(AbsensiModel.tgl_absen).all()
 
-    if request.method == "POST":
+    form = FormSelectAbsensi()
+    # data kelas
+    for i in kelas:
+        form.kelas.choices.append((i.id, i.kelas))
+    # data bulan
+    for i in bulan:
+        form.bulan.choices.append((i.id, i.nama_bulan.title()))
+
+    for i in sql_absen:
+        form.tahun.choices.append((i.tgl_absen.year, i.tgl_absen.year))
+
+    if request.method == "POST" and form.validate_on_submit():
         kelas_id = request.form.get("kelas")
-        # mapel_id = request.form.get("mapel")
         bulan_id = request.form.get("bulan")
-
-        # print(kelas_id)
-        # print(bulan_id)
+        tahun = request.form.get("tahun")
 
         sql_kehadiran = (
             db.session.query(AbsensiModel)
@@ -1857,10 +1869,10 @@ def data_kehadiran():
             .join(MengajarModel)
             .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
             .filter(func.month(AbsensiModel.tgl_absen) == bulan_id)
+            .filter(func.year(AbsensiModel.tgl_absen) == tahun)
             .filter(SiswaModel.kelas_id == kelas_id)
             .group_by(AbsensiModel.siswa_id)
             .order_by(AbsensiModel.siswa_id.asc())
-            # .filter(MengajarModel.mapel_id == mapel_id)
             .all()
         )
         sql_keterangan = db.session.query(AbsensiModel)
@@ -1871,18 +1883,7 @@ def data_kehadiran():
             data["kelas"] = i.siswa.kelas.kelas
             data["tahun_ajaran"] = i.mengajar.tahun_ajaran.th_ajaran
             data["semester"] = i.mengajar.semester.semester
-            # print(f"tgl_absen : {i.tgl_absen.day}")
-            # print(
-            #     i.siswa.first_name
-            #     + " "
-            #     + i.siswa.last_name
-            #     + " Kelas: "
-            #     + i.siswa.kelas.kelas
-            #     + " Mapel :"
-            #     + i.mengajar.mapel.mapel
-            # )
 
-        # this_year = data.get("tahun_ajaran").split("-")[0]
         this_year = datetime.date(datetime.today())
         data["tahun"] = this_year.year
         date_in_month = monthrange(
@@ -1906,8 +1907,42 @@ def data_kehadiran():
         "admin/absensi/daftar_hadir_siswa.html",
         kelas=kelas,
         bulan=bulan,
-        mapel=mapel,
+        form=form,
     )
 
 
-# @admin2.route()
+@admin2.route("surat-pernyataan/pilih-kelas", methods=["GET", "POST"])
+@login_required
+def select_siswa():
+    base_kelas = BaseModel(KelasModel)
+    sql_kelas = base_kelas.get_all()
+    form = FormSelectKelas()
+    for i in sql_kelas:
+        form.kelas.choices.append((i.id, i.kelas))
+
+    data = {}
+
+    if form.validate_on_submit():
+        kelas = request.form.get("kelas")
+        base_siswa = BaseModel(SiswaModel)
+        sql_siswa = base_siswa.get_all_filter_by(kelas_id=kelas)
+        for i in sql_siswa:
+            data["kelas"] = i.kelas.kelas
+
+        return render_template(
+            "admin/siswa/get_siswa_by_kelas.html", model=sql_siswa, data=data
+        )
+
+    return render_template("admin/letter_report/select_kelas.html", form=form)
+
+
+@admin2.route("surat-pernyataan", methods=["GET", "POST"])
+@login_required
+def surat_pernyataan():
+    base_siswa = BaseModel(SiswaModel)
+    id = request.args.get(key="siswa_id", type=int)
+    sql_siswa = base_siswa.get_one(id=id)
+    today = datetime.date(datetime.today())
+    return render_template(
+        "arsip/surat_pernyataan.html", sql_siswa=sql_siswa, today=today
+    )

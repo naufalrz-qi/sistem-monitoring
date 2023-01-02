@@ -1,5 +1,13 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField, HiddenField, DateField, SubmitField
+from wtforms import (
+    BooleanField,
+    StringField,
+    HiddenField,
+    DateField,
+    SubmitField,
+    SelectField,
+)
+from wtforms.validators import ValidationError
 
 
 class AbsensiForm(FlaskForm):
@@ -9,3 +17,21 @@ class AbsensiForm(FlaskForm):
     today = DateField("Tanggal")
     ket = BooleanField("")
     submit = SubmitField("Selesai")
+
+
+class FormSelectAbsensi(FlaskForm):
+    kelas = SelectField(label="Pilih Kelas", choices=[("", "- Pilih -")])
+    bulan = SelectField(label="Pilih Bulan", choices=[("", "- Pilih -")])
+    tahun = SelectField(label="Pilih Tahun", choices=[("", "- Pilih -")])
+
+    def validate_kelas(self, field):
+        if field.data == "":
+            raise ValidationError("*Harap pilih kelas")
+
+    def validate_bulan(self, field):
+        if field.data == "":
+            raise ValidationError("*Harap pilih bulan")
+
+    def validate_tahun(self, field):
+        if field.data == "":
+            raise ValidationError("*Harap pilih tahun")

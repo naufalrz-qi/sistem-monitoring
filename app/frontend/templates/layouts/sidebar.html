@@ -237,8 +237,9 @@
           </a>
         </li>
         <li class="nav-header">Letter & Report</li>
-        <li class="nav-item">
-          <a href="#" class="nav-link">
+        <li class="nav-item ">
+          <a href="{{ url_for('admin2.select_siswa') }}"
+            class="nav-link {{ 'active' if filename=='siswa-kelas' or filename=='select-siswa' else '' }}">
             <i class="nav-icon fas fa-print"></i>
             <p>Surat Pernyataan</p>
           </a>

@@ -82,6 +82,35 @@ def format_indo(date):
     return format_indo
 
 
+def format_indo_non_weekday(date):
+    MONTHLIST = (
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+    )
+
+    tgl = date.day
+    bulan = MONTHLIST[date.month - 1]
+    tahun = date.year
+    format_indo = (
+        (str(tgl) if len(str(tgl)) == 2 else "0" + str(tgl))
+        + " "
+        + bulan
+        + " "
+        + str(tahun)
+    )
+    return format_indo
+
+
 def format_datetime_id(datetime):
     WEEKDAYSLIST = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
     MONTHLIST = (
