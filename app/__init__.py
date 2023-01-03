@@ -16,7 +16,8 @@ def create_app():
     register_app_site(app)
     loginManager(app)
 
-    app.jinja_env.filters["date_indo"] = format_indo_non_weekday
+    app.jinja_env.filters["date_indo"] = format_indo
+    app.jinja_env.filters["date_indo_non_weekday"] = format_indo_non_weekday
     app.jinja_env.filters["tgl"] = day_in_date
     return app
 

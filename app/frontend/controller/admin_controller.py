@@ -11,13 +11,15 @@ from flask import (
     render_template,
     flash,
 )
+from werkzeug.utils import secure_filename
+from flask_login import login_required, current_user
+from calendar import monthrange
 from app.backend.lib.status_code import HTTP_413_REQUEST_ENTITY_TOO_LARGE
 from app.backend.models.user_model import *
 from app.backend.models.master_model import *
 from app.backend.models.user_details_model import *
 from app.backend.lib.base_model import BaseModel
-from werkzeug.utils import secure_filename
-from app.frontend.forms.form_absen import FormSelectAbsensi
+from app.frontend.forms.form_absen import FormSelectAbsensi, FormSelectKehadiranSemester
 from app.frontend.forms.form_auth import FormEditStatus
 from app.frontend.forms.form_jadwal import FormJadwalMengajar
 from app.frontend.forms.form_letter_report import FormSelectKelas
@@ -26,7 +28,6 @@ from app.frontend.forms.form_siswa import FormAddSiswa, FormEditSiswa
 from ..forms.form_auth import *
 from ..forms.form_guru import *
 from ..lib.base_url import base_url
-from flask_login import login_required, current_user
 from ..models.user_login_model import *
 from ...backend.models.data_model import *
 from sqlalchemy import func
@@ -34,7 +35,6 @@ import os
 import requests as req
 import io
 import xlwt
-from calendar import calendar, monthrange
 
 admin2 = Blueprint(
     "admin2", __name__, template_folder="../templates/", url_prefix="/admin"
@@ -1838,111 +1838,146 @@ NOTE : DATABASE DIRECT NO API
 """
 
 
-@admin2.route("/data-kehadiran", methods=["GET", "POST"])
+@admin2.route("/data-kehadiran/bulan", methods=["GET", "POST"])
 @login_required
-def data_kehadiran():
-    base_kelas = BaseModel(KelasModel)
-    kelas = base_kelas.get_all()
-    base_bulan = BaseModel(NamaBulanModel)
-    bulan = base_bulan.get_all()
-    sql_absen = AbsensiModel.query.group_by(AbsensiModel.tgl_absen).all()
+def data_kehadiran_bulan():
+    if current_user.group == "admin":
+        base_kelas = BaseModel(KelasModel)
+        kelas = base_kelas.get_all()
+        base_bulan = BaseModel(NamaBulanModel)
+        bulan = base_bulan.get_all()
+        sql_absen = AbsensiModel.query.group_by(AbsensiModel.tgl_absen).all()
 
-    form = FormSelectAbsensi()
-    # data kelas
-    for i in kelas:
-        form.kelas.choices.append((i.id, i.kelas))
-    # data bulan
-    for i in bulan:
-        form.bulan.choices.append((i.id, i.nama_bulan.title()))
+        form = FormSelectAbsensi()
+        # data kelas
+        for i in kelas:
+            form.kelas.choices.append((i.id, i.kelas))
+        # data bulan
+        for i in bulan:
+            form.bulan.choices.append((i.id, i.nama_bulan.title()))
 
-    for i in sql_absen:
-        form.tahun.choices.append((i.tgl_absen.year, i.tgl_absen.year))
+        for i in sql_absen:
+            form.tahun.choices.append((i.tgl_absen.year, i.tgl_absen.year))
 
-    if request.method == "POST" and form.validate_on_submit():
-        kelas_id = request.form.get("kelas")
-        bulan_id = request.form.get("bulan")
-        tahun = request.form.get("tahun")
+        if request.method == "POST" and form.validate_on_submit():
+            kelas_id = request.form.get("kelas")
+            bulan_id = request.form.get("bulan")
+            tahun = request.form.get("tahun")
 
-        sql_kehadiran = (
-            db.session.query(AbsensiModel)
-            .join(SiswaModel)
-            .join(MengajarModel)
-            .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
-            .filter(func.month(AbsensiModel.tgl_absen) == bulan_id)
-            .filter(func.year(AbsensiModel.tgl_absen) == tahun)
-            .filter(SiswaModel.kelas_id == kelas_id)
-            .group_by(AbsensiModel.siswa_id)
-            .order_by(AbsensiModel.siswa_id.asc())
-            .all()
-        )
-        sql_keterangan = db.session.query(AbsensiModel)
+            sql_kehadiran = (
+                db.session.query(AbsensiModel)
+                .join(SiswaModel)
+                .join(MengajarModel)
+                .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
+                .filter(func.month(AbsensiModel.tgl_absen) == bulan_id)
+                .filter(func.year(AbsensiModel.tgl_absen) == tahun)
+                .filter(SiswaModel.kelas_id == kelas_id)
+                .group_by(AbsensiModel.siswa_id)
+                .order_by(AbsensiModel.siswa_id.asc())
+                .all()
+            )
+            sql_keterangan = db.session.query(AbsensiModel)
 
-        data = {}
-        data["bulan"] = base_bulan.get_one(id=bulan_id).nama_bulan
-        for i in sql_kehadiran:
-            data["kelas"] = i.siswa.kelas.kelas
-            data["tahun_ajaran"] = i.mengajar.tahun_ajaran.th_ajaran
-            data["semester"] = i.mengajar.semester.semester
+            data = {}
+            data["bulan"] = base_bulan.get_one(id=bulan_id).nama_bulan
+            for i in sql_kehadiran:
+                data["kelas"] = i.siswa.kelas.kelas
+                data["tahun_ajaran"] = i.mengajar.tahun_ajaran.th_ajaran
+                data["semester"] = i.mengajar.semester.semester
 
-        this_year = datetime.date(datetime.today())
-        data["tahun"] = this_year.year
-        date_in_month = monthrange(
-            int(
-                this_year.year,
-            ),
-            int(bulan_id),
-        )
-        data["month_range"] = date_in_month[1]
+            this_year = datetime.date(datetime.today())
+            data["tahun"] = this_year.year
+            date_in_month = monthrange(
+                int(
+                    this_year.year,
+                ),
+                int(bulan_id),
+            )
+            data["month_range"] = date_in_month[1]
+
+            return render_template(
+                "admin/absensi/result_daftar_hadir.html",
+                sql_kehadiran=sql_kehadiran,
+                data=data,
+                sql_ket=sql_keterangan,
+                func=func,
+                AbsensiModel=AbsensiModel,
+            )
 
         return render_template(
-            "admin/absensi/result_daftar_hadir.html",
-            sql_kehadiran=sql_kehadiran,
-            data=data,
-            sql_ket=sql_keterangan,
-            func=func,
-            AbsensiModel=AbsensiModel,
+            "admin/absensi/daftar_hadir_siswa.html",
+            kelas=kelas,
+            bulan=bulan,
+            form=form,
         )
+    else:
+        return abort(404)
 
-    return render_template(
-        "admin/absensi/daftar_hadir_siswa.html",
-        kelas=kelas,
-        bulan=bulan,
-        form=form,
-    )
+
+@admin2.route("data-kehadiran/semester")
+@login_required
+def data_kehadiran_semester():
+    if current_user.group == "admin":
+        form = FormSelectKehadiranSemester()
+        sql_kelas = BaseModel(KelasModel).get_all()
+        sql_semester = BaseModel(SemesterModel).get_all()
+
+        for i in sql_kelas:
+            form.kelas.choices.append((i.id, i.kelas))
+
+        for i in sql_semester:
+            form.semester.choices.append((i.id, i.semester.upper()))
+        return render_template("admin/absensi/daftar_hadir_semester.html", form=form)
+    else:
+        return abort(404)
 
 
 @admin2.route("surat-pernyataan/pilih-kelas", methods=["GET", "POST"])
 @login_required
 def select_siswa():
-    base_kelas = BaseModel(KelasModel)
-    sql_kelas = base_kelas.get_all()
-    form = FormSelectKelas()
-    for i in sql_kelas:
-        form.kelas.choices.append((i.id, i.kelas))
+    if current_user.group == "admin":
+        base_kelas = BaseModel(KelasModel)
+        sql_kelas = base_kelas.get_all()
+        form = FormSelectKelas()
+        for i in sql_kelas:
+            form.kelas.choices.append((i.id, i.kelas))
 
-    data = {}
+        data = {}
 
-    if form.validate_on_submit():
-        kelas = request.form.get("kelas")
-        base_siswa = BaseModel(SiswaModel)
-        sql_siswa = base_siswa.get_all_filter_by(kelas_id=kelas)
-        for i in sql_siswa:
-            data["kelas"] = i.kelas.kelas
+        if form.validate_on_submit():
+            kelas = request.form.get("kelas")
+            base_siswa = BaseModel(SiswaModel)
+            sql_siswa = base_siswa.get_all_filter_by(kelas_id=kelas)
+            for i in sql_siswa:
+                data["kelas"] = i.kelas.kelas
 
-        return render_template(
-            "admin/siswa/get_siswa_by_kelas.html", model=sql_siswa, data=data
-        )
+            return render_template(
+                "admin/siswa/get_siswa_by_kelas.html", model=sql_siswa, data=data
+            )
 
-    return render_template("admin/letter_report/select_kelas.html", form=form)
+        return render_template("admin/letter_report/select_kelas.html", form=form)
+    else:
+        return abort(404)
 
 
 @admin2.route("surat-pernyataan", methods=["GET", "POST"])
 @login_required
 def surat_pernyataan():
-    base_siswa = BaseModel(SiswaModel)
-    id = request.args.get(key="siswa_id", type=int)
-    sql_siswa = base_siswa.get_one(id=id)
-    today = datetime.date(datetime.today())
-    return render_template(
-        "arsip/surat_pernyataan.html", sql_siswa=sql_siswa, today=today
-    )
+    try:
+        if current_user.group == "admin":
+            base_siswa = BaseModel(SiswaModel)
+            id = request.args.get(key="siswa_id", type=int)
+            sql_siswa = base_siswa.get_one(id=id)
+            today = datetime.date(datetime.today())
+            sql_wali = BaseModel(WaliKelasModel).get_one(kelas_id=sql_siswa.kelas_id)
+            print(sql_wali)
+            return render_template(
+                "arsip/surat_pernyataan.html",
+                sql_siswa=sql_siswa,
+                today=today,
+                sql_wali=sql_wali,
+            )
+        else:
+            return abort(404)
+    except Exception as e:
+        return e

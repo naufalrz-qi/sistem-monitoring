@@ -3,7 +3,11 @@
 {{super()}}
 <style>
   input[type='radio'] {
-    display: none;
+    width: 30px;
+
+    height: 30px;
+
+    border-radius: 15px;
   }
 </style>
 {% endblock %}
@@ -50,17 +54,17 @@
                 <td>{{ i.first_name | title }} {{ i.last_name | title }}</td>
                 <td class="text-center ">
                   <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-outline-success rounded-circle btn-sm text-center mr-2">
-                      <input type="radio" name="ket-{{loop.index}}" value="H">&nbsp;H&nbsp;
+                    <label class="btn btn-outline-success rounded-circle btn-sm text-center mr-2" style="width: 30px;">
+                      <input type="radio" name="ket-{{loop.index}}" value="H"><span>H</span>
                     </label>
-                    <label class="btn btn-outline-warning rounded-circle btn-sm text-center mr-2">
-                      <input type="radio" name="ket-{{loop.index}}" value="S">&nbsp;S&nbsp;
+                    <label class="btn btn-outline-warning rounded-circle btn-sm text-center mr-2" style="width: 30px;">
+                      <input type="radio" name="ket-{{loop.index}}" value="S"><span>S<span>
                     </label>
-                    <label class="btn btn-outline-info rounded-circle btn-sm text-center mr-2">
-                      <input type="radio" name="ket-{{loop.index}}" value="I">&nbsp;I&nbsp;
+                    <label class="btn btn-outline-info rounded-circle btn-sm text-center mr-2" style="width: 30px;">
+                      <input type="radio" name="ket-{{loop.index}}" value="I"><span>I<span>
                     </label>
-                    <label class="btn btn-outline-danger rounded-circle btn-sm text-center">
-                      <input type="radio" name="ket-{{loop.index}}" value="A">&nbsp;A&nbsp;
+                    <label class="btn btn-outline-danger rounded-circle btn-sm text-center" style="width: 30px;">
+                      <input type="radio" name="ket-{{loop.index}}" value="A"><span>A<span>
                     </label>
                   </div>
                 </td>
