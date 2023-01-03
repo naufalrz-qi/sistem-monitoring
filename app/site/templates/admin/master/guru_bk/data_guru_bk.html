@@ -35,6 +35,7 @@
                     <tr>
                         <th>No</th>
                         <th>Nama Guru BK</th>
+                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -43,6 +44,7 @@
                     <tr>
                         <td class="align-middle text-center" style="width: 12px;">{{ loop.index}}</td>
                         <td class="align-middle">{{ _.first_name | title }} {{ _.last_name | title}}</td>
+                        <td class="align-middle">{{ _.status | title }}</td>
                         <!-- AKSI -->
                         <td class="align-middle text-center" style="width: 120px;">
                             <button class="btn btn-warning btn-xs" title="Delete Data." data-toggle="modal"

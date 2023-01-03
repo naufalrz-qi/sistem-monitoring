@@ -196,9 +196,11 @@ class GuruBKModel(db.Model):
         sa.Integer, sa.ForeignKey("detail_guru.user_id", onupdate="CASCADE")
     )
     guru = rs.relationship("GuruModel", backref="guru_bk")
+    status = sa.Column(sa.String(1), nullable=True)
 
-    def __init__(self, guruId=None):
+    def __init__(self, guruId: Optional[GuruModel], status: Optional[str]):
         self.guru_id = guruId
+        self.status = status
 
     def __repr__(self) -> str:
         return "Nama Guru : {}".format(self.guru.first_name)

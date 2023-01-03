@@ -1462,7 +1462,8 @@ class MasterData:
         if current_user.group == "admin":
             url = base_url + f"api/v2/master/guru-bk/create"
             guru_id = request.form.get("namaGuru")
-            payload = json.dumps({"guru_id": guru_id})
+            status = request.form.get("status")
+            payload = json.dumps({"guru_id": guru_id, "status": status})
             headers = {"Content-Type": "application/json"}
             resp = req.post(url=url, data=payload, headers=headers)
 
@@ -1481,8 +1482,8 @@ class MasterData:
     def edit_bk(id):
         if current_user.group == "admin":
             url = base_url + f"api/v2/master/guru-bk/get-one/{id}"
-            guru_id = request.form.get("namaGuru")
-            payload = json.dumps({"guru_id": guru_id})
+            status = request.form.get("status")
+            payload = json.dumps({"status": status})
             headers = {"Content-Type": "application/json"}
 
             resp = req.put(url=url, data=payload, headers=headers)
@@ -1975,12 +1976,14 @@ def surat_pernyataan():
             sql_siswa = base_siswa.get_one(id=id)
             today = datetime.date(datetime.today())
             sql_wali = BaseModel(WaliKelasModel).get_one(kelas_id=sql_siswa.kelas_id)
-            print(sql_wali)
+            print(sql_wali.guru_id)
+            sql_bk = BaseModel(GuruBKModel).get_one_or_none(status='1')
             return render_template(
                 "arsip/surat_pernyataan.html",
                 sql_siswa=sql_siswa,
                 today=today,
                 sql_wali=sql_wali,
+                sql_bk=sql_bk,
             )
         else:
             return abort(404)

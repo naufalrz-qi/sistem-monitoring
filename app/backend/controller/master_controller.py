@@ -635,8 +635,9 @@ class GuruBK(object):
     @master.route("/guru-bk/create", endpoint="guru-bk-create", methods=["POST", "GET"])
     def create():
         guru_id = request.json.get("guru_id")
+        status = request.json.get("status")
 
-        base = BaseModel(GuruBKModel(guruId=guru_id))
+        base = BaseModel(GuruBKModel(guruId=guru_id, status=status))
         guru_check = base.get_one_or_none(guru_id=guru_id)
 
         if guru_check:
@@ -662,6 +663,7 @@ class GuruBK(object):
                     "id": _.id,
                     "first_name": _.guru.first_name,
                     "last_name": _.guru.last_name,
+                    "status": "aktif" if _.status == "1" else "tidak",
                 }
             )
 
@@ -690,9 +692,9 @@ class GuruBK(object):
                 return jsonify(msg="Data not found."), HTTP_404_NOT_FOUND
 
         elif request.method == "PUT":
-            guru_id = request.json.get("guru_id")
+            status = request.json.get("status")
 
-            model.guru_id = guru_id
+            model.status = status
             base.edit()
 
             return (
