@@ -2,7 +2,7 @@ from app.site.controller.admin_controller import admin2
 from app.site.controller.guru_controller import guru2
 from app.site.controller.login_controller import login
 from app.site.controller.wali_kelas_controller import wali_kelas
-from app.site.controller.data_preprosesing_controller import data_pre
+from app.site.controller.data_preprocessing_controller import data_pre
 
 
 def register_app_site(app):
