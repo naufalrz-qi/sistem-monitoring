@@ -12,11 +12,11 @@ from flask import (
 import asyncio
 from flask_login import current_user, login_required
 from sqlalchemy import and_, func
-from app.frontend.forms.form_absen import AbsensiForm
+from app.site.forms.form_absen import AbsensiForm
 from ...backend.extensions import db
 from app.backend.lib.base_model import BaseModel
 from app.backend.models.user_details_model import GuruModel, SiswaModel
-from app.frontend.forms.form_guru import FormGetProfileGuru, FormUpdatePassword
+from app.site.forms.form_guru import FormGetProfileGuru, FormUpdatePassword
 from ..models.user_login_model import *
 from ...backend.models.master_model import (
     KelasModel,

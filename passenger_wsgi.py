@@ -1,7 +1,7 @@
 from app import app
 from waitress import serve
-from app.frontend.extensions import login_manager
-from app.frontend.models.user_login_model import UserLogin
+from app.site.extensions import login_manager
+from app.site.models.user_login_model import UserLogin
 
 
 @login_manager.user_loader

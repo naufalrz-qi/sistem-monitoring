@@ -19,12 +19,12 @@ from app.backend.models.user_model import *
 from app.backend.models.master_model import *
 from app.backend.models.user_details_model import *
 from app.backend.lib.base_model import BaseModel
-from app.frontend.forms.form_absen import FormSelectAbsensi, FormSelectKehadiranSemester
-from app.frontend.forms.form_auth import FormEditStatus
-from app.frontend.forms.form_jadwal import FormJadwalMengajar
-from app.frontend.forms.form_letter_report import FormSelectKelas
-from app.frontend.forms.form_master import *
-from app.frontend.forms.form_siswa import FormAddSiswa, FormEditSiswa
+from app.site.forms.form_absen import FormSelectAbsensi, FormSelectKehadiranSemester
+from app.site.forms.form_auth import FormEditStatus
+from app.site.forms.form_jadwal import FormJadwalMengajar
+from app.site.forms.form_letter_report import FormSelectKelas
+from app.site.forms.form_master import *
+from app.site.forms.form_siswa import FormAddSiswa, FormEditSiswa
 from ..forms.form_auth import *
 from ..forms.form_guru import *
 from ..lib.base_url import base_url
@@ -35,18 +35,23 @@ import os
 import requests as req
 import io
 import xlwt
+import pandas as pd
 
 admin2 = Blueprint(
-    "admin2", __name__, template_folder="../templates/", url_prefix="/admin"
+    "admin2",
+    __name__,
+    template_folder="../templates/",
+    url_prefix="/admin",
+    static_folder="../static/",
 )
 
 file = os.getcwd() + "/data.json"
 
 
-@admin2.route("/admin/<path:filename>")
-def static(filename):
-    dir = send_from_directory("frontend/static", filename)
-    return dir
+# @admin2.route("/admin/<path:filename>")
+# def static(filename):
+#     dir = send_from_directory("frontend/static", filename)
+#     return dir
 
 
 sql = lambda x: x
