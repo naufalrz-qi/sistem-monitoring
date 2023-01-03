@@ -138,6 +138,7 @@ def profile_guru():
 
 
 @guru2.route("/profile/<int:id>", methods=["GET", "POST"])
+@login_required
 def update_profile(id):
     base = BaseModel(GuruModel)
     guru = base.get_one(user_id=id)

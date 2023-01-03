@@ -1440,7 +1440,7 @@ class MasterData:
             jsonRespGuru = respGuru.json()
             for i in jsonRespGuru:
                 form.namaGuru.choices.append(
-                    (i["id"], i["first_name"] + "" + i["last_name"])
+                    (i["id"], i["first_name"] + " " + i["last_name"])
                 )
             return render_template(
                 "admin/master/guru_bk/data_guru_bk.html",
@@ -1713,8 +1713,8 @@ class JadwalMengajara:
                     flash(f'{msg["msg"]} Status : {resp.status_code}', "success")
                     return redirect(url_for("admin2.get_jadwal"))
                 else:
-                    flash(f'{msg["msg"]} Status : {resp.status_code}')
-                    return redirect(url_for("admin2.get_jadwal", "error"))
+                    flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
+                    return redirect(url_for("admin2.get_jadwal"))
 
             return render_template(
                 "admin/jadwal_mengajar/tambah_jadwal.html", form=form

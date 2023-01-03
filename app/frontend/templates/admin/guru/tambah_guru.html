@@ -28,14 +28,14 @@
             <div class="form-group">
               {{ form.username.label}}
               {% if form.username.errors %}
-              {{ form.username(class="form-control form-control-sm is-invalid", placeholder="NISN" ,aria_invalid="true")}}
+              {{ form.username(class="form-control form-control-sm is-invalid", placeholder="NIP" ,aria_invalid="true")}}
               {% for msg in form.username.errors %}
               <span class="error invalid-feedback">{{ msg }}</span>
               {% endfor %}
               {% elif form.username.data %}
               {{ form.username(class="form-control form-control-sm", aria_invalid="false")}}
               {% else %}
-              {{ form.username(class="form-control form-control-sm", placeholder="NISN")}}
+              {{ form.username(class="form-control form-control-sm", placeholder="NIP")}}
               {% endif %}
             </div>
           </div>
