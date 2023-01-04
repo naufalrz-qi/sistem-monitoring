@@ -34,6 +34,7 @@
 
 # print(jsonResp)
 
+
 # nama = 'Aura Suci Ambarala'
 # get_one = nama.split(sep=' ', maxsplit=1)[1]
 # print(get_one)
