@@ -214,9 +214,9 @@ def update_pswd():
 def jadwal_mengajar():
     if current_user.group == "guru":
         base = BaseModel(MengajarModel)
-        mengajar = base.get_all_filter_by(
-            base.model.hari_id.asc(), guru_id=current_user.id
-        )
+        # mengajar = base.get_all_filter_by(
+        #     base.model.hari_id.asc(), guru_id=current_user.id
+        # )
         sql_mengajar = (
             db.session.query(MengajarModel)
             .join(SemesterModel)
@@ -322,9 +322,11 @@ def absensi(mengajar_id):
             sql=(
                 db.session.query(MengajarModel)
                 .join(HariModel)
+                .join(SemesterModel)
                 .filter(MengajarModel.guru_id == current_user.id)
                 .filter(MengajarModel.hari_id == HariModel.id)
                 .filter(HariModel.hari == today_())
+                .filter(SemesterModel.is_active == 1)
                 .all()
             )
         )
