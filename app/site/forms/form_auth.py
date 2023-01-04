@@ -19,8 +19,8 @@ class FormEditPassword(FlaskForm):
 
 
 class FormLogin(FlaskForm):
-    username = StringField("Username")
-    password = PasswordField("Password")
+    username = StringField("Nama Pengguna")
+    password = PasswordField("Kata Sandi")
     level = SelectField(
         "Level Pengguna",
         choices=[
@@ -31,7 +31,7 @@ class FormLogin(FlaskForm):
         ],
     )
     remember = BooleanField("Remember Me")
-    submit = SubmitField("Sign In")
+    submit = SubmitField("Masuk")
 
     def validate_username(self, field):
         if field.data == "":

@@ -28,7 +28,7 @@
 <body class="hold-transition login-page">
   <div class="login-box">
 
-    <div class="card">
+    <div class="card" style="border-radius: 4%;">
       <div class="login-logo mt-4 mb-0">
         <img src="{{ url_for('admin2.static', filename='img/logo.png') }}" alt="" width="100">
         <p class="font-weight-bold h4">UPT SPF SMPN2 MAKASSAR</p>
@@ -46,7 +46,7 @@
           {{ form.username.label(class="mb-1")}}
           <div class="input-group mb-3">
             {% if form.username.errors %}
-            {{ form.username(class="form-control is-invalid", aria_invalid=true,  placeholder="NIP")}}
+            {{ form.username(class="form-control is-invalid", aria_invalid=true,  placeholder="[Masukkan Username Anda]")}}
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-user"></span>
@@ -56,14 +56,14 @@
             <span class="error invalid-feedback">{{msg}}</span>
             {% endfor %}
             {% elif form.username.data %}
-            {{ form.username(class="form-control", aria_invalid=false, placeholder="NIP")}}
+            {{ form.username(class="form-control", aria_invalid=false, placeholder="[Masukkan Username Anda]")}}
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-user"></span>
               </div>
             </div>
             {% else %}
-            {{ form.username(class="form-control", placeholder="NIP")}}
+            {{ form.username(class="form-control", placeholder="[Masukkan Username Anda]")}}
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-user"></span>
@@ -77,7 +77,7 @@
           {{ form.password.label(class="mb-1")}}
           <div class="input-group mb-3">
             {% if form.password.errors %}
-            {{ form.password(class="form-control is-invalid", aria_invalid=true,  placeholder="Password")}}
+            {{ form.password(class="form-control is-invalid", aria_invalid=true,  placeholder="[Masukkan Kata Sandi Anda]")}}
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-lock"></span>
@@ -87,14 +87,14 @@
             <span class="error invalid-feedback">{{msg}}</span>
             {% endfor %}
             {% elif form.password.data %}
-            {{ form.password(class="form-control", aria_invalid=false, placeholder="Password")}}
+            {{ form.password(class="form-control", aria_invalid=false, placeholder="[Masukkan Kata Sandi Anda]")}}
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-lock"></span>
               </div>
             </div>
             {% else %}
-            {{ form.password(class="form-control", placeholder="Password")}}
+            {{ form.password(class="form-control", placeholder="[Masukkan Kata Sandi Anda]")}}
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-lock"></span>
@@ -134,14 +134,11 @@
             {% endif %}
           </div>
           <div class="row">
-            <div class="col-8">
-              {# <div class="icheck-primary">
-                {{ form.remember}}
-                {{ form.remember.label}}
-              </div> #}
-            </div>
-            <div class="col-4">
-              {{ form.submit(class="btn btn-primary btn-block")}}
+
+            <div class="col-md-12">
+              {# {{ form.submit(class="btn btn-primary btn-flat")}} #}
+              <button type="submit" class="btn btn-primary btn-block btn-flat">Masuk<span class="ml-1"><i
+                    class="fas fa-arrow-circle-right"></i></span></button>
             </div>
           </div>
         </form>
