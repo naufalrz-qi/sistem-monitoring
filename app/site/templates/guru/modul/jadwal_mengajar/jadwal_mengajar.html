@@ -24,11 +24,43 @@
               </div>
               <div class="card-body">
                 <div class="d-inline-block text-truncate" style="max-width: auto;">
-                  <li>Nama Guru : {{i.guru.first_name}} {{i.guru.last_name}}</li>
-                  <li> Mapel : {{i.mapel.mapel}} </li>
+                  {# <li>Nama Guru : {{i.guru.first_name}} {{i.guru.last_name}}</li>
+                  <li>Mapel : {{i.mapel.mapel}} </li>
                   <li>Jam Ke : {{i.jam_ke}}</li>
                   <li>Waktu : {{i.jam_mulai}}-{{i.jam_selesai}}</li>
-                  <li>Kelas : {{i.kelas.kelas}}</li>
+                  <li>Kelas : {{i.kelas.kelas}}</li> #}
+                  <table style="width: 100%;">
+                    <tr>
+                      <td width="70">Nama Guru</td>
+                      <td>:</td>
+                      <td>{{i.guru.first_name}} {{i.guru.last_name}}</td>
+                    </tr>
+                    <tr>
+                      <td>Mapel</td>
+                      <td>:</td>
+                      <td>{{i.mapel.mapel |title}}</td>
+                    </tr>
+                    <tr>
+                      <td>Semester</td>
+                      <td>:</td>
+                      <td>{{ i.semester.semester | title }}</td>
+                    </tr>
+                    <tr>
+                      <td>Jam-ke</td>
+                      <td>:</td>
+                      <td>{{i.jam_ke}}</td>
+                    </tr>
+                    <tr>
+                      <td>Waktu</td>
+                      <td>:</td>
+                      <td>{{i.jam_mulai}} - {{i.jam_selesai}}</td>
+                    </tr>
+                    <tr>
+                      <td>Kelas</td>
+                      <td>:</td>
+                      <td>{{ i.kelas.kelas }}</td>
+                    </tr>
+                  </table>
                 </div>
               </div>
             </div>
@@ -47,11 +79,38 @@
               </div>
               <div class="card-body">
                 <div class="d-inline-block text-truncate" style="max-width: auto;">
-                  <li>Nama Guru : {{i.guru.first_name}} {{i.guru.last_name}}</li>
-                  <li> Mapel : {{i.mapel.mapel}} </li>
-                  <li>Jam Ke : {{i.jam_ke}}</li>
-                  <li>Waktu : {{i.jam_mulai}}-{{i.jam_selesai}}</li>
-                  <li>Kelas : {{i.kelas.kelas}}</li>
+                  <table style="width: 100%;">
+                    <tr>
+                      <td width="70">Nama Guru</td>
+                      <td>:</td>
+                      <td>{{i.guru.first_name}} {{i.guru.last_name}}</td>
+                    </tr>
+                    <tr>
+                      <td>Mapel</td>
+                      <td>:</td>
+                      <td>{{i.mapel.mapel |title}}</td>
+                    </tr>
+                    <tr>
+                      <td>Semester</td>
+                      <td>:</td>
+                      <td>{{ i.semester.semester | title }}</td>
+                    </tr>
+                    <tr>
+                      <td>Jam-ke</td>
+                      <td>:</td>
+                      <td>{{i.jam_ke}}</td>
+                    </tr>
+                    <tr>
+                      <td>Waktu</td>
+                      <td>:</td>
+                      <td>{{i.jam_mulai}} - {{i.jam_selesai}}</td>
+                    </tr>
+                    <tr>
+                      <td>Kelas</td>
+                      <td>:</td>
+                      <td>{{ i.kelas.kelas }}</td>
+                    </tr>
+                  </table>
                 </div>
               </div>
             </div>
@@ -75,11 +134,38 @@
               </div>
               <div class="card-body">
                 <div class="d-inline-block text-truncate" style="max-width: auto;">
-                  <li>Nama Guru : {{i.guru.first_name}} {{i.guru.last_name}}</li>
-                  <li> Mapel : {{i.mapel.mapel}} </li>
-                  <li>Jam Ke : {{i.jam_ke}}</li>
-                  <li>Waktu : {{i.jam_mulai}}-{{i.jam_selesai}}</li>
-                  <li>Kelas : {{i.kelas.kelas}}</li>
+                  <table style="width: 100%;">
+                    <tr>
+                      <td width="70">Nama Guru</td>
+                      <td>:</td>
+                      <td>{{i.guru.first_name}} {{i.guru.last_name}}</td>
+                    </tr>
+                    <tr>
+                      <td>Mapel</td>
+                      <td>:</td>
+                      <td>{{i.mapel.mapel |title}}</td>
+                    </tr>
+                    <tr>
+                      <td>Semester</td>
+                      <td>:</td>
+                      <td>{{ i.semester.semester | title }}</td>
+                    </tr>
+                    <tr>
+                      <td>Jam-ke</td>
+                      <td>:</td>
+                      <td>{{i.jam_ke}}</td>
+                    </tr>
+                    <tr>
+                      <td>Waktu</td>
+                      <td>:</td>
+                      <td>{{i.jam_mulai}} - {{i.jam_selesai}}</td>
+                    </tr>
+                    <tr>
+                      <td>Kelas</td>
+                      <td>:</td>
+                      <td>{{ i.kelas.kelas }}</td>
+                    </tr>
+                  </table>
                 </div>
               </div>
             </div>
