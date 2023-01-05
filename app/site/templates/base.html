@@ -109,17 +109,17 @@
   <!-- Moment js -->
   <script src="{{ url_for('admin2.static', filename='plugins/moment/moment.min.js') }}"></script>
 
-  {% block js %}{% endblock js %} {% with messages =
-    get_flashed_messages(with_categories=true) %} {% if messages %} {% for
-    category, message in messages %}
+  {% block js %}{% endblock js %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, message in messages %}
   <script>
-    //alert("{{message}}")
     $(function () {
       var Toast = Swal.mixin({
         toast: true,
         position: "top-end",
         showConfirmButton: false,
-        timer: 5000,
+        timer: 2500,
       });
 
       Toast.fire({
@@ -129,6 +129,25 @@
     });
   </script>
   {% endfor %} {% endif %} {% endwith %}
+
+  {# {% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+  {% for ctg, msg in messages %}
+  <script>
+    /*
+    $(function () {
+      Swal.fire({
+        icon: "{{ ctg }}",
+        text: "{{ msg }}",
+        timer: 3000,
+        showConfirmButton: false
+      });
+    }); */
+  </script>
+  {% endfor %}
+  {% endif %}
+
+  {% endwith %} #}
 </body>
 
 </html>

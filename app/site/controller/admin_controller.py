@@ -1853,7 +1853,7 @@ def data_kehadiran_bulan():
         kelas = base_kelas.get_all()
         base_bulan = BaseModel(NamaBulanModel)
         bulan = base_bulan.get_all()
-        sql_absen = AbsensiModel.query.group_by(AbsensiModel.tgl_absen).all()
+        sql_absen = AbsensiModel.query.group_by(func.year(AbsensiModel.tgl_absen)).all()
 
         form = FormSelectAbsensi()
         # data kelas
@@ -1938,8 +1938,29 @@ def data_kehadiran_semester():
         for i in sql_semester:
             form.semester.choices.append((i.id, i.semester.upper()))
         if form.validate_on_submit():
+            kelas = request.form.get("kelas")
+            semester = request.form.get("semester")
 
-            return render_template("admin/absensi/result_daftar_hadir_sms.html")
+            sql_siswa = (
+                db.session.query(AbsensiModel)
+                .join(SiswaModel)
+                .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
+                .filter(SiswaModel.kelas_id == kelas)
+                .group_by(AbsensiModel.siswa_id)
+            )
+
+            sql_ket = (
+                db.session.query(AbsensiModel)
+                .join(MengajarModel)
+                .filter(MengajarModel.semester_id == semester)
+            )
+
+            return render_template(
+                "admin/absensi/result_daftar_hadir_sms.html",
+                sql_siswa=sql_siswa,
+                AbsensiModel=AbsensiModel,
+                sql_ket=sql_ket,
+            )
         return render_template("admin/absensi/daftar_hadir_semester.html", form=form)
     else:
         return abort(404)
@@ -1996,3 +2017,7 @@ def surat_pernyataan():
             return abort(404)
     except Exception as e:
         return e
+
+@admin2.route('rekap-absen', methods=['GET','POST'])
+def rekap_bulan():
+    response = make_response(render_template())
