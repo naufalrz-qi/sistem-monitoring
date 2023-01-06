@@ -40,4 +40,12 @@ class FormSelectAbsensi(FlaskForm):
 class FormSelectKehadiranSemester(FlaskForm):
     kelas = SelectField(label="Pilih Kelas", choices=[("", "- Pilih -")])
     semester = SelectField(label="Pilih Semester", choices=[("", "- Pilih -")])
-    submit = SubmitField(label='Lihat Data')
+    submit = SubmitField(label="Lihat Data")
+
+    def validate_kelas(self, field):
+        if field.data == "":
+            raise ValidationError("*Harap pilih kelas")
+
+    def validate_semester(self, field):
+        if field.data == "":
+            raise ValidationError("*Harap pilih semester")

@@ -4,6 +4,7 @@ from flask import (
     Blueprint,
     Response,
     abort,
+    make_response,
     request,
     redirect,
     send_from_directory,
@@ -1882,8 +1883,8 @@ def data_kehadiran_bulan():
                 .order_by(AbsensiModel.siswa_id.asc())
                 .all()
             )
-            sql_keterangan = db.session.query(AbsensiModel)
 
+            sql_keterangan = db.session.query(AbsensiModel)
             data = {}
             data["bulan"] = base_bulan.get_one(id=bulan_id).nama_bulan
             for i in sql_kehadiran:
@@ -1901,15 +1902,18 @@ def data_kehadiran_bulan():
             )
             data["month_range"] = date_in_month[1]
 
-            return render_template(
-                "admin/absensi/result_daftar_hadir.html",
-                sql_kehadiran=sql_kehadiran,
-                data=data,
-                sql_ket=sql_keterangan,
-                func=func,
-                AbsensiModel=AbsensiModel,
+            response = make_response(
+                render_template(
+                    "admin/absensi/result_daftar_hadir.html",
+                    sql_kehadiran=sql_kehadiran,
+                    data=data,
+                    sql_ket=sql_keterangan,
+                    func=func,
+                    AbsensiModel=AbsensiModel,
+                )
             )
-
+            print(response.status_code)
+            return response
         return render_template(
             "admin/absensi/daftar_hadir_siswa.html",
             kelas=kelas,
@@ -1920,7 +1924,7 @@ def data_kehadiran_bulan():
         return abort(404)
 
 
-@admin2.route("data-kehadiran/semester")
+@admin2.route("data-kehadiran/semester", methods=["GET", "POST"])
 @login_required
 def data_kehadiran_semester():
     if current_user.group == "admin":
@@ -1933,6 +1937,9 @@ def data_kehadiran_semester():
 
         for i in sql_semester:
             form.semester.choices.append((i.id, i.semester.upper()))
+        if form.validate_on_submit():
+
+            return render_template("admin/absensi/result_daftar_hadir_sms.html")
         return render_template("admin/absensi/daftar_hadir_semester.html", form=form)
     else:
         return abort(404)
@@ -1977,7 +1984,7 @@ def surat_pernyataan():
             today = datetime.date(datetime.today())
             sql_wali = BaseModel(WaliKelasModel).get_one(kelas_id=sql_siswa.kelas_id)
             print(sql_wali.guru_id)
-            sql_bk = BaseModel(GuruBKModel).get_one_or_none(status='1')
+            sql_bk = BaseModel(GuruBKModel).get_one_or_none(status="1")
             return render_template(
                 "arsip/surat_pernyataan.html",
                 sql_siswa=sql_siswa,

@@ -17,14 +17,6 @@
   </div> #}
   <div class="card-body">
     <div class="row mb-2">
-      {# <div class="col-md-4">
-        <h6 class="card-text text-bold">Daftar Hadir Kelas : {{ data.kelas }}</h6>
-        <h6 class="card-text text-bold">Bulan : {{ data.bulan | title }} {{ data.tahun }}</h6>
-      </div>
-      <div class="col-md-4">
-        <h6 class="card-text text-bold">Semester : {{ data.semester | title }}</h6>
-        <h6 class="card-text text-bold">Tahun Aajaran : {{ data.tahun_ajaran | title }}</h6>
-      </div> #}
       <div class="col-md-6">
         <table width="100%" class="table-responsive card-text text-bold">
           <tr>
@@ -90,7 +82,7 @@
               <td class="text-center">{{ 'L' if i.siswa.gender =='laki-laki' else 'P'}}</td>
               {% for n in range(1, data.month_range+1) %}
               <td class="text-center align-middle" style="background-color: #9e9e9e;">
-                {% for ket in sql_ket.filter(AbsensiModel.siswa_id==i.siswa_id).filter(func.day(AbsensiModel.tgl_absen)==n).group_by(func.day(AbsensiModel.tgl_absen)) %}
+                {% for ket in sql_ket.filter(AbsensiModel.siswa_id==i.siswa_id).filter(func.day(AbsensiModel.tgl_absen)==n).filter(func.year(AbsensiModel.tgl_absen)==i.tgl_absen.year).group_by(func.day(AbsensiModel.tgl_absen)) %}
                 {% if ket.ket=='H' %}
                 <div class="bg-gradient-green">{{ ket.ket }}</div>
                 {% elif ket.ket=='S' %}
@@ -98,7 +90,7 @@
                 {% elif ket.ket=='I' %}
                 <div class="bg-gradient-blue">{{ ket.ket }}</div>
                 {% elif ket.ket=='A' %}
-                <div class="bg-gradient-red">{{ ket.ket }}</div> #}
+                <div class="bg-gradient-red">{{ ket.ket }}</div>
                 {% endif %}
                 {% endfor %}
               </td>

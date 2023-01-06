@@ -11,9 +11,12 @@
   }
 </style>
 {% endblock %}
-{% set filename='absen' %}
+{% set filename=data_mengajar.mengajar_id %}
+{% set page='absen' %}
 {% block content %}
-
+{# {% if url_for(request.endpoint, **request.view_args).split('/')[-1] %}
+{{ data_mengajar.mengajar_id}}
+{% endif %} #}
 <div class="row">
   <div class="col-md-8">
     <div class="card card-blue">
@@ -23,6 +26,7 @@
       <form action method="post">
         {{ form.csrf_token }}
         <div class="card-body">
+          {# {{ url_for(request.endpoint, **request.view_args).split('/')[-1] }} #}
           <div class="row mb-0 align-items-center">
             <div class="col-md-6">
               <h6 class="text-bold">Kelas : {{data_mengajar.kelas}}</h6>
