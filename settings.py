@@ -25,7 +25,6 @@ class Config(object):
     SQLALCHEMY_QUERIES_RECORD = str(os.getenv("SQLALCHEMY_QUERIES_RECORD"))
     # MODIFY DEFAULT CONFIG
     JSON_SORT_KEYS = False
-    # PREFERRED_URL_SCHEME = "https"
     # JSON
     JWT_SECRET_KEY = str(os.getenv("JWT_SECRET_KEY"))
     ACCESS_EXPIRE = timedelta(hours=1)
@@ -34,5 +33,6 @@ class Config(object):
     JWT_REFRESH_TOKEN_EXPIRES = ACCESS_REFRESH
     MAX_CONTENT_LENGTH = 2 * 1024 * 1024
     # TEMPLATE
-    TEMPLATES_AUTO_RELOAD = str(os.getenv("TEMPLATES_AUTO_RELOAD"))
+    # PREFERRED_URL_SCHEME = "https"
+    # TEMPLATES_AUTO_RELOAD = str(os.getenv("TEMPLATES_AUTO_RELOAD"))
     # EXPLAIN_TEMPLATE_LOADING = str(os.getenv("EXPLAIN_TEMPLATE_LOADING"))

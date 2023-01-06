@@ -1,5 +1,6 @@
 import json
 import time
+import traceback
 from flask import (
     Blueprint,
     Response,
@@ -2018,6 +2019,73 @@ def surat_pernyataan():
     except Exception as e:
         return e
 
-@admin2.route('rekap-absen', methods=['GET','POST'])
+
+@admin2.route("rekap-absen", methods=["GET", "POST"])
+@login_required
 def rekap_bulan():
-    response = make_response(render_template())
+    form = FormSelectAbsensi()
+    base_kelas = BaseModel(KelasModel)
+    sql_kelas = base_kelas.get_all()
+    base_bulan = BaseModel(NamaBulanModel)
+    sql_bulan = base_bulan.get_all()
+    sql_year = AbsensiModel.query.group_by(func.year(AbsensiModel.tgl_absen)).all()
+
+    form = FormSelectAbsensi()
+    # data kelas
+    for i in sql_kelas:
+        form.kelas.choices.append((i.id, i.kelas))
+    # data bulan
+    for i in sql_bulan:
+        form.bulan.choices.append((i.id, i.nama_bulan.title()))
+
+    for i in sql_year:
+        form.tahun.choices.append((i.tgl_absen.year, i.tgl_absen.year))
+        # try:
+        if form.validate_on_submit():
+            kelas = request.form.get("kelas")
+            bulan = request.form.get("bulan")
+            tahun = request.form.get("tahun")
+
+            sql_siswa = (
+                db.session.query(AbsensiModel)
+                .join(SiswaModel)
+                .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
+                .filter(SiswaModel.kelas_id == kelas)
+                .filter(func.month(AbsensiModel.tgl_absen) == bulan)
+                .filter(func.year(AbsensiModel.tgl_absen) == tahun)
+                .group_by(AbsensiModel.siswa_id)
+                .all()
+            )
+
+            data = {}
+            sql_ket = db.session.query(AbsensiModel)
+
+            month_range = monthrange(int(tahun), int(bulan))
+            data["month_range"] = month_range[1]
+            response = make_response(
+                render_template(
+                    "admin/letter_report/result_rekap_bulan.html",
+                    AbsensiModel=AbsensiModel,
+                    sql_siswa=sql_siswa,
+                    data=data,
+                    db=db,
+                    func=func,
+                    sql_ket=sql_ket,
+                )
+            )
+            return response
+    # except Exception as e:
+    #     # traceback_ = traceback.format_exc()
+    #     # trace_file = traceback.format_exc().split(" ")[7]
+    #     # get_file = trace_file.split(sep="\\")[-1]
+    #     # trace_line = traceback_.split(" ")
+    #     # response = make_response(
+    #     #     f"Pesan : {str(e)} </br> {get_file} </br> {trace_line} </br> {len(trace_line)}"
+    #     # )
+    #     # return response
+    #     return
+    else:
+        response = make_response(
+            render_template("admin/letter_report/rekap_bulan.html", form=form)
+        )
+        return response

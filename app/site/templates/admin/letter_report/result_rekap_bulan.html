@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{{ url_for('admin2.static', filename='plugins/fontawesome-free/css/all.min.css') }}" />
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{{ url_for('admin2.static', filename='css/adminlte.min.css') }}" />
+
+  <style>
+    * {
+      font-family: 'Times New Roman', Times, serif;
+      margin: 0;
+      padding: 0;
+      line-height: normal;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="d-flex justify-content-center">
+          <table style="width: 100%;" class="table-responsive-sm">
+            <tr>
+              <td>
+                <div class="text-center mr-2 mb-0 pb-0">
+                  <img src="{{ url_for('admin2.static', filename='img/kota_makassar.png') }}" width="75" alt="">
+                  <div style="font-size: 10pt; margin-top: 5px;">NPSN : 40307325</div>
+                </div>
+              </td>
+              <td>
+                <div class="text-center mr-2 ml-2">
+                  <div style="font-size: 14pt;">PEMERINTAH KOTA MAKASSAR <br>
+                    DINAS PENDIDIKAN <br>
+                    UPT SATUAN PENDIDIKAN FORMAL <br></div>
+                  <div style="font-size: 14pt; font-weight: 600;">SMP NEGERI 2 MAKASSAR</div>
+                  <div style="font-size: 10pt;">Jl. Amanagappa No. 4 Makassar (90111) - Telp. (0411) 3611404</div>
+                  <div style="font-size: 10pt; font-style: italic; text-decoration: underline; color:#0088FF">Email :
+                    smp02makassar78@gmail.com</div>
+                </div>
+              </td>
+              <td>
+                <div class="text-center ml-2 ">
+                  <img src="{{ url_for('admin2.static', filename='img/logo.png') }}" height="90" alt="">
+                  <div style="font-size: 10pt; margin-top: 5px;">NSS : 201196007002</div>
+                </div>
+              </td>
+            </tr>
+            <tr class="mt-0">
+              <td colspan="3">
+                <hr class="d-flex align-items-start mt-0" style="border: 1.5pt solid black;">
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="d-flex justify-content-center">
+          <table class="table-bordered table-striped table-sm nowrap" style="width: 100%;">
+            <thead>
+              <tr>
+                <th width="10" rowspan="2" class="text-center">NO</th>
+                <th rowspan="2" class="text-center">Nama Siswa</th>
+                <th rowspan="2" width="15">P/L</th>
+                <th class="text-center" colspan="{{ data.month_range }}">Tanggal</th>
+                <th class="text-center" colspan="3">Jumlah</th>
+              </tr>
+              <tr>
+                {% for i in range(1, data.month_range + 1) %}
+                <th class="text-center" width="20" style="padding: 2px;">{{ loop.index }}</th>
+                {% endfor %}
+                <th class="text-center" width="20">S</th>
+                <th class="text-center" width="20">I</th>
+                <th class="text-center" width="20">A</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in sql_siswa %}
+              <tr>
+                <td class="text-center">{{ loop.index }}</td>
+                <td>{{ i.siswa.first_name | title }} {{ i.siswa.last_name | title }}</td>
+                <td class="text-center">{{ 'L' if i.siswa.gender=='laki-laki' else 'P' }}</td>
+                {% for v in range(1, data.month_range + 1) %}
+                <td>
+                  {# {% set sql_ket = db.session.query(AbsensiModel)
+                    .filter(AbsensiModel.siswa_id==i.siswa_id)
+                    .filter(func.day(AbsensiModel.tgl_absen)==v)
+                    .filter(func.month(AbsensiModel.tgl_absen)==i.tgl_absen.month) %} #}
+                  {% for ket in sql_ket %}
+                  {% if ket.tgl_absen.day == v and ket.siswa_id==i.siswa_id and ket.tgl_absen.year == i.tgl_absen.year %}
+                  {# {{ ket.ket }} #}
+                  {% if ket.ket == 'S' %}
+                  <div style="color: #ffc107; font-weight: 600;">{{ ket.ket }}</div>
+                  {% elif ket.ket=='H' %}
+                  <div style="color:#28a745 ; font-weight: 600;">{{ ket.ket }}</div>
+                  {% elif ket.ket=='I' %}
+                  <div style="color:#007bff ; font-weight: 600;">{{ ket.ket }}</div>
+                  {% elif ket.ket=='I' %}
+                  <div style="color:#dc3545 ; font-weight: 600;">{{ ket.ket }}</div>
+                  {% endif %}
+                  {% endif %}
+                  {% endfor %}
+                </td>
+                {% endfor %}
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- jQuery -->
+  <script src="{{ url_for('admin2.static', filename='plugins/jquery/jquery.min.js') }}"></script>
+  <!-- Bootstrap 4 -->
+  <script src="{{ url_for('admin2.static', filename='plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <!-- AdminLTE App -->
+  <script src="{{ url_for('admin2.static', filename='js/adminlte.min.js') }}"></script>
+</body>
+
+</html>
