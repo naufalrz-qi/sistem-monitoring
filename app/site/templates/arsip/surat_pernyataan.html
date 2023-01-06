@@ -215,7 +215,7 @@
         <table width="600" class="table-ortu" style="margin-top: 65px;">
             <tr>
                 <td width="390" style="font-weight: 600;">
-                    {{ sql_siswa.nama_ortu_or_wali | title if sql_siswa.nama_ortu_or_wali else '-'}}
+                    {{ sql_siswa.nama_ortu_or_wali | title if sql_siswa.nama_ortu_or_wali else '___________________'}}
                 </td>
                 <td style="font-weight: 600;">{{ sql_siswa.first_name | title }}
                     {{ sql_siswa.last_name | title }}</td>

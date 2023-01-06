@@ -2057,11 +2057,24 @@ def rekap_bulan():
                 .all()
             )
 
-            data = {}
+            sql_wali = (
+                db.session.query(WaliKelasModel).filter_by(kelas_id=kelas).scalar()
+            )
+            sql_kepsek = KepsekModel.query.filter_by(status=1).first()
             sql_ket = db.session.query(AbsensiModel)
-
             month_range = monthrange(int(tahun), int(bulan))
+            data = {}
+            data["bulan"] = base_bulan.get_one_or_none(id=bulan).nama_bulan
+            data["kelas"] = base_kelas.get_one_or_none(id=kelas).kelas
+            data["wali_kelas"] = f"{sql_wali.guru.first_name} {sql_wali.guru.last_name}"
+            data["nip_wali"] = sql_wali.guru.user.username
+            data["semester"] = min([i.mengajar.semester.semester for i in sql_siswa])
+            data["ta"] = min([i.mengajar.tahun_ajaran.th_ajaran for i in sql_siswa])
             data["month_range"] = month_range[1]
+            data["today"] = datetime.date(datetime.today())
+            data["kepsek"] = f"{sql_kepsek.guru.first_name} {sql_kepsek.guru.last_name}"
+
+            data["nip_kepsek"] = sql_kepsek.guru.user.username
             response = make_response(
                 render_template(
                     "admin/letter_report/result_rekap_bulan.html",
