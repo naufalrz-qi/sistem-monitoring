@@ -11,11 +11,11 @@
       <div class="card-body">
         <div class="row mb-2 mt-0">
           <div class="col col-md-6">
-            <table>
+            <table class="font-weight-bold">
               <tr>
-                <td width="105">Mata Pelajaran</td>
+                <td width="110">Mata Pelajaran</td>
                 <td width="10">:</td>
-                <td width="200">{{ data.mapel | title }}</td>
+                <td width="195">{{ data.mapel | title }}</td>
                 <td width="95">Semester</td>
                 <td width="10">:</td>
                 <td>{{ data.semester |upper}}</td>
@@ -64,10 +64,13 @@
                   <td class="pl-2">{{ i.siswa.first_name | title }} {{ i.siswa.last_name | title }}</td>
                   <td class="text-center">{{ 'L' if i.siswa.gender  =='laki-laki' else 'P' }}</td>
                   {% for key in sql_tgl_absen.filter(AbsensiModel.siswa_id==i.siswa_id) %}
-                  <td width="60" class="text-center">
+                  <td class="text-center">
                     {{ key.ket }}
                   </td>
                   {% endfor %}
+                  <td></td>
+                  <td></td>
+                  <td></td>
                 </tr>
                 {% endfor %}
               </tbody>
