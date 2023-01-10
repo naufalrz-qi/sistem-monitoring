@@ -62,7 +62,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for _ in siswa['data'] %}
+                        {% for _ in siswa['data']  %}
                         {% if object.kelas == _.kelas %}
                         <tr>
                             <td>{{_.nisn}}</td>
@@ -163,7 +163,7 @@
             "paging": true,
             "lengthChange": true,
             "searching": true,
-            "ordering": true,
+            "ordering": false,
             "info": true,
             "autoWidth": false,
             "responsive": false,

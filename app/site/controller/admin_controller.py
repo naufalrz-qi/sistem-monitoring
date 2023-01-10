@@ -103,6 +103,7 @@ class PenggunaSiswa:
                 urlSiswa = base_url + url_for("siswa.get")
                 respSiswa = req.get(urlSiswa)
                 jsonRespSiswa = respSiswa.json()
+                print(respSiswa.text)
                 return render_template(
                     "admin/siswa/get_siswa.html",
                     kelas=jsonRespKelas,

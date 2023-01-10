@@ -77,8 +77,9 @@
         </li>
 
 
-        <li class="nav-item {{ 'menu-open' if filename=='daftar_kehadiran' else None }}">
-          <a href="#" class="nav-link {{ 'active' if filename=='daftar_kehadiran' else None }} ">
+        <li class="nav-item {{ 'menu-open' if filename=='daftar_kehadiran' or filename=='result-absen' else None }}">
+          <a href="#"
+            class="nav-link {{ 'active' if filename=='daftar_kehadiran' or filename=='result-absen' else None }} ">
             <i class="nav-icon fas fa-list-alt"></i>
             <p>Data Kehadiran</p>
             <i class="right fa fa-angle-left"></i>
@@ -87,8 +88,9 @@
           <ul class="nav nav-treeview">
             <li class="nav-item">
               <a href="{{ url_for('guru2.daftar_kehadiran') }}"
-                class="nav-link {{ 'active' if filename=='daftar_kehadiran' else None }}">
-                <i class="nav-icon far fa-circle {{ 'fa-dot-circle' if filename=='daftar_kehadiran' else None }} "></i>
+                class="nav-link {{ 'active' if filename=='daftar_kehadiran' or filename=='result-absen' else None }}">
+                <i
+                  class="nav-icon far fa-circle {{ 'fa-dot-circle' if filename=='daftar_kehadiran' or filename=='result-absen' else None }} "></i>
                 <p>Daftar Hadir</p>
               </a>
             </li>

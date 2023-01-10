@@ -1,18 +1,18 @@
 from flask import (
     abort,
+    make_response,
     request,
     Blueprint,
     redirect,
     url_for,
     flash,
-    session,
     render_template,
-    escape,
 )
 import asyncio
 from flask_login import current_user, login_required
-from sqlalchemy import and_, func
-from app.site.forms.form_absen import AbsensiForm
+from sqlalchemy import func
+from app.site.forms.form_absen import AbsensiForm, FormSelectKehadiranSemester
+from app.site.forms.form_letter_report import FormSelectKehadiranSiswa, FormSelectKelas
 from ...backend.extensions import db
 from app.backend.lib.base_model import BaseModel
 from app.backend.models.user_details_model import GuruModel, SiswaModel
@@ -22,6 +22,7 @@ from ...backend.models.master_model import (
     KelasModel,
     MengajarModel,
     HariModel,
+    NamaBulanModel,
     SemesterModel,
     WaliKelasModel,
 )
@@ -440,7 +441,7 @@ def absensi(mengajar_id):
 
 @guru2.route("update-absensi/<int:mengajar_id>", methods=["GET", "POST"])
 @login_required
-def update_absen(mengajar_id):
+async def update_absen(mengajar_id):
     if current_user.group == "guru":
         data = {}
         """
@@ -509,6 +510,77 @@ def update_absen(mengajar_id):
 
 @guru2.route("/daftar-hadir", methods=["GET", "POST"])
 @login_required
-async def daftar_kehadiran():
+def daftar_kehadiran():
+    data = {}
+    form = FormSelectKehadiranSiswa()
+    sql_kelas = KelasModel.query.all()
+    sql_bulan = NamaBulanModel.query.all()
+    sql_tahun = AbsensiModel.query.group_by(func.year(AbsensiModel.tgl_absen)).all()
+    for i in sql_kelas:
+        form.kelas.choices.append((i.id, i.kelas))
+    for i in sql_bulan:
+        form.bulan.choices.append((i.id, i.nama_bulan.upper()))
 
-    return render_template("guru/modul/absen/daftar_hadir.html")
+    for i in sql_tahun:
+        form.tahun.choices.append((i.tgl_absen.year, i.tgl_absen.year))
+    if form.validate_on_submit():
+        kelas = request.form.get("kelas")
+        bulan = request.form.get("bulan")
+        tahun = request.form.get("tahun")
+        sql_kehadiran = (
+            db.session.query(AbsensiModel)
+            .join(MengajarModel)
+            .join(SiswaModel)
+            .filter(AbsensiModel.mengajar_id == MengajarModel.id)
+            .filter(func.month(AbsensiModel.tgl_absen) == bulan)
+            .filter(func.year(AbsensiModel.tgl_absen) == tahun)
+            .filter(MengajarModel.kelas_id == kelas)
+            .filter(MengajarModel.guru_id == current_user.id)
+            .group_by(AbsensiModel.siswa_id)
+            .order_by(SiswaModel.first_name.asc())
+        )
+
+        for i in sql_kehadiran.all():
+            data["kelas"] = i.siswa.kelas.kelas
+            data["mapel"] = i.mengajar.mapel.mapel
+            data["semester"] = i.mengajar.semester.semester
+            data["tahun_ajaran"] = i.mengajar.tahun_ajaran.th_ajaran
+            data["mengajar_id"] = i.mengajar_id
+            data["bulan"] = min(
+                [k.nama_bulan for k in sql_bulan if k.id == i.tgl_absen.month]
+            )
+
+        sql_tgl_absen = (
+            db.session.query(AbsensiModel)
+            .filter(AbsensiModel.mengajar_id == MengajarModel.id)
+            .filter(MengajarModel.guru_id == current_user.id)
+            .filter(MengajarModel.kelas_id == kelas)
+            .filter(func.month(AbsensiModel.tgl_absen) == bulan)
+            .filter(func.year(AbsensiModel.tgl_absen) == tahun)
+            .group_by(func.day(AbsensiModel.tgl_absen))
+        )
+
+        if sql_kehadiran.all():
+            response = make_response(
+                render_template(
+                    "guru/modul/absen/result_daftar_hadir.html",
+                    sqlToday=get_kelas_today(),
+                    sql_kehadiran=sql_kehadiran,
+                    data=data,
+                    sql_tgl_absen=sql_tgl_absen,
+                    AbsensiModel=AbsensiModel,
+                    func=func,
+                )
+            )
+            return response
+        else:
+            flash(
+                "Data yang dimaksud tidak ditemukan. Coba periksa kembali..!", "error"
+            )
+
+    response = make_response(
+        render_template(
+            "guru/modul/absen/daftar_hadir.html", form=form, sqlToday=get_kelas_today()
+        )
+    )
+    return response
