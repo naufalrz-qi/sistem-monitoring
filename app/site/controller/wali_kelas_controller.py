@@ -1,7 +1,7 @@
 from flask import Flask, url_for, request, redirect, flash, render_template, Blueprint
 from flask_login import current_user
-from app.backend.models.master_model import WaliKelasModel
-from ...backend.extensions import db
+from app.models.master_model import WaliKelasModel
+from ...extensions import db
 
 wali_kelas = Blueprint(
     "wali_kelas",

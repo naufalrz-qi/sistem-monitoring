@@ -1,11 +1,11 @@
 from flask import Blueprint, jsonify, request
-from app.backend.lib.base_model import BaseModel
-from app.backend.lib.date_time import format_datetime_id, format_indo
-from app.backend.lib.status_code import *
-from app.backend.models.master_model import KelasModel, WaliKelasModel
-from app.backend.models.user_details_model import GuruModel
-from app.backend.models.user_model import UserModel
-from app.backend.extensions import db
+from app.api.lib.base_model import BaseModel
+from app.api.lib.date_time import format_datetime_id, format_indo
+from app.api.lib.status_code import *
+from app.models.master_model import KelasModel, WaliKelasModel
+from app.models.user_details_model import GuruModel
+from app.models.user_model import UserModel
+from app.extensions import db
 
 guru = Blueprint("guru", __name__, url_prefix="/api/v2/guru")
 

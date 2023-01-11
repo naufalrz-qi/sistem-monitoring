@@ -1,4 +1,4 @@
-from app.backend.extensions import db
+from app.extensions import db
 from flask import jsonify
 from typing import Optional
 from flask_sqlalchemy import Model

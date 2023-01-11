@@ -13,12 +13,12 @@ from flask_login import current_user, login_required
 from sqlalchemy import func
 from app.site.forms.form_absen import AbsensiForm, FormSelectKehadiranSemester
 from app.site.forms.form_letter_report import FormSelectKehadiranSiswa, FormSelectKelas
-from ...backend.extensions import db
-from app.backend.lib.base_model import BaseModel
-from app.backend.models.user_details_model import GuruModel, SiswaModel
+from ...extensions import db
+from app.api.lib.base_model import BaseModel
+from app.models.user_details_model import GuruModel, SiswaModel
 from app.site.forms.form_guru import FormGetProfileGuru, FormUpdatePassword
-from ..models.user_login_model import *
-from ...backend.models.master_model import (
+from ...models.user_login_model import *
+from ...models.master_model import (
     KelasModel,
     MengajarModel,
     HariModel,
@@ -26,9 +26,9 @@ from ...backend.models.master_model import (
     SemesterModel,
     WaliKelasModel,
 )
-from ...backend.lib.date_time import format_indo, tomorrow_, today_
+from ...api.lib.date_time import format_indo, tomorrow_, today_
 from werkzeug.security import generate_password_hash, check_password_hash
-from ...backend.models.data_model import AbsensiModel
+from ...models.data_model import AbsensiModel
 from datetime import datetime
 from sqlalchemy import exists
 

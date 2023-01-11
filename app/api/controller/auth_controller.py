@@ -8,14 +8,14 @@ from flask_jwt_extended import (
     create_refresh_token,
 )
 from sqlalchemy import func
-from app.backend.extensions import jwt
-from app.backend.lib.base_model import BaseModel
-from app.backend.lib.date_time import format_datetime_id, format_indo, utc_makassar
-from app.backend.models.master_model import KelasModel
-from app.backend.models.user_details_model import *
-from app.backend.models.user_model import TokenBlockList, UserModel
-from app.backend.extensions import db
-from app.backend.lib.status_code import *
+from app.extensions import jwt
+from app.api.lib.base_model import BaseModel
+from app.api.lib.date_time import format_datetime_id, format_indo, utc_makassar
+from app.models.master_model import KelasModel
+from app.models.user_details_model import *
+from app.models.user_model import TokenBlockList, UserModel
+from app.extensions import db
+from app.api.lib.status_code import *
 from werkzeug.security import generate_password_hash
 
 from ..lib.date_time import *

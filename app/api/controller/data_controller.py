@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint
-from app.backend.models.data_model import *
+from app.models.data_model import *
 
 data = Blueprint("data", __name__, url_prefix="/api/v2/data")
 

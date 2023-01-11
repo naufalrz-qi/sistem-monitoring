@@ -16,11 +16,11 @@ from flask import (
 from werkzeug.utils import secure_filename
 from flask_login import login_required, current_user
 from calendar import monthrange
-from app.backend.lib.status_code import HTTP_413_REQUEST_ENTITY_TOO_LARGE
-from app.backend.models.user_model import *
-from app.backend.models.master_model import *
-from app.backend.models.user_details_model import *
-from app.backend.lib.base_model import BaseModel
+from app.api.lib.status_code import HTTP_413_REQUEST_ENTITY_TOO_LARGE
+from app.models.user_model import *
+from app.models.master_model import *
+from app.models.user_details_model import *
+from app.api.lib.base_model import BaseModel
 from app.site.forms.form_absen import FormSelectAbsensi, FormSelectKehadiranSemester
 from app.site.forms.form_auth import FormEditStatus
 from app.site.forms.form_jadwal import FormJadwalMengajar
@@ -30,8 +30,8 @@ from app.site.forms.form_siswa import FormAddSiswa, FormEditSiswa
 from ..forms.form_auth import *
 from ..forms.form_guru import *
 from ..lib.base_url import base_url
-from ..models.user_login_model import *
-from ...backend.models.data_model import *
+from app.models.user_login_model import *
+from app.models.data_model import *
 from sqlalchemy import func
 import os
 import requests as req

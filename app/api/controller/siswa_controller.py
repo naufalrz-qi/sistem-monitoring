@@ -8,23 +8,23 @@ from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers import HorizontalBarsDrawer
 from flask import Blueprint, jsonify, request, send_from_directory, url_for
 from flask_jwt_extended import jwt_required
-from app.backend.lib.base_model import BaseModel
-from app.backend.lib.date_time import (
+from app.api.lib.base_model import BaseModel
+from app.api.lib.date_time import (
     format_datetime_id,
     format_indo,
     string_format,
     utc_makassar,
 )
-from app.backend.lib.status_code import (
+from app.api.lib.status_code import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
     HTTP_404_NOT_FOUND,
 )
-from app.backend.models.master_model import KelasModel
-from app.backend.models.user_details_model import SiswaModel
-from app.backend.models.user_model import UserModel
-from app.backend.extensions import db
-from app.backend.lib.uploader import uploads
+from app.models.master_model import KelasModel
+from app.models.user_details_model import SiswaModel
+from app.models.user_model import UserModel
+from app.extensions import db
+from app.api.lib.uploader import uploads
 from datetime import datetime
 import app
 
@@ -35,13 +35,13 @@ siswa = Blueprint(
     static_url_path="/path/",
     static_folder="../static/",
 )
-qc_folder = os.getcwd() + "/app/backend/static/img/siswa/qr_code/"
+qc_folder = os.getcwd() + "/app/api/static/img/siswa/qr_code/"
 
 
 # NOTE : MANUAL STATIC FOLDER
-# @siswa.route('backend/<path:filename>')
+# @siswa.route('api/<path:filename>')
 # def static(filename):
-#     dir = send_from_directory('backend/static', filename)
+#     dir = send_from_directory('api/static', filename)
 #     return dir
 
 
@@ -195,8 +195,8 @@ def get_single(id):
             """
             Check file before delete user and file
             """
-            dir_file = os.getcwd() + "/app/backend/static/img/siswa/foto/"
-            qr_file = os.getcwd() + "/app/backend/static/img/siswa/qr_code"
+            dir_file = os.getcwd() + "/app/api/static/img/siswa/foto/"
+            qr_file = os.getcwd() + "/app/api/static/img/siswa/qr_code"
             # file = dir_file + model.pic
 
             if model.pic and model.qr_code:

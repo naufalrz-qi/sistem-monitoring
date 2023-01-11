@@ -1,6 +1,5 @@
 from datetime import datetime
-from email.policy import default
-from app.backend.extensions import db
+from app.extensions import db
 import sqlalchemy as sa
 from .user_model import UserModel
 from .master_model import *

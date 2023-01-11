@@ -1,8 +1,8 @@
-from app.backend.extensions import db
+from app.extensions import db
 import sqlalchemy as sa
 import sqlalchemy.orm as sql
 from sqlalchemy.orm import backref
-from app.backend.models.master_model import *
+from app.models.master_model import *
 
 
 class AbsensiModel(db.Model):

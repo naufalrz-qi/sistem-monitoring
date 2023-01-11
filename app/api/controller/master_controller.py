@@ -1,8 +1,7 @@
 import time
 from flask import Blueprint, jsonify, request
-
-from app.backend.models.user_details_model import SiswaModel
-from ..models.master_model import *
+from app.models.user_details_model import SiswaModel
+from app.models.master_model import *
 from ..lib.base_model import BaseModel
 from ..lib.status_code import *
 from sqlalchemy import func

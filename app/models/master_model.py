@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-from ..extensions import db
+from app.extensions import db
 import sqlalchemy.orm as rs
 from sqlalchemy.orm import backref
 from .user_details_model import *

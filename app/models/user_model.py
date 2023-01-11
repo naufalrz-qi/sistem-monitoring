@@ -1,7 +1,7 @@
-from app.backend.extensions import db
+from app.extensions import db
 import sqlalchemy as sa
 import sqlalchemy.orm as sql
-from app.backend.lib.date_time import utc_makassar
+from app.api.lib.date_time import utc_makassar
 from werkzeug.security import check_password_hash
 from sqlalchemy.orm import relationship, backref
 

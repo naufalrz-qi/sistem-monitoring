@@ -1,9 +1,9 @@
 from flask import Flask
-from app.backend.register_app import register_app
+from app.api.register_app import register_app
 from app.site.register_app import register_app_site
 from settings import Config
-from app.site.models.user_login_model import UserLogin
-from app.backend.lib.date_time import *
+from app.models.user_login_model import UserLogin
+from app.api.lib.date_time import *
 
 
 def create_app():
@@ -23,7 +23,7 @@ def create_app():
 
 
 def extended_ext(app):
-    from app.backend.extensions import db, admin, jwt, migrate
+    from app.extensions import db, admin, jwt, migrate
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -32,7 +32,7 @@ def extended_ext(app):
 
 
 def loginManager(app):
-    from app.site.extensions import login_manager
+    from app.extensions import login_manager
 
     login_manager.init_app(app)
     login_manager.session_protection = "strong"
