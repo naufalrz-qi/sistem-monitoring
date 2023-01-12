@@ -35,10 +35,14 @@ class FormLogin(FlaskForm):
 
     def validate_username(self, field):
         if field.data == "":
-            raise ValidationError("** Username harap di isi.")
+            raise ValidationError("*Username harap di isi!")
 
     def validate_password(self, field):
         if len(field.data) < 6 and len(field.data) > 0:
-            raise ValidationError("** Panjang karakter minimal 6 digit.")
+            raise ValidationError("*Jumlah karakter minimal 6 digit!")
         elif field.data == "":
-            raise ValidationError("** Password belum di isi.")
+            raise ValidationError("*Form Kata Sandi Tidak Boleh Kosong!")
+
+    def validate_level(self, field):
+        if field.data == "":
+            raise ValidationError("*Pilih Level Pengguna Terlebih dahulu!")

@@ -215,60 +215,61 @@ def update_pswd():
 @guru2.route("jadwal-mengajar")
 @login_required
 def jadwal_mengajar():
-    if current_user.group == "guru":
-        base = BaseModel(MengajarModel)
-        # mengajar = base.get_all_filter_by(
-        #     base.model.hari_id.asc(), guru_id=current_user.id
-        # )
-        sql_mengajar = (
-            db.session.query(MengajarModel)
-            .join(SemesterModel)
-            .filter(SemesterModel.is_active == 1)
-            .filter(MengajarModel.guru_id == current_user.id)
-            .order_by(MengajarModel.hari_id.asc())
-            .order_by(MengajarModel.jam_mulai.asc())
-            .all()
-        )
-        """GET WITH GENERAL FUNCTION"""
-        # sqlToday = get_kelas_today()
-        # sqlTomorrow = get_kelas_tomorrow()
-
-        """GET WITH LAMBDA FUNCTION"""
-        sqlToday = day(
-            sql=(
+    if current_user.is_authenticated:
+        if current_user.group == "guru":
+            base = BaseModel(MengajarModel)
+            # mengajar = base.get_all_filter_by(
+            #     base.model.hari_id.asc(), guru_id=current_user.id
+            # )
+            sql_mengajar = (
                 db.session.query(MengajarModel)
-                .join(HariModel)
                 .join(SemesterModel)
-                .filter(MengajarModel.guru_id == current_user.id)
-                .filter(MengajarModel.hari_id == HariModel.id)
-                .filter(HariModel.hari == today_())
                 .filter(SemesterModel.is_active == 1)
-                .order_by(MengajarModel.jam_mulai)
+                .filter(MengajarModel.guru_id == current_user.id)
+                .order_by(MengajarModel.hari_id.asc())
+                .order_by(MengajarModel.jam_mulai.asc())
                 .all()
             )
-        )
-        sqlTomorrow = day(
-            sql=(
-                db.session.query(MengajarModel)
-                .join(HariModel)
-                .join(SemesterModel)
-                .filter(MengajarModel.guru_id == current_user.id)
-                .filter(MengajarModel.hari_id == HariModel.id)
-                .filter(HariModel.hari == tomorrow_())
-                .filter(SemesterModel.is_active == 1)
-                .all()
-            )
-        )
+            """GET WITH GENERAL FUNCTION"""
+            # sqlToday = get_kelas_today()
+            # sqlTomorrow = get_kelas_tomorrow()
 
-        return render_template(
-            "guru/modul/jadwal_mengajar/jadwal_mengajar.html",
-            # sqlJadwal=mengajar,
-            sqlJadwal=sql_mengajar,
-            sqlToday=sqlToday,
-            sqlTomorrow=sqlTomorrow,
-        )
-    else:
-        return abort(404)
+            """GET WITH LAMBDA FUNCTION"""
+            sqlToday = day(
+                sql=(
+                    db.session.query(MengajarModel)
+                    .join(HariModel)
+                    .join(SemesterModel)
+                    .filter(MengajarModel.guru_id == current_user.id)
+                    .filter(MengajarModel.hari_id == HariModel.id)
+                    .filter(HariModel.hari == today_())
+                    .filter(SemesterModel.is_active == 1)
+                    .order_by(MengajarModel.jam_mulai)
+                    .all()
+                )
+            )
+            sqlTomorrow = day(
+                sql=(
+                    db.session.query(MengajarModel)
+                    .join(HariModel)
+                    .join(SemesterModel)
+                    .filter(MengajarModel.guru_id == current_user.id)
+                    .filter(MengajarModel.hari_id == HariModel.id)
+                    .filter(HariModel.hari == tomorrow_())
+                    .filter(SemesterModel.is_active == 1)
+                    .all()
+                )
+            )
+
+            return render_template(
+                "guru/modul/jadwal_mengajar/jadwal_mengajar.html",
+                # sqlJadwal=mengajar,
+                sqlJadwal=sql_mengajar,
+                sqlToday=sqlToday,
+                sqlTomorrow=sqlTomorrow,
+            )
+        else:
+            return abort(404)
 
 
 @guru2.route("/absensi-pelajaran/<int:mengajar_id>", methods=["GET", "POST"])
@@ -293,7 +294,7 @@ def absensi(mengajar_id):
             mengambil semua data siswa dengan filter kelas id pada tabel siswa
             dan di join dengan kelas id pada tabel master mengajar. Dan data
         """
-        base_siswa = BaseModel(SiswaModel)
+        # base_siswa = BaseModel(SiswaModel)
         # siswa = base_siswa.get_all_filter_by(kelas_id=data_mengajar["kelas_id"])
         siswa = (
             db.session.query(SiswaModel)

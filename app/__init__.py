@@ -36,7 +36,7 @@ def loginManager(app):
 
     login_manager.init_app(app)
     login_manager.session_protection = "strong"
-    login_manager.login_view = "login.masuk"
+    login_manager.login_view = "auth2.login"
     login_manager.login_message_category = "warning"
 
 

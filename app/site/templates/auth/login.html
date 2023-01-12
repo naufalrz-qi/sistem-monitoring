@@ -40,11 +40,11 @@
         <p class="login-box-msg" style="font-weight: 600;">Sistem Monitoring & Absensi Siswa</p>
         <!-- <p class="login-box-msg">Sign in untuk memulai sesi</p> -->
 
-        <form action="{{ url_for('login.masuk')}}" method="post">
+        <form action="{{ url_for('auth2.login')}}" method="post">
           {{ form.hidden_tag() }}
           <!-- Username -->
           {{ form.username.label(class="mb-1")}}
-          <div class="input-group mb-3">
+          <div class="input-group mb-1">
             {% if form.username.errors %}
             {{ form.username(class="form-control is-invalid", aria_invalid=true,  placeholder="[Masukkan Username Anda]")}}
             <div class="input-group-append">
@@ -75,7 +75,7 @@
 
           <!-- Password -->
           {{ form.password.label(class="mb-1")}}
-          <div class="input-group mb-3">
+          <div class="input-group mb-1">
             {% if form.password.errors %}
             {{ form.password(class="form-control is-invalid", aria_invalid=true,  placeholder="[Masukkan Kata Sandi Anda]")}}
             <div class="input-group-append">
@@ -134,8 +134,13 @@
             {% endif %}
           </div>
           <div class="row">
-
-            <div class="col-md-12">
+            <div class="col col-8 col-md-8">
+              <div class="icheck-primary">
+                {{ form.remember }}
+                {{ form.remember.label }}
+              </div>
+            </div>
+            <div class="col col-4 col-md-4">
               {# {{ form.submit(class="btn btn-primary btn-flat")}} #}
               <button type="submit" class="btn btn-primary btn-block btn-flat">Masuk<span class="ml-1"><i
                     class="fas fa-arrow-circle-right"></i></span></button>

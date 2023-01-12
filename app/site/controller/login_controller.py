@@ -1,7 +1,5 @@
 import json
 import os
-import time
-import requests as req
 from flask import (
     Blueprint,
     abort,
@@ -11,15 +9,16 @@ from flask import (
     render_template,
     url_for,
     session,
+    make_response,
 )
-from app.models.user_login_model import UserLogin
+from app.models.user_details_model import AdminModel, GuruModel
 from app.site.forms.form_auth import FormLogin
-from ..lib.base_url import base_url
 from flask_login import login_user, current_user, login_required, logout_user
 from urllib.parse import urljoin, urlparse
 from ..lib.json import JsonFileObject
+from ...models.user_model import UserModel
 
-login = Blueprint("login", __name__, url_prefix="/", template_folder="../templates/")
+auth2 = Blueprint("auth2", __name__, url_prefix="/", template_folder="../templates/")
 
 JSON_FILE = os.getcwd() + "/data.json"
 
@@ -35,9 +34,16 @@ def is_safe_url(target):
     return test_url.scheme in ("http", "https") and ref_url.netloc == test_url.netloc
 
 
-@login.get("/")
+@auth2.get("/")
 def index():
-    return redirect(url_for("login.masuk"))
+    if current_user.is_authenticated:
+        if current_user.group == "admin":
+            response = make_response(redirect(url_for("admin2.index")))
+            return response
+        elif current_user.group == "guru":
+            response = make_response(redirect(url_for("guru2.index")))
+            return response
+    return redirect(url_for("auth2.login"))
 
 
 # def index():
@@ -52,63 +58,141 @@ def index():
 #     return render_template("auth/login.html", form=form)
 
 
-@login.route("sign-in", methods=["GET", "POST"])
-def masuk():
-    if current_user.is_authenticated:
-        if current_user.group == "admin":
-            return redirect(url_for("admin2.index"))
-        elif current_user.group == "guru":
-            return redirect(url_for("guru2.index"))
-
-    url = base_url + "api/v2/auth/login"
-    form = FormLogin(request.form)
+@auth2.route("/login", methods=["GET", "POST"])
+def login():
+    form = FormLogin()
     if request.method == "POST" and form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        group = request.form.get("level")
-        remember = form.remember.data
+        username = request.form.get("username")
+        password = request.form.get("password")
+        level = request.form.get("level")
+        remember = request.form.get("remember")
+        sql_user = UserModel.query.filter_by(username=username).first()
+        sql_admin = AdminModel.query.filter_by(user_id=sql_user.id).first()
+        sql_guru = GuruModel.query.filter_by(user_id=sql_user.id).first()
 
-        payload = json.dumps({"username": username, "password": password})
-        headers = {"Content-Type": "application/json"}
-        resp = req.post(url=url, data=payload, headers=headers)
-        jsonResp = resp.json()
-        t = JsonFileObject(JSON_FILE)
-        t.write_json(data=jsonResp)
-        session.update(jsonResp)
-        if resp.status_code == 200:
-            user = UserLogin()
-            user.id = session.get("id")
-            # user.group = session.get("group")
-            login_user(user, remember=remember)
-            if "next" in session and session["next"]:
-                if is_safe_url(session["next"]):
-                    return redirect(session["next"])
-
-            if current_user.group == "admin" and group == "admin":
-                flash(
-                    f"Login berhasil. Selamat datang {str(jsonResp['group']).upper()}. Status : {resp.status_code}",
-                    "success",
-                )
-                time.sleep(1.5)
-                return redirect(url_for("admin2.index"))
-            elif current_user.group == "guru" and group == "guru":
-                flash(
-                    f"Login berhasil. Selamat datang {str(jsonResp['group']).upper()}. Status : {resp.status_code}",
-                    "success",
-                )
-                time.sleep(1.5)
-                return redirect(url_for("guru2.index"))
-            else:
-                logout_user()
-                flash(
-                    f"Login gagal. anda salah memilih level pengguna. silahkan pilih level pengguna yang sesuai.",
-                    "error",
-                )
+        if not sql_user:
+            flash(
+                message="Username yang di input salah.! silahkan periksa kembali.",
+                category="error",
+            )
         else:
-            flash(f'{jsonResp["msg"]} Status Code : {resp.status_code}', "error")
-            # return render_template("auth/login.html", form=form)
+            sql_check_password = UserModel.check_pswd(sql_user.password, password)
+            if sql_check_password:
+                login_user(user=sql_user, remember=remember)
+                # if "next" in session and session["next"]:
+                #     if is_safe_url(session["next"]):
+                #         if "_user_id" in session:
+                #             sql_admin = AdminModel.query.filter_by(
+                #                 user_id=session["_user_id"]
+                #             ).first()
+                #             sql_guru = GuruModel.query.filter_by(
+                #                 user_id=session["_user_id"]
+                #             ).first()
+                #             if sql_guru:
+                #                 session["first_name"] = sql_guru.first_name.upper()
+                #                 session["last_name"] = sql_guru.last_name.upper()
+                #             elif sql_admin:
+                #                 session["first_name"] = sql_admin.first_name.upper()
+                #                 session["last_name"] = sql_admin.last_name.upper()
+                #         return redirect(session["next"])
+                if level == "admin" and current_user.group == "admin":
+                    session["first_name"] = sql_admin.first_name.upper()
+                    session["last_name"] = sql_admin.last_name.upper()
+
+                    flash(
+                        message=f"Login Sukses...\\nHi.. {sql_admin.first_name.title()} {sql_admin.last_name.title()} Selamat Datang Di Sistem E-Monitoring.",
+                        category="success",
+                    )
+                    response = make_response(redirect(url_for("admin2.index")))
+                    return response
+                elif level == "guru" and current_user.group == "guru":
+                    session["first_name"] = sql_guru.first_name.upper()
+                    session["last_name"] = sql_guru.last_name.upper()
+
+                    flash(
+                        message=f"Login Sukses...\\nHi.. {sql_guru.first_name} {sql_guru.last_name} Selamat Datang Di Sistem E-Monitoring.",
+                        category="success",
+                    )
+                    response = make_response(redirect(url_for("guru2.index")))
+                    return response
+
+                else:
+                    flash(
+                        message=f"Ma'af...!\\nData Yang Di Input Tidak Sesuai",
+                        category="error",
+                    )
+
+    response = make_response(render_template("auth/login.html", form=form))
     session["next"] = request.args.get("next")
-    return render_template("auth/login.html", form=form)
+    # if "_user_id" in session:
+    #     sql_admin = AdminModel.query.filter_by(user_id=session["_user_id"]).first()
+    #     sql_guru = GuruModel.query.filter_by(user_id=session["_user_id"]).first()
+    #     if sql_guru:
+    #         session["first_name"] = sql_guru.first_name.upper()
+    #         session["last_name"] = sql_guru.last_name.upper()
+    #     elif sql_admin:
+    #         session["first_name"] = sql_admin.first_name.upper()
+    #         session["last_name"] = sql_admin.last_name.upper()
+    return response
+
+
+# @auth2.route("sign-in", methods=["GET", "POST"])
+# def masuk():
+#     if current_user.is_authenticated:
+#         if current_user.group == "admin":
+#             return redirect(url_for("admin2.index"))
+#         elif current_user.group == "guru":
+#             return redirect(url_for("guru2.index"))
+
+#     url = base_url + "api/v2/auth/login"
+#     form = FormLogin(request.form)
+#     if request.method == "POST" and form.validate_on_submit():
+#         username = form.username.data
+#         password = form.password.data
+#         group = request.form.get("level")
+#         remember = form.remember.data
+
+#         payload = json.dumps({"username": username, "password": password})
+#         headers = {"Content-Type": "application/json"}
+#         resp = req.post(url=url, data=payload, headers=headers)
+#         jsonResp = resp.json()
+#         t = JsonFileObject(JSON_FILE)
+#         t.write_json(data=jsonResp)
+#         session.update(jsonResp)
+#         if resp.status_code == 200:
+#             user = UserLogin()
+#             user.id = session.get("id")
+#             # user.group = session.get("group")
+#             login_user(user, remember=remember)
+#             if "next" in session and session["next"]:
+#                 if is_safe_url(session["next"]):
+#                     return redirect(session["next"])
+
+#             if current_user.group == "admin" and group == "admin":
+#                 flash(
+#                     f"Login berhasil. Selamat datang {str(jsonResp['group']).upper()}. Status : {resp.status_code}",
+#                     "success",
+#                 )
+#                 time.sleep(1.5)
+#                 return redirect(url_for("admin2.index"))
+#             elif current_user.group == "guru" and group == "guru":
+#                 flash(
+#                     f"Login berhasil. Selamat datang {str(jsonResp['group']).upper()}. Status : {resp.status_code}",
+#                     "success",
+#                 )
+#                 time.sleep(1.5)
+#                 return redirect(url_for("guru2.index"))
+#             else:
+#                 logout_user()
+#                 flash(
+#                     f"Login gagal. anda salah memilih level pengguna. silahkan pilih level pengguna yang sesuai.",
+#                     "error",
+#                 )
+#         else:
+#             flash(f'{jsonResp["msg"]} Status Code : {resp.status_code}', "error")
+#             # return render_template("auth/login.html", form=form)
+#     session["next"] = request.args.get("next")
+#     return render_template("auth/login.html", form=form)
 
 
 #         if "next" in session and session["next"]:
@@ -135,11 +219,11 @@ def masuk():
 # return render_template("auth/login.html", form=form)
 
 
-@login.route("sign-out")
+@auth2.route("sign-out")
 @login_required
 def logout():
     session.clear()
     logout_user()
-    t = JsonFileObject(JSON_FILE)
-    t.clear_json()
-    return redirect(url_for("login.index"))
+    # t = JsonFileObject(JSON_FILE)
+    # t.clear_json()
+    return redirect(url_for("auth2.index"))

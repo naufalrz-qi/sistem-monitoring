@@ -48,9 +48,9 @@
 
     <!-- Main Sidebar Container -->
     {% if current_user.is_authenticated %}
-    {% if session.group == 'admin' %}
+    {% if current_user.group == 'admin' %}
     {% include 'layouts/sidebar.html' %}
-    {% elif session.group == 'guru' %}
+    {% elif current_user.group == 'guru' %}
     {% include 'layouts/sidebar_guru.html' %}
     {% else %}
     {% endif %}

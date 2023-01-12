@@ -4,9 +4,10 @@ import sqlalchemy.orm as sql
 from app.api.lib.date_time import utc_makassar
 from werkzeug.security import check_password_hash
 from sqlalchemy.orm import relationship, backref
+from flask_login import UserMixin
 
 
-class UserModel(db.Model):
+class UserModel(db.Model, UserMixin):
     __tablename__ = "auth_user"
     id = sa.Column(sa.Integer, primary_key=True)
     username = sa.Column(sa.String(128), nullable=False)
@@ -26,7 +27,7 @@ class UserModel(db.Model):
         self.is_active = 1
 
     def __repr__(self) -> str:
-        return "{}".format(self.username)
+        return self.username
 
     def check_pswd(*args, **kwargs):
         return check_password_hash(*args, **kwargs)
