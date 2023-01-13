@@ -289,6 +289,7 @@ def absensi(mengajar_id):
             data_mengajar["kelas_id"] = i.kelas_id
             data_mengajar["kelas"] = i.kelas.kelas
             data_mengajar["mengajar_id"] = i.id
+            data_mengajar["mapel_id"] = i.mapel_id
             data_mengajar["mapel"] = i.mapel.mapel
         """
             mengambil semua data siswa dengan filter kelas id pada tabel siswa
@@ -341,12 +342,20 @@ def absensi(mengajar_id):
         """
         Menghitung jumlah pertemuan dengan filter berdasarkan tabel MENGAJAR ID
         """
+        # print(f'id === {data_mengajar["mengajar_id"]}')
         sqlCountPertemuan = day(
             sql=db.session.query(AbsensiModel)
-            .filter(AbsensiModel.mengajar_id == data_mengajar["mengajar_id"])
+            .join(SiswaModel)
+            .join(MengajarModel)
+            .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
+            .filter(MengajarModel.kelas_id == SiswaModel.kelas_id)
+            .filter(MengajarModel.guru_id == current_user.id)
+            .filter(AbsensiModel.mengajar_id == MengajarModel.id)
+            # .filter(AbsensiModel.mengajar_id == data_mengajar["mengajar_id"])
+            .group_by(AbsensiModel.pertemuan_ke)
             .order_by(AbsensiModel.pertemuan_ke.desc())
             .limit(1)
-            .count()
+            .scalar()
         )
 
         """
@@ -369,7 +378,7 @@ def absensi(mengajar_id):
             ZDI PERTEMUAN SELANJUTNYA
         """
         if sqlCountPertemuan:
-            data["pertemuan"] = sqlCountPertemuan + 1
+            data["pertemuan"] = int(sqlCountPertemuan.pertemuan_ke) + 1
             # sqlCountPertemuan + 1 if sqlTglAbsen is None else sqlCountPertemuan
 
         else:
@@ -629,7 +638,7 @@ def rekap_kehadiran():
             data["kelas"] = i.siswa.kelas.kelas
             data["mapel"] = i.mengajar.mapel.mapel
             data["semester"] = i.mengajar.semester.semester
-            data["tahun_ajaran"] = i.mengajar.tahun_ajaran.th_ajaxxxxxxxxxran
+            data["tahun_ajaran"] = i.mengajar.tahun_ajaran.th_ajaran
             data["mengajar_id"] = i.mengajar_id
             data["bulan"] = min(
                 [k.nama_bulan for k in sql_bulan if k.id == i.tgl_absen.month]
