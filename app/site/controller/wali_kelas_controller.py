@@ -1,6 +1,16 @@
-from flask import Flask, url_for, request, redirect, flash, render_template, Blueprint
-from flask_login import current_user
+from flask import (
+    Flask,
+    make_response,
+    url_for,
+    request,
+    redirect,
+    flash,
+    render_template,
+    Blueprint,
+)
+from flask_login import current_user, login_required
 from app.models.master_model import WaliKelasModel
+from app.models.user_details_model import SiswaModel
 from ...extensions import db
 
 wali_kelas = Blueprint(
@@ -14,7 +24,7 @@ wali_kelas = Blueprint(
 query = lambda sql: sql
 
 
-def check_wali():
+def sql_wali_():
     sql = query(
         sql=db.session.query(WaliKelasModel)
         .filter(WaliKelasModel.guru_id == current_user.id)
@@ -24,8 +34,25 @@ def check_wali():
 
 
 @wali_kelas.route("/index")
-def index_wali():
-    wali_kelas = check_wali()
-    return render_template(
-        "wali_kelas/index_wali_kelas.html", wali_controller=wali_kelas
+@login_required
+def index():
+    return render_template("wali_kelas/index_wali_kelas.html", sql_wali_=sql_wali_())
+
+
+@wali_kelas.route("data-siswa")
+@login_required
+def data_siswa():
+    sql_siswa = (
+        db.session.query(SiswaModel)
+        .filter(SiswaModel.kelas_id == sql_wali_().kelas_id)
+        .all()
     )
+
+    response = make_response(
+        render_template(
+            "wali_kelas/modul/siswa/data_siswa.html",
+            sql_siswa=sql_siswa,
+            sql_wali_=sql_wali_(),
+        )
+    )
+    return response
