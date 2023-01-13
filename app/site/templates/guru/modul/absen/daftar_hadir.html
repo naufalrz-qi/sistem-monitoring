@@ -2,7 +2,11 @@
 {% block head %}
 {{ super() }}
 {% endblock head %}
-{% set filename='daftar_kehadiran' %}
+{% if data.filename == 'daftar-hadir' %}
+{% set filename=data.filename %}
+{% else %}
+{% set filename=data.filename %}
+{% endif %}
 {% block content %}
 <div class="row">
   <div class="col col-md-4">
@@ -13,7 +17,7 @@
         </div>
       </div> -->
       <div class="card-body ">
-        <form action="" method="post">
+        <form action="" method="post" {{ 'target="_blank"' if data.filename=='rekap-data' else '' }}>
           {{ form.csrf_token() }}
           <div class="row">
             <div class="col col-md-12">
@@ -71,7 +75,8 @@
           <div class="row">
             <div class="col col-md-12">
               <div class="form-group">
-                <input type="submit" class="btn btn-primary btn-block" value="Result Data">
+                <input type="submit" class="btn btn-primary btn-block"
+                  value="{{ 'Result Data' if data.filename =='daftar-hadir' else 'Rekap Data' }}">
               </div>
             </div>
           </div>
