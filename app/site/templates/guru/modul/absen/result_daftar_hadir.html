@@ -45,7 +45,7 @@
                   <th width="35" rowspan="2" class="text-center align-middle">#</th>
                   <th rowspan="2" class="text-center align-middle">Nama Siswa</th>
                   <th width="35" rowspan="2" class="text-center align-middle">L/P</th>
-                  <th colspan="{{ sql_tgl_absen.count() }}" class="text-center">Tanggal Peremuan</th>
+                  <th colspan="{{ sql_tgl_absen.count() }}" class="text-center">Tanggal Pertemuan</th>
                   <th colspan="4" class="text-center">Jumlah Ket</th>
                 </tr>
                 <tr>
@@ -65,7 +65,7 @@
                   <td class="pl-2">{{ i.siswa.first_name | title }} {{ i.siswa.last_name | title }}</td>
                   <td class="text-center">{{ 'L' if i.siswa.gender  =='laki-laki' else 'P' }}</td>
                   {% for key in sql_tgl_absen.filter(AbsensiModel.siswa_id==i.siswa_id) %}
-                  <td width="90" class="text-center">
+                  <td class="text-center">
                     {% if key.ket == 'H' %}
                     <div class="text-green font-weight-bold">{{ key.ket }}</div>
                     {% elif key.ket == 'S' %}

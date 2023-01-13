@@ -20,6 +20,7 @@ from app.site.forms.form_guru import FormGetProfileGuru, FormUpdatePassword
 from ...models.user_login_model import *
 from ...models.master_model import (
     KelasModel,
+    KepsekModel,
     MengajarModel,
     HariModel,
     NamaBulanModel,
@@ -339,50 +340,25 @@ def absensi(mengajar_id):
         )
         date = datetime.date(datetime.today())
 
-        """
-        Menghitung jumlah pertemuan dengan filter berdasarkan tabel MENGAJAR ID
-        """
-        # print(f'id === {data_mengajar["mengajar_id"]}')
-        sqlCountPertemuan = day(
-            sql=db.session.query(AbsensiModel)
-            .join(SiswaModel)
-            .join(MengajarModel)
-            .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
-            .filter(MengajarModel.kelas_id == SiswaModel.kelas_id)
-            .filter(MengajarModel.guru_id == current_user.id)
-            .filter(AbsensiModel.mengajar_id == MengajarModel.id)
-            # .filter(AbsensiModel.mengajar_id == data_mengajar["mengajar_id"])
-            .group_by(AbsensiModel.pertemuan_ke)
-            .order_by(AbsensiModel.pertemuan_ke.desc())
-            .limit(1)
-            .scalar()
-        )
-
-        """
-            MENAMBIL DATA ABSEN PERHARI DENGAN FILTER BERDASARKAN TANGGAL PERHARI
-            UNTUK FILTER PERTEMUAN-KE N JIKA TANGGALNYA MASIH SAMA ATAU DI HARI YANG
-            SAMA PADA ABSEN MAKA PERTEMUAN KE TIDAK AKAN BERUBAH
-        """
-        sqlTglAbsen = day(
-            sql=db.session.query(AbsensiModel)
-            .join(SiswaModel)
-            .filter(AbsensiModel.tgl_absen == date)
-            .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
-            .order_by(AbsensiModel.pertemuan_ke.desc())
-            .first()
-        )
+        # """
+        #     MENAMBIL DATA ABSEN PERHARI DENGAN FILTER BERDASARKAN TANGGAL PERHARI
+        #     UNTUK FILTER PERTEMUAN-KE N JIKA TANGGALNYA MASIH SAMA ATAU DI HARI YANG
+        #     SAMA PADA ABSEN MAKA PERTEMUAN KE TIDAK AKAN BERUBAH
+        # """
+        # sqlTglAbsen = day(
+        #     sql=db.session.query(AbsensiModel)
+        #     .join(SiswaModel)
+        #     .filter(AbsensiModel.tgl_absen == date)
+        #     .filter(AbsensiModel.siswa_id == SiswaModel.user_id)
+        #     .first()
+        # )
 
         """
             MENGHITUNG PERTEMUAN SETIAP SUDAH MELAKUKAN ABSEN, DAN HASIL
             KALKULASI DARI PERTEMUAN AKAN TER-TAMBAH SECARA OTOMATIS
             ZDI PERTEMUAN SELANJUTNYA
         """
-        if sqlCountPertemuan:
-            data["pertemuan"] = int(sqlCountPertemuan.pertemuan_ke) + 1
-            # sqlCountPertemuan + 1 if sqlTglAbsen is None else sqlCountPertemuan
 
-        else:
-            data["pertemuan"] = 1
         absen = []
 
         if request.method == "POST":
@@ -391,7 +367,6 @@ def absensi(mengajar_id):
                 mengajar_id = request.form.get(f"mengajarId")
                 tgl_absen = request.form["today"]
                 ket = request.form.get(f"ket-{n}")
-                pertemuan_ke = request.form["pertemuan"]
 
                 absen.append(ket)
                 base_absesn = BaseModel(
@@ -400,7 +375,6 @@ def absensi(mengajar_id):
                         siswa_id=siswa_id,
                         tgl_absen=tgl_absen,
                         ket=ket,
-                        pertemuan=pertemuan_ke,
                     )
                 )
 
@@ -609,6 +583,8 @@ def rekap_kehadiran():
     sql_kelas = KelasModel.query.all()
     sql_bulan = NamaBulanModel.query.all()
     sql_tahun = AbsensiModel.query.group_by(func.year(AbsensiModel.tgl_absen)).all()
+    sql_kepsek = KepsekModel.query.filter_by(status=1).first()
+    sql_guru = GuruModel.query.filter_by(user_id=current_user.id).first()
     for i in sql_kelas:
         form.kelas.choices.append((i.id, i.kelas))
     for i in sql_bulan:
@@ -643,6 +619,12 @@ def rekap_kehadiran():
             data["bulan"] = min(
                 [k.nama_bulan for k in sql_bulan if k.id == i.tgl_absen.month]
             )
+
+        data["today"] = datetime.date(datetime.today())
+        data["kepsek"] = f"{sql_kepsek.guru.first_name} {sql_kepsek.guru.last_name}"
+        data["nip_kepsek"] = sql_kepsek.guru.user.username
+        data["guru"] = f"{sql_guru.first_name} {sql_guru.last_name}"
+        data["nip_guru"] = f"{sql_guru.user.username}"
 
         sql_tgl_absen = (
             db.session.query(AbsensiModel)

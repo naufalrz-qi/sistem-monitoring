@@ -21,21 +21,33 @@
   <div class="col-md-8">
     <div class="card card-blue">
       <div class="card-header">
-        <h3 class="card-title">Absen Kehadiran</h3>
+        <h3 class="card-title">Absen Siswa</h3>
       </div>
       <form action method="post">
         {{ form.csrf_token }}
         <div class="card-body">
           {# {{ url_for(request.endpoint, **request.view_args).split('/')[-1] }} #}
-          <div class="row mb-0 align-items-center">
+          <div class="row mb-2 align-items-center">
             <div class="col-md-6">
-              <h6 class="text-bold">Kelas : {{data_mengajar.kelas}}</h6>
-              <h6 class="text-bold">Mapel : {{data_mengajar.mapel}}</h6>
+              <table class="font-weight-bold">
+                <tr>
+                  <td>Hari</td>
+                  <td>:</td>
+                  <td>{{today | date_indo }}</td>
+                </tr>
+                <tr>
+                  <td width="110">Mata Pelajaran</td>
+                  <td width="15">:</td>
+                  <td>{{data_mengajar.mapel}}</td>
+                </tr>
+                <tr>
+                  <td>Kelas</td>
+                  <td>:</td>
+                  <td>{{data_mengajar.kelas}}</td>
+                </tr>
+              </table>
             </div>
             <div class="col-md-6">
-              {{form.pertemuan(value=data.pertemuan)}}
-              <h6 class="text-bold">Pertemuan Ke : {{data.pertemuan}}</h6>
-              <h6 class="text-bold ">Hari : {{today | date_indo }}</h6>
               {{form.today(class="form-control form-control-sm form-control-border text-bold", value=today, hidden=true )}}
             </div>
           </div>
