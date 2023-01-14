@@ -28,7 +28,7 @@
                             <th class="text-center">Alamat</th>
                             <th class="text-center">Tempat Lahir</th>
                             <th width="10" class="text-center">Kelas</th>
-                            <th class="text-center">Aksi</th>
+                            <th class="text-center">Foto</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,7 +40,9 @@
                             <td>{{ i.alamat if i.alamat else '-' }}</td>
                             <td>{{ i.tempat_lahir if i.tempat_lahir else '-' }}</td>
                             <td>{{ i.kelas }}</td>
-                            <td></td>
+                            <td><img src="{{ url_for('siswa.static', filename='img/siswa/foto/'+i.pic if i.pic else '') }}"
+                                    alt="">
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

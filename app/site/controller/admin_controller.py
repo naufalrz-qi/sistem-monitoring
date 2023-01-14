@@ -103,7 +103,6 @@ class PenggunaSiswa:
                 urlSiswa = base_url + url_for("siswa.get")
                 respSiswa = req.get(urlSiswa)
                 jsonRespSiswa = respSiswa.json()
-                print(respSiswa.text)
                 return render_template(
                     "admin/siswa/get_siswa.html",
                     kelas=jsonRespKelas,
@@ -186,7 +185,7 @@ class PenggunaSiswa:
                 path = upload_folder + file_name
                 file.save(path)
 
-                files = {"images": open(path, "rb+")}
+                files = {"images": open(path, "rb")}
                 response = req.post(url, files=files)
 
                 if response.status_code == 200:
@@ -1914,7 +1913,6 @@ def data_kehadiran_bulan():
                     AbsensiModel=AbsensiModel,
                 )
             )
-            print(response.status_code)
             return response
         return render_template(
             "admin/absensi/daftar_hadir_siswa.html",
@@ -2006,7 +2004,6 @@ def surat_pernyataan():
             sql_siswa = base_siswa.get_one(id=id)
             today = datetime.date(datetime.today())
             sql_wali = BaseModel(WaliKelasModel).get_one(kelas_id=sql_siswa.kelas_id)
-            print(sql_wali.guru_id)
             sql_bk = BaseModel(GuruBKModel).get_one_or_none(status="1")
             return render_template(
                 "arsip/surat_pernyataan.html",

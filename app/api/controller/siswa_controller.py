@@ -12,7 +12,6 @@ from app.api.lib.base_model import BaseModel
 from app.api.lib.date_time import (
     format_datetime_id,
     format_indo,
-    string_format,
     utc_makassar,
 )
 from app.api.lib.status_code import (
@@ -214,12 +213,10 @@ def get_single(id):
                     os.path.join(qr_file, model.qr_code) if model.qr_code else None
                 )
                 file = os.path.join(dir_file, model.pic) if model.pic else None
-                print(file_qr)
                 if file_qr is not None:
                     os.unlink(file_qr)
                     base_user = BaseModel(UserModel)
                     model_user = base_user.get_one(id=id)
-                    print(file)
                     base.delete(model_user)
                     return jsonify(msg="Data has been deleted."), HTTP_204_NO_CONTENT
 
