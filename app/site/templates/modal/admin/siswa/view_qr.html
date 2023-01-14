@@ -1,8 +1,8 @@
-<div class="modal fade" id="qr-{{_.id}}">
+<div class="modal fade" id="qr-{{i.id}}">
   <div class="modal-dialog overlay">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title fas fa-file-image">&nbsp;QR CODE {{ _.first_name | upper }}</h4>
+        <h4 class="modal-title fas fa-file-image">&nbsp;QR CODE {{ i.first_name | upper }}</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -10,7 +10,7 @@
       <div class="modal-body">
         <div class="row justify-content-center mb-2">
 
-          <img src="{{_.qr_code if _.qr_code else '#' }}" alt="">
+          <img src="{{i.qr_code if i.qr_code else '#' }}" alt="">
         </div>
         <div class="modal-footer justify-content-end">
           <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>

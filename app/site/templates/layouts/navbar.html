@@ -40,7 +40,7 @@
         {% if current_user.group == 'guru' and wali_kelas %}
         <span class="dropdown-header dropdown-item">AKSES SEBAGAI</span>
         <div class="dropdown-divider"></div>
-        <a href="{{ url_for('wali_kelas.index_wali') }}" class="dropdown-item">
+        <a href="{{ url_for('wali_kelas.index') }}" class="dropdown-item">
           <i class="fas fa-user-tie mr-1"></i>
           Wali Kelas
         </a>

@@ -1,4 +1,4 @@
-<div class="modal fade" id="modal-detail{{ _.id }}">
+<div class="modal fade" id="modal-detail{{ i.id }}">
   <div class="modal-dialog overlay">
     <div class="modal-content">
       <div class="modal-header">
@@ -17,13 +17,13 @@
           <div class="col-md-6">
             <div class="form-group">
               <label for="" class="font-weight-normal">Username</label>
-              <input type="text" class="form-control form-control-sm" value="{{_.nisn}}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{i.nisn}}" disabled>
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               <label for="" class="font-weight-normal">Tipe Akun</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.type }}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.type }}" disabled>
             </div>
           </div>
         </div>
@@ -32,13 +32,13 @@
             <div class="form-group">
               <label for="" class="font-weight-normal">Status Akun</label>
               <!-- <input type="text" class="form-control form-control-border border-width-1" id="exampleInputBorder"> -->
-              <input type="text" class="form-control form-control-sm" value="{{ _.active }}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.active }}" disabled>
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               <label class="font-weight-normal">Tgl Join</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.join}}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.join}}" disabled>
             </div>
           </div>
         </div>
@@ -46,13 +46,13 @@
           <div class="col-md-6">
             <div class="form-group">
               <label class="font-weight-normal">Terakhir Update</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.last_update}}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.last_update}}" disabled>
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               <label class="font-weight-normal">Terakhir Login</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.last_login}}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.last_login}}" disabled>
             </div>
           </div>
         </div>
@@ -65,13 +65,13 @@
           <div class="col-md-6">
             <div class="form-group">
               <label class="font-weight-normal">NISN</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.nisn }}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.nisn }}" disabled>
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               <label class="font-weight-normal">Nama</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.first_name}} {{ _.last_name}}"
+              <input type="text" class="form-control form-control-sm" value="{{ i.first_name}} {{ i.last_name}}"
                 disabled>
             </div>
           </div>
@@ -80,13 +80,13 @@
           <div class="col-md-6">
             <div class="form-group">
               <label class="font-weight-normal">Tempat Lahir</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.tempat_lahir}}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.tempat_lahir}}" disabled>
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               <label class="font-weight-normal">Tgl Lahir</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.tgl_lahir}}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.tgl_lahir}}" disabled>
             </div>
           </div>
         </div>
@@ -94,28 +94,28 @@
           <div class="col-md-6">
             <div class="form-group">
               <label class="font-weight-normal">Agama</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.agama}}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.agama}}" disabled>
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               <label class="font-weight-normal">Alamat</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.alamat}}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.alamat}}" disabled>
             </div>
-            
+
           </div>
         </div>
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
               <label class="font-weight-normal">Nama Orang Tua/Wali</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.nama_ortu}}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.nama_ortu}}" disabled>
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               <label class="font-weight-normal">No. Telp</label>
-              <input type="text" class="form-control form-control-sm" value="{{ _.telp}}" disabled>
+              <input type="text" class="form-control form-control-sm" value="{{ i.telp}}" disabled>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-<div class="modal fade" id="upload-{{_.id}}">
+<div class="modal fade" id="upload-{{i.id}}">
   <div class="modal-dialog overlay">
     <div class="modal-content">
       <div class="modal-header">
@@ -7,7 +7,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form method="post" action="{{ url_for('admin2.upload_foto', id=_.id) }}" enctype="multipart/form-data">
+      <form method="post" action="{{ url_for('admin2.upload_foto', id=i.id) }}" enctype="multipart/form-data">
         <div class="modal-body">
           <div class="form-group row">
             <label for="exampleInputFile" class="col-sm-2 col-form-label">Images</label>
