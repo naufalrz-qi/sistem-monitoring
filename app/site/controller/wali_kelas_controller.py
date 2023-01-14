@@ -9,8 +9,11 @@ from flask import (
     Blueprint,
 )
 from flask_login import current_user, login_required
-from app.models.master_model import WaliKelasModel
+from sqlalchemy import func
+from app.models.data_model import AbsensiModel
+from app.models.master_model import NamaBulanModel, WaliKelasModel
 from app.models.user_details_model import SiswaModel
+from app.site.forms.form_letter_report import FormRekapAbsenWali
 from ...extensions import db
 
 wali_kelas = Blueprint(
@@ -55,4 +58,28 @@ def data_siswa():
             sql_wali_=sql_wali_(),
         )
     )
+    return response
+
+
+@wali_kelas.route("rekap-absen")
+@login_required
+def rekap_absen():
+    form = FormRekapAbsenWali()
+    sql_bulan = NamaBulanModel.query.all()
+    sql_tahun = AbsensiModel.query.group_by(func.year(AbsensiModel.tgl_absen)).all()
+
+    for i in sql_bulan:
+        form.bulan.choices.append((i.id, i.nama_bulan.upper()))
+
+    for i in sql_tahun:
+        form.tahun.choices.append((i.tgl_absen.year, i.tgl_absen.year))
+
+    response = make_response(
+        render_template(
+            "wali_kelas/modul/rekap_kehadiran/rekap_by_kelas.html",
+            form=form,
+            sql_wali_=sql_wali_(),
+        )
+    )
+
     return response

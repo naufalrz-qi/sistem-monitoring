@@ -27,3 +27,16 @@ class FormSelectKehadiranSiswa(FlaskForm):
     def validate_tahun(self, field):
         if field.data == "":
             raise ValidationError("*Harap Pilih Tahun")
+
+
+class FormRekapAbsenWali(FlaskForm):
+    bulan = SelectField(label="*Pilih Bulan", choices=[("", "- Pilih -")])
+    tahun = SelectField(label="*Pilih Tahun", choices=[("", "- Pilih -")])
+
+    def validate_bulan(self, field):
+        if field.data == "":
+            raise ValidationError("* Harap Pilih Bulan!")
+
+    def validate_tahun(self, field):
+        if field.data == "":
+            raise ValidationError("* Harap Pilih Tahun!")
