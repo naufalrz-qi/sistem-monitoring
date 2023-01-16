@@ -125,7 +125,7 @@ def login():
                         level == "bk"
                         and GuruBKModel.query.filter_by(guru_id=current_user.id).first()
                     ):
-                        response = make_response("Selamat Datang Guru BK")
+                        response = make_response(redirect(url_for("guru_bk.index")))
                         return response
                     else:
                         flash(
