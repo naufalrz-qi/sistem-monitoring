@@ -47,7 +47,9 @@ def sql_wali_():
 @wali_kelas.route("/index")
 @login_required
 def index():
-    return render_template("wali_kelas/index_wali_kelas.html", sql_wali_=sql_wali_())
+    return render_template(
+        "guru_wali_kelas/index_wali_kelas.html", sql_wali_=sql_wali_()
+    )
 
 
 @wali_kelas.route("data-siswa")
@@ -61,7 +63,7 @@ def data_siswa():
 
     response = make_response(
         render_template(
-            "wali_kelas/modul/siswa/data_siswa.html",
+            "guru_wali_kelas/modul/siswa/data_siswa.html",
             sql_siswa=sql_siswa,
             sql_wali_=sql_wali_(),
         )
@@ -142,7 +144,7 @@ def rekap_absen():
 
     response = make_response(
         render_template(
-            "wali_kelas/modul/rekap_kehadiran/rekap_by_kelas.html",
+            "guru_wali_kelas/modul/rekap_kehadiran/rekap_by_kelas.html",
             form=form,
             sql_wali_=sql_wali_(),
         )
@@ -235,7 +237,7 @@ def rekap_absen_mapel():
 
     response = make_response(
         render_template(
-            "wali_kelas/modul/rekap_kehadiran/rekap_by_mapel.html",
+            "guru_wali_kelas/modul/rekap_kehadiran/rekap_by_mapel.html",
             sql_wali_=sql_wali_(),
             form=form,
         )

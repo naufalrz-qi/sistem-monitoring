@@ -26,7 +26,7 @@ class FormLogin(FlaskForm):
         choices=[
             ("", "- Pilih -"),
             ("admin", "Admin"),
-            ("guru", "Guru"),
+            ("guru", "Guru Mata Pelajaran"),
             ("bk", "Guru BK"),
         ],
     )

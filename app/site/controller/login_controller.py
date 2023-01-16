@@ -11,6 +11,7 @@ from flask import (
     session,
     make_response,
 )
+from app.models.master_model import GuruBKModel, MengajarModel
 from app.models.user_details_model import AdminModel, GuruModel
 from app.site.forms.form_auth import FormLogin
 from flask_login import login_user, current_user, login_required, logout_user
@@ -105,17 +106,32 @@ def login():
                     )
                     response = make_response(redirect(url_for("admin2.index")))
                     return response
-                elif level == "guru" and current_user.group == "guru":
+                elif current_user.group == "guru":
                     session["first_name"] = sql_guru.first_name.upper()
                     session["last_name"] = sql_guru.last_name.upper()
-
-                    flash(
-                        message=f"Login Sukses...\\nHi.. {sql_guru.first_name} {sql_guru.last_name} Selamat Datang Di Sistem E-Monitoring.",
-                        category="success",
-                    )
-                    response = make_response(redirect(url_for("guru2.index")))
-                    return response
-
+                    if (
+                        level == "guru"
+                        and MengajarModel.query.filter_by(
+                            guru_id=current_user.id
+                        ).first()
+                    ):
+                        flash(
+                            message=f"Login Sukses...\\nHi.. {sql_guru.first_name} {sql_guru.last_name} Selamat Datang Di Sistem E-Monitoring.",
+                            category="success",
+                        )
+                        response = make_response(redirect(url_for("guru2.index")))
+                        return response
+                    elif (
+                        level == "bk"
+                        and GuruBKModel.query.filter_by(guru_id=current_user.id).first()
+                    ):
+                        response = make_response("Selamat Datang Guru BK")
+                        return response
+                    else:
+                        flash(
+                            f"Ma'af..! Login Gagal.\\nSilahkan Periksa Kembali Username Dan Level Pengguna Anda.",
+                            "error",
+                        )
                 else:
                     flash(
                         message=f"Ma'af...!\\nData Yang Di Input Tidak Sesuai",
