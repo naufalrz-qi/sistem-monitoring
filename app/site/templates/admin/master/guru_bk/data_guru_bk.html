@@ -29,20 +29,22 @@
             <i class="fas fa-plus"></i>
             Tambah Data
         </a>
-        <div class="col-md-6">
+        <div class="col-md-8">
             <table id="tabel" class="table table-bordered table-striped table-sm">
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>Nama Guru BK</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
+                        <th class="text-center">No</th>
+                        <th class="text-center"></th>
+                        <th class="text-center">Nama Guru BK</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for _ in model['data'] %}
                     <tr>
                         <td class="align-middle text-center" style="width: 12px;">{{ loop.index}}</td>
+                        <td class="text-center">{{ _.nip }}</td>
                         <td class="align-middle">{{ _.first_name | title }} {{ _.last_name | title}}</td>
                         <td class="align-middle">{{ _.status | title }}</td>
                         <!-- AKSI -->
