@@ -53,6 +53,8 @@
     {% elif current_user.group == 'guru' %}
     {% if sql_wali_ %}
     {% include 'layouts/sidebar_wali_kelas.html' %}
+    {% elif guru_bk %}
+    {% include 'layouts/sidebar_guru_bk.html' %}
     {% else %}
     {% include 'layouts/sidebar_guru.html' %}
     {% endif %}

@@ -21,6 +21,7 @@ guru_bk = Blueprint(
 
 def get_guru_bk():
     sql = GuruBKModel.query.filter_by(guru_id=current_user.id).first()
+    return sql
 
 
 @guru_bk.route("index")
