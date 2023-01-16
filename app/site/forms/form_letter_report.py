@@ -40,3 +40,21 @@ class FormRekapAbsenWali(FlaskForm):
     def validate_tahun(self, field):
         if field.data == "":
             raise ValidationError("* Harap Pilih Tahun!")
+
+
+class FormSelectMapel(FlaskForm):
+    mapel = SelectField(label="Pilih Mata Pelajaran", choices=[("", "- Pilih -")])
+    bulan = SelectField(label="Pilih Bulan", choices=[("", "- Pilih -")])
+    tahun = SelectField(label="Pilih Tahun", choices=[("", "- Pilih -")])
+
+    def validate_mapel(self, field):
+        if field.data == "" or field.data == None:
+            raise ValidationError(f"* Harap {field.label.text}!")
+
+    def validate_bulan(self, field):
+        if field.data == "" or field.data == None:
+            raise ValidationError(f"* Harap {field.label.text}!")
+
+    def validate_tahun(self, field):
+        if field.data == "" or field.data == None:
+            raise ValidationError(f"* Harap {field.label.text}!")

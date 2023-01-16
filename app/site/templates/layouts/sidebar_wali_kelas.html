@@ -29,8 +29,8 @@
             <p>Data Siswa</p>
           </a>
         </li>
-        <li class="nav-item {{ 'menu-open' if filename=='rekap-absen' else '' }}">
-          <a href="#" class="nav-link {{ 'active' if filename=='rekap-absen' else '' }}">
+        <li class="nav-item {{ 'menu-open' if filename=='rekap-absen' or filename=='by-mapel' else '' }}">
+          <a href="#" class="nav-link {{ 'active' if filename=='rekap-absen' or filename=='by-mapel' else '' }}">
             <i class="nav-icon fas fa-list-alt"></i>
             <p>Rekap Kehadiran</p>
             <i class="right fas fa-angle-left"></i>
@@ -40,17 +40,23 @@
               <a href="{{ url_for('wali_kelas.rekap_absen') }}"
                 class="nav-link {{ 'active' if filename=='rekap-absen' else '' }} ">
                 <i class="nav-icon far fa-circle {{ 'fa-dot-circle' if filename=='rekap-absen' else '' }}"></i>
-                <p>Kelas</p>
+                <p>By Kelas</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon far fa-circle"></i>
-                <p>Mata Pelajaran</p>
+              <a href="{{ url_for('wali_kelas.rekap_absen_mapel') }}"
+                class="nav-link {{'active' if filename=='by-mapel' else ''}} ">
+                <i class="nav-icon far fa-circle {{'fa-dot-circle' if filename=='by-mapel' else ''}} "></i>
+                <p>By Mata Pelajaran</p>
               </a>
             </li>
-
           </ul>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-database"></i>
+            <p>Data Sanksi Siswa</p>
+          </a>
         </li>
     </nav>
     <!-- /.sidebar-menu -->

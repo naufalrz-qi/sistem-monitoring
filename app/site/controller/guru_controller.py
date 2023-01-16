@@ -146,6 +146,7 @@ def profile_guru():
             form=form,
             sqlJadwal=mengajar,
             sqlToday=sqlToday,
+            wali_kelas=check_wali(),
         )
     else:
         abort(404)
@@ -208,7 +209,9 @@ def update_pswd():
                 flash(f"Password akun anda telah berhasil di perbaharui.!", "info")
 
                 return redirect(url_for("guru2.index"))
-        return render_template("guru/modul/akun/update_password.html", form=form)
+        return render_template(
+            "guru/modul/akun/update_password.html", form=form, wali_kelas=check_wali()
+        )
     else:
         return abort(404)
 
@@ -268,6 +271,7 @@ def jadwal_mengajar():
                 sqlJadwal=sql_mengajar,
                 sqlToday=sqlToday,
                 sqlTomorrow=sqlTomorrow,
+                wali_kelas=check_wali(),
             )
         else:
             return abort(404)
@@ -417,6 +421,7 @@ def absensi(mengajar_id):
             form=form,
             today=date,
             data_mengajar=data_mengajar,
+            wali_kelas=check_wali(),
         )
     else:
         return abort(404)
@@ -486,6 +491,7 @@ async def update_absen(mengajar_id):
             sql_absensi=sql_absensi,
             data=data,
             sql_siswa=sql_siswa,
+            wali_kelas=check_wali(),
         )
     else:
         return abort(404)
@@ -555,12 +561,14 @@ def daftar_kehadiran():
                     sql_tgl_absen=sql_tgl_absen,
                     AbsensiModel=AbsensiModel,
                     func=func,
+                    wali_kelas=check_wali(),
                 )
             )
             return response
         else:
             flash(
-                "Data yang dimaksud tidak ditemukan. Coba periksa kembali..!", "error"
+                "Ma'af!\\nData yang dimaksud tidak ditemukan. Coba periksa kembali..!",
+                "error",
             )
 
     response = make_response(
@@ -569,6 +577,7 @@ def daftar_kehadiran():
             form=form,
             sqlToday=get_kelas_today(),
             data=data,
+            wali_kelas=check_wali(),
         )
     )
     return response
@@ -580,7 +589,12 @@ def rekap_kehadiran():
     data = {}
     form = FormSelectKehadiranSiswa()
     data["filename"] = "rekap-data"
-    sql_kelas = KelasModel.query.all()
+    sql_kelas = (
+        MengajarModel.query.filter_by(guru_id=current_user.id)
+        .group_by("kelas_id")
+        .order_by(MengajarModel.kelas_id.asc())
+        .all()
+    )
     sql_bulan = NamaBulanModel.query.all()
     sql_tahun = AbsensiModel.query.group_by(func.year(AbsensiModel.tgl_absen)).all()
     sql_kepsek = KepsekModel.query.filter_by(status=1).first()
@@ -651,9 +665,15 @@ def rekap_kehadiran():
             return response
         else:
             flash(
-                "Data yang dimaksud tidak ditemukan. Coba periksa kembali..!", "error"
+                "Ma'af!\\nData yang dimaksud tidak ditemukan. Coba periksa kembali..!",
+                "error",
             )
     response = make_response(
-        render_template("guru/modul/absen/daftar_hadir.html", data=data, form=form)
+        render_template(
+            "guru/modul/absen/daftar_hadir.html",
+            data=data,
+            form=form,
+            wali_kelas=check_wali(),
+        )
     )
     return response

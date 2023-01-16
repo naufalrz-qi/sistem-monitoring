@@ -2052,6 +2052,7 @@ def rekap_bulan():
                 .filter(func.month(AbsensiModel.tgl_absen) == bulan)
                 .filter(func.year(AbsensiModel.tgl_absen) == tahun)
                 .group_by(AbsensiModel.siswa_id)
+                .order_by(SiswaModel.first_name.asc())
                 .all()
             )
 
