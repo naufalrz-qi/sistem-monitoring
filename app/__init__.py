@@ -2,7 +2,6 @@ from flask import Flask
 from app.api.register_app import register_app
 from app.site.register_app import register_app_site
 from settings import Config
-from app.models.user_login_model import UserLogin
 from app.api.lib.date_time import *
 
 
