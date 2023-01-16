@@ -579,6 +579,7 @@ class KepalaSekolah(object):
             data.append(
                 {
                     "id": _.id,
+                    "nip": _.guru.user.username,
                     "first_name": _.guru.first_name,
                     "last_name": _.guru.last_name,
                     "status": "aktif" if _.status == "1" else "tidak aktif",
@@ -660,6 +661,7 @@ class GuruBK(object):
             data.append(
                 {
                     "id": _.id,
+                    "nip": _.guru.user.usernamem,
                     "first_name": _.guru.first_name,
                     "last_name": _.guru.last_name,
                     "status": "aktif" if _.status == "1" else "tidak",
