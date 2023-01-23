@@ -92,45 +92,58 @@ class FormHari(FlaskForm):
             ("rabu", "Rabu"),
             ("kamis", "Kamis"),
             ("jumat", "Jumat"),
-            ('sabtu', "Sabtu"),
-            ('minggu', 'Minggu')
+            ("sabtu", "Sabtu"),
+            ("minggu", "Minggu"),
         ],
     )
-    submit = SubmitField(label='Submit Data')
-    
+    submit = SubmitField(label="Submit Data")
+
     def validate_hari(self, field):
-        if field.data == '':
-            raise ValidationError('*Pilih Hari terlebih dahulu.')
+        if field.data == "":
+            raise ValidationError("*Pilih Hari terlebih dahulu.")
+
 
 class FormJam(FlaskForm):
-    jam = StringField('Jam')
-    submit = SubmitField('Sumbit Data')
-    
+    jam = StringField("Jam")
+    submit = SubmitField("Sumbit Data")
+
     # def validate_jam(self, field):
     #     if field.data == '':
     #         raise ValidationError('*Inputan Jam tidak boleh kosong.')
 
+
 class FormWaliKelas(FlaskForm):
-    namaGuru = SelectField('Nama Guru', choices=[('','- Pilih -')])
-    kelas = SelectField('Nama Kelas', choices=[('','- Pilih -')])
-    submit = SubmitField('Submit Data')
-    
+    namaGuru = SelectField("Nama Guru", choices=[("", "- Pilih -")])
+    kelas = SelectField("Nama Kelas", choices=[("", "- Pilih -")])
+    submit = SubmitField("Submit Data")
+
     # def validate_namaGuru(self, field):
     #     if field.data == '':
     #         raise ValidationError('*Pilih nama guru terlebih dahulu.')
-        
+
     # def validate_kelas(self, field):
     #     if field.data == '':
     #         raise ValidationError('*Pilih nama kelas terlebih dahulu.')
-    
+
+
 class FormGuruBK(FlaskForm):
-    namaGuru = SelectField('Nama Guru', choices=[('','- Pilih -')])
-    submit = SubmitField('Submit Data')
+    namaGuru = SelectField("Nama Guru", choices=[("", "- Pilih -")])
+    submit = SubmitField("Submit Data")
+
 
 class FormKepsek(FlaskForm):
-    namaGuru = SelectField('Nama Guru', choices=[('','- Pilih -')])
+    namaGuru = SelectField("Nama Guru", choices=[("", "- Pilih -")])
     status = SelectField(
         label="Status",
         choices=[("", "- Pilih -"), ("1", "Aktif"), ("0", "Tidak Aktif")],
     )
-    submit = SubmitField('Submit Data')
+    submit = SubmitField("Submit Data")
+
+
+class FormKategoriPelanggaran(FlaskForm):
+    kategori = StringField(label="Nama Kategori")
+    submit = SubmitField(label="Submit")
+
+    def validate_kategori(self, field):
+        if field.data == "":
+            raise ValidationError("*Inputan tidak boleh kosong!")

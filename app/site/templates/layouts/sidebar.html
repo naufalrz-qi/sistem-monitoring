@@ -42,9 +42,11 @@
         <li class="nav-header">Main Menu</li>
         <!-- NOTE: DATA MASTER -->
         <li
-          class="nav-item {{'menu-open' if filename=='data-mapel'or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' or filename=='tahun-ajaran' or filename=='tambah-ajaran' or filename=='data-kelas' or filename=='tambah-kelas' or filename=='edit-kelas' or filename=='data-hari' or filename=='tambah-hari' or filename=='data-jam' or filename=='data-wali' or filename=='data-bk' or filename=='data-kepsek' else ''}}">
+          class="nav-item
+          {{'menu-open' if filename=='data-mapel'or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semester' or filename=='edit-semester' or filename=='tahun-ajaran' or filename=='tambah-ajaran' or filename=='data-kelas' or filename=='tambah-kelas' or filename=='edit-kelas' or filename=='data-hari' or filename=='tambah-hari' or filename=='data-jam' or filename=='data-wali' or filename=='data-bk' or filename=='data-kepsek' or filename=='kategori-pelanggaran' else ''}}">
           <a href="#"
-            class="nav-link {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semseter' or filename=='edit-semester' or filename=='tahun-ajaran' or filename=='tambah-ajaran' or filename=='data-kelas' or filename=='tambah-kelas' or filename=='edit-kelas' or filename=='data-hari' or filename=='tambah-hari' or filename=='data-jam' or filename=='data-wali' or filename=='data-bk' or filename=='data-kepsek' else ''}}">
+            class="nav-link
+            {{'active' if filename=='data-mapel' or filename=='tambah-mapel' or filename=='edit-mapel' or filename=='data-semester' or filename=='tambah-semseter' or filename=='edit-semester' or filename=='tahun-ajaran' or filename=='tambah-ajaran' or filename=='data-kelas' or filename=='tambah-kelas' or filename=='edit-kelas' or filename=='data-hari' or filename=='tambah-hari' or filename=='data-jam' or filename=='data-wali' or filename=='data-bk' or filename=='data-kepsek' or filename=='kategori-pelanggaran' else ''}}">
             <i class="nav-icon fas fa-layer-group"></i>
             <p>
               Data Umum
@@ -117,17 +119,19 @@
                 <p>Kepala Sekolah</p>
               </a>
             </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
+            <li class="nav-item {{ 'menu-open' if filename=='kategori-pelanggaran' else '' }}">
+              <a href="#" class="nav-link {{ 'active' if filename=='kategori-pelanggaran' else '' }}">
+                <i class="nav-icon far fa-circle {{ 'fa-dot-circle' if filename=='kategori-pelanggaran' else '' }}"></i>
                 <p>Pelanggaran
                   <i class="right fas fa-angle-left"></i>
                 </p>
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                  <a href="{{ url_for('admin2.kategori_pelanggaran') }}"
+                    class="nav-link {{ 'active' if filename=='kategori-pelanggaran' else '' }}">
+                    <i
+                      class="nav-icon far fa-circle {{ 'fa-dot-circle' if filename=='kategori-pelanggaran' else '' }} "></i>
                     <p>Kategori Pelanggaran</p>
                   </a>
                 </li>

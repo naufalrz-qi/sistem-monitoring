@@ -1561,12 +1561,12 @@ class MasterData:
             headers = {"Content-Type": "application/json"}
             resp = req.post(url=url, data=payload, headers=headers)
 
-            msg = resp.json()
             if resp.status_code == 201:
+                msg = resp.json()
                 flash(f'{msg["msg"]} Status : {resp.status_code}', "success")
                 return redirect(url_for("admin2.get_kepsek"))
             else:
-                flash(f'{msg["msg"]} Status : {resp.status_code}', "error")
+                flash(f"Ma'af! Terjadi kesalahan menginput data.", "error")
                 return redirect(url_for("admin2.get_kepsek"))
         else:
             abort(404)
@@ -2101,3 +2101,50 @@ def rekap_bulan():
             render_template("admin/letter_report/rekap_bulan.html", form=form)
         )
         return response
+
+
+"""
+NOTE: PELANGGARAN
+"""
+
+
+@admin2.route("kategori-pelanggaran")
+@login_required
+def kategori_pelanggaran():
+    if current_user.is_authenticated:
+        if current_user.group == "admin":
+            form = FormKategoriPelanggaran()
+            sql_kategori = BaseModel(KategoriPelanggaranModel).get_all()
+            response = make_response(
+                render_template(
+                    "admin/master/pelanggaran/kategori_pelanggaran.html",
+                    form=form,
+                    sql_kategori=sql_kategori,
+                )
+            )
+            return response
+        else:
+            return abort(404)
+
+
+@admin2.route("kategori-pelanggaran/add", methods=["GET", "POST"])
+@login_required
+def add_kategori_pelanggaran():
+    if current_user.is_authenticated:
+        if current_user.group == "admin":
+            form = FormKategoriPelanggaran()
+            if request.method == "POST" and form.validate_on_submit():
+                kategori = form.kategori.data
+                insert_sql = KategoriPelanggaranModel(kategori=kategori)
+                db.session.add(insert_sql)
+                db.session.commit()
+                response = make_response(
+                    redirect(url_for("admin2.kategori_pelanggaran"))
+                )
+                flash(f"Data kategori berhasil ditambahkan!", "success")
+                return response
+            else:
+                flash(f"Ma'af!\\nTerjadi kesalahan dalam menginput data.", "error")
+                return redirect(url_for("admin2.kategori_pelanggaran"))
+        else:
+            return abort(404)
