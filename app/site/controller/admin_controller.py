@@ -2148,3 +2148,38 @@ def add_kategori_pelanggaran():
                 return redirect(url_for("admin2.kategori_pelanggaran"))
         else:
             return abort(404)
+
+
+@admin2.route("kategori-pelanggaran/edit", methods=["GET", "POST"])
+@login_required
+def edit_kategori_pelanggaran():
+    if current_user.is_authenticated:
+        if current_user.group == "admin":
+            form = FormKategoriPelanggaran()
+            id = request.args.get("idx")
+            sql_kategori = KategoriPelanggaranModel.query.filter_by(id=id).first()
+
+            sql_kategori.kategori = form.kategori.data
+            db.session.commit()
+
+            response = make_response(redirect(url_for("admin2.kategori_pelanggaran")))
+            flash(f"Data kategori berhasil diperbaharui.", "info")
+            return response
+        else:
+            return abort(404)
+
+
+@admin2.route("kategori-pelanggaran/delete", methods=["GET", "POST", "DELETE"])
+@login_required
+def delete_kategori_pelanggaran():
+    if current_user.is_authenticated:
+        if current_user.group == "admin":
+            id = request.args.get("idx")
+            sql_kategori = KategoriPelanggaranModel.query.filter_by(id=id).first()
+            db.session.delete(sql_kategori)
+            db.session.commit()
+
+            flash(f"Data Kategori Pelanggaran\\nTelah Dihapus Dari Database.", "info")
+            return redirect(url_for("admin2.kategori_pelanggaran"))
+        else:
+            return abort(404)
