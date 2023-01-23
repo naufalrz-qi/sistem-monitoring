@@ -252,7 +252,11 @@ class JenisPelanggaranModel(db.Model):
     kategori_pelanggaran_id = sa.Column(
         sa.Integer, sa.ForeignKey("master_kategori_pelanggaran.id", onupdate="CASCADE")
     )
+    kategori = rs.relationship(
+        "KategoriPelanggaranModel", backref="kategori_pelanggaran"
+    )
     jenis = sa.Column(sa.String(128), nullable=False)
+    poin_pelanggaran = sa.Column(sa.Integer, nullable=True)
 
     def __init__(self, kategori_id: int, jenis: str):
         self.kategori_pelanggaran_id = kategori_id

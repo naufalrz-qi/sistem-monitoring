@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField
+from wtforms import StringField, SubmitField, SelectField, IntegerField
 from wtforms.validators import ValidationError
 
 
@@ -152,4 +152,5 @@ class FormKategoriPelanggaran(FlaskForm):
 class FormJenisPelanggaran(FlaskForm):
     kategori = SelectField(label="Pilih Kategori", choices=[("", "- Pilih -")])
     jenis = StringField(label="Jenis Pelanggaran")
+    poin = IntegerField(label="Jumlah Poin")
     submit = SubmitField(label="Submit")

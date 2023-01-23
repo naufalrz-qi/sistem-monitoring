@@ -2195,7 +2195,19 @@ NOTE : JENIS PELANGGARAN
 def jenis_pelanggaran():
     if current_user.is_authenticated:
         if current_user.group == "admin":
+            form = FormJenisPelanggaran()
+            sql_kategori = KategoriPelanggaranModel.query.all()
+            for i in sql_kategori:
+                form.kategori.choices.append((i.id, i.kategori))
+
+            sql_jenis = BaseModel(JenisPelanggaranModel).get_all()
             response = make_response(
-                render_template("admin/master/pelanggaran/jenis_pelanggaran.html")
+                render_template(
+                    "admin/master/pelanggaran/jenis_pelanggaran.html",
+                    form=form,
+                    sql_jenis=sql_jenis,
+                )
             )
             return response
+        else:
+            return abort(404)
