@@ -232,3 +232,31 @@ class TahunModel(db.Model):
 
     def __repr__(self) -> str:
         return "id : {} | tahun {} | status {}".format(self.id, self.tahun, self.status)
+
+
+class KategoriPelanggaranModel(db.Model):
+    __tablename__ = "master_kategori_pelanggaran"
+    id = sa.Column(sa.Integer, primary_key=True)
+    kategori = sa.Column(sa.String(64), nullable=False)
+
+    def __init__(self, kategori: str):
+        self.kategori = kategori
+
+    def __repr__(self) -> str:
+        return f"kategori : {self.kategori}"
+
+
+class JenisPelanggaranModel(db.Model):
+    __tablename__ = "master_jenis_pelanggaran"
+    id = sa.Column(sa.Integer, primary_key=True)
+    kategori_pelanggaran_id = sa.Column(
+        sa.Integer, sa.ForeignKey("master_kategori_pelanggaran.id", onupdate="CASCADE")
+    )
+    jenis = sa.Column(sa.String(128), nullable=False)
+
+    def __init__(self, kategori_id: int, jenis: str):
+        self.kategori_pelanggaran_id = kategori_id
+        self.jenis = jenis
+
+    def __repr__(self) -> str:
+        return self.jenis
