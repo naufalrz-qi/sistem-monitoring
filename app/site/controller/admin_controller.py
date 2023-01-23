@@ -2104,7 +2104,7 @@ def rekap_bulan():
 
 
 """
-NOTE: PELANGGARAN
+NOTE: KATEOGRI PELANGGARAN
 """
 
 
@@ -2183,3 +2183,19 @@ def delete_kategori_pelanggaran():
             return redirect(url_for("admin2.kategori_pelanggaran"))
         else:
             return abort(404)
+
+
+"""
+NOTE : JENIS PELANGGARAN
+"""
+
+
+@admin2.route("jenis-pelanggaran", methods=["GET", "POST"])
+@login_required
+def jenis_pelanggaran():
+    if current_user.is_authenticated:
+        if current_user.group == "admin":
+            response = make_response(
+                render_template("admin/master/pelanggaran/jenis_pelanggaran.html")
+            )
+            return response
