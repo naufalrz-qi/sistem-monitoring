@@ -147,3 +147,9 @@ class FormKategoriPelanggaran(FlaskForm):
     def validate_kategori(self, field):
         if field.data == "":
             raise ValidationError("*Inputan tidak boleh kosong!")
+
+
+class FormJenisPelanggaran(FlaskForm):
+    kategori = SelectField(label="Pilih Kategori", choices=[("", "- Pilih -")])
+    jenis = StringField(label="Jenis Pelanggaran")
+    submit = SubmitField(label="Submit")
