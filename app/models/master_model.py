@@ -258,9 +258,10 @@ class JenisPelanggaranModel(db.Model):
     jenis = sa.Column(sa.String(128), nullable=False)
     poin_pelanggaran = sa.Column(sa.Integer, nullable=True)
 
-    def __init__(self, kategori_id: int, jenis: str):
+    def __init__(self, kategori_id: int, jenis: str, poin: int):
         self.kategori_pelanggaran_id = kategori_id
         self.jenis = jenis
+        self.poin_pelanggaran = poin
 
     def __repr__(self) -> str:
         return self.jenis

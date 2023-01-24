@@ -2211,3 +2211,23 @@ def jenis_pelanggaran():
             return response
         else:
             return abort(404)
+
+
+@admin2.route("jenis-pelanggaran/add", methods=["GET", "POST"])
+@login_required
+def add_jenis_pelanggaran():
+    if current_user.is_authenticated:
+        if current_user.group == "admin":
+            form = FormJenisPelanggaran()
+            kategori_id = request.form.get("kategori")
+            jenis = form.jenis.data
+            poin = form.poin.data
+
+            insert_jenis = JenisPelanggaranModel(kategori_id, jenis, poin)
+            db.session.add(insert_jenis)
+            db.session.commit()
+            response = make_response(redirect(url_for("admin2.jenis_pelanggaran")))
+            flash(f'Data Jenis Pelanggaran Berhasil Ditambahkan.', 'success')
+            return response
+        else:
+            return abort(404)
