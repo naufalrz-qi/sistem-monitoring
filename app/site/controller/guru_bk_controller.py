@@ -1,5 +1,6 @@
 from flask import (
     Blueprint,
+    abort,
     render_template,
     request,
     redirect,
@@ -9,6 +10,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from app.models.master_model import GuruBKModel
+from app.models.data_model import *
 
 guru_bk = Blueprint(
     "guru_bk",
@@ -27,7 +29,11 @@ def get_guru_bk():
 @guru_bk.route("index")
 @login_required
 def index():
-    response = make_response(
-        render_template("guru_bk/index_bk.html", guru_bk=get_guru_bk())
-    )
-    return response
+    if current_user.is_authenticated:
+        if current_user.id == get_guru_bk().guru_id:
+            response = make_response(
+                render_template("guru_bk/index_bk.html", guru_bk=get_guru_bk())
+            )
+            return response
+        else:
+            return abort(404)
