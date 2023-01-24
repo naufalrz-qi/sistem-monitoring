@@ -4,9 +4,97 @@
 {% endblock head %}
 {% set filename='tambah-pelanggar' %}
 {% block content %}
-
+<div class="row">
+  <div class="col col-md-5">
+    <div class="card card-info card-outline">
+      <div class="card-header">
+        <h5 class="card-text">Tambah Data Pelanggar</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+            <form action="" method="post">
+              {{ form.csrf_token }}
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    {{ form.kelas.label }}
+                    {{ form.kelas(class="custom-select form-control-border") }}
+                  </div>
+                </div>
+                <div class="col-md-8">
+                  <div class="form-group">
+                    {{ form.siswa.label }}
+                    {% if form.siswa.errors %}
+                    {{ form.siswa(class="custom-select form-control-border is-invalid") }}
+                    {% for msg in form.siswa.errors %}
+                    <span class="error invalid-feedback">{{ msg }}</span>
+                    {% endfor %}
+                    {% elif form.siswa.data %}
+                    {{ form.siswa(class="custom-select form-control-border") }}
+                    {% else %}
+                    {{ form.siswa(class="custom-select form-control-border") }}
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    {{ form.jenisPelanggaran.label }}
+                    {% if form.jenisPelanggaran.errors %}
+                    {{ form.jenisPelanggaran(class="custom-select form-control-border is-invalid") }}
+                    {% for msg in form.jenisPelanggaran.errors %}
+                    <span class="error invalid-feedback">{{ msg }}</span>
+                    {% endfor %}
+                    {% elif form.jenisPelanggaran.data %}
+                    {{ form.jenisPelanggaran(class="custom-select form-control-border") }}
+                    {% else %}
+                    {{ form.jenisPelanggaran(class="custom-select form-control-border") }}
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    {{ form.pelapor(hidden=true, value=guru_bk.guru.first_name+ ' ' +guru_bk.guru.last_name) }}
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    {{ form.submit(class="btn btn-primary btn-flat btn-block", value='Submit Data') }}
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}
 {% block js %}
+<script>
+  let selectKelas = document.getElementById('kelas')
+  let selectSiswa = document.getElementById('siswa')
+  selectKelas.onchange = function () {
+    let kelas = selectKelas.value
+    fetch(`/api/v2/student/get-siswa-kelas/${kelas}`).then(function (response) {
+      response.json().then(function (data) {
+        let optHtml = ''
+        for (i of data['data']) {
+          optHtml += `<option value="${i.id}">${i.first_name} ${i.last_name}</option>`
+        }
+        selectSiswa.innerHTML = optHtml;
+      })
+    })
+  }
+</script>
+
 <!-- bs-custom-file-input -->
 <script src="{{ url_for('.static', filename='plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
 {% endblock js %}

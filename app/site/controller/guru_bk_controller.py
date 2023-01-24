@@ -7,10 +7,12 @@ from flask import (
     flash,
     Blueprint,
     make_response,
+    url_for,
 )
 from flask_login import login_required, current_user
 from app.models.master_model import GuruBKModel
 from app.models.data_model import *
+from app.site.forms.form_guru_bk import FormTambahPelanggar
 
 guru_bk = Blueprint(
     "guru_bk",
@@ -60,12 +62,37 @@ def data_pelanggar():
 def add_data_pelanggar():
     if current_user.is_authenticated:
         if current_user.id == get_guru_bk().guru_id:
-            response = make_response(
-                render_template(
-                    "guru_bk/modul/pelanggaran/tambah-pelanggar.html",
-                    guru_bk=get_guru_bk(),
+            form = FormTambahPelanggar()
+            sql_kelas = KelasModel.query.all()
+            sql_jenis = JenisPelanggaranModel.query.all()
+            sql_siswa = SiswaModel.query.all()
+            for i in sql_kelas:
+                form.kelas.choices.append((i.id, i.kelas))
+            for i in sql_jenis:
+                form.jenisPelanggaran.choices.append((i.id, i.jenis))
+
+            if request.method == "POST":
+                siswa_id = request.form.get("siswa")
+                jenis_id = request.form.get("jenisPelanggaran")
+                pelapor = request.form.get("pelapor")
+
+                insert_pelanggar = PelanggaranModel(
+                    siswaId=siswa_id, jenisPelanggaranId=jenis_id, pelapor=pelapor
                 )
-            )
-            return response
+                db.session.add(insert_pelanggar)
+                db.session.commit()
+                response = make_response(redirect(url_for("guru_bk.data_pelanggar")))
+                flash(f"Data Pelanggar Berhasil Di Tambahkan.", "success")
+                return response
+            else:
+                response = make_response(
+                    render_template(
+                        "guru_bk/modul/pelanggaran/tambah-pelanggar.html",
+                        guru_bk=get_guru_bk(),
+                        form=form,
+                        sql_siswa=sql_siswa,
+                    )
+                )
+                return response
         else:
             return abort(404)

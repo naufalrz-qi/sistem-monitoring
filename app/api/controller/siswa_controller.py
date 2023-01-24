@@ -93,6 +93,55 @@ def get():
     return jsonify(data=data), HTTP_200_OK
 
 
+@siswa.route("/get-siswa-kelas/<kelas_id>")
+def get_by_kelas(kelas_id):
+    # model = db.session.query(UserModel, SiswaModel)\
+    #                   .join(SiswaModel).all()
+    base = BaseModel(SiswaModel)
+    model = base.get_all_filter_by(kelas_id=kelas_id)
+    data = []
+    for user in model:
+        data.append(
+            {
+                "id": user.user.id,
+                "nisn": user.user.username,
+                "first_name": user.first_name.title(),
+                "last_name": user.last_name.title(),
+                "gender": user.gender.title(),
+                "kelas": user.kelas.kelas if user.kelas_id else "-",
+                "tempat_lahir": user.tempat_lahir.title() if user.tempat_lahir else "-",
+                # 'tgl_lahir': user.tgl_lahir if user.tgl_lahir else '-',
+                "tgl_lahir": format_indo(user.tgl_lahir) if user.tgl_lahir else "-",
+                "agama": user.agama.title() if user.agama else "-",
+                "alamat": user.alamat.title() if user.alamat else "-",
+                "nama_ortu": user.nama_ortu_or_wali if user.nama_ortu_or_wali else "-",
+                "picture": url_for(".static", filename="img/siswa/foto/" + user.pic)
+                if user.pic
+                else None,
+                "pic_name": user.pic if user.pic else "-",
+                "telp": user.no_telp if user.no_telp else "-",
+                "qr_code": url_for(
+                    ".static", filename="img/siswa/qr_code/" + user.qr_code
+                )
+                if user.qr_code
+                else None,
+                "active": "Aktif" if user.user.is_active == "1" else "Non-Aktif",
+                "join": format_datetime_id(user.user.join_date)
+                if user.user.join_date
+                else "-",
+                "type": user.user.group.upper(),
+                "last_update": format_indo(user.user.update_date)
+                if user.user.update_date
+                else "-",
+                "last_login": format_datetime_id(user.user.user_last_login)
+                if user.user.user_last_login
+                else "-",
+                "logout": user.user.user_logout if user.user.user_logout else "-",
+            }
+        )
+    return jsonify(data=data), HTTP_200_OK
+
+
 @siswa.route("/single/<int:id>", methods=["GET", "PUT", "DELETE"])
 def get_single(id):
     # base_user = BaseModel(UserModel)
