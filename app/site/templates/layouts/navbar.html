@@ -31,6 +31,8 @@
         {% elif current_user.group == 'guru' %}
         {% if sql_wali_ %}
         (WALI KELAS)
+        {% elif guru_bk %}
+        (GURU BK)
         {% else %}
         (GURU MAPEL)
         {% endif %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+{% set filename='tambah-pelanggar' %}
+{% block content %}
+
+{% endblock content %}
+{% block js %}
+<!-- bs-custom-file-input -->
+<script src="{{ url_for('.static', filename='plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
+{% endblock js %}

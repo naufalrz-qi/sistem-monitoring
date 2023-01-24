@@ -37,3 +37,35 @@ def index():
             return response
         else:
             return abort(404)
+
+
+@guru_bk.route("data-pelanggar", methods=["GET", "POST"])
+@login_required
+def data_pelanggar():
+    if current_user.is_authenticated:
+        if current_user.id == get_guru_bk().guru_id:
+            response = make_response(
+                render_template(
+                    "guru_bk/modul/pelanggaran/daftar-pelanggar.html",
+                    guru_bk=get_guru_bk(),
+                )
+            )
+            return response
+        else:
+            return abort(404)
+
+
+@guru_bk.route("data-pelanggar/add", methods=["GET", "POST"])
+@login_required
+def add_data_pelanggar():
+    if current_user.is_authenticated:
+        if current_user.id == get_guru_bk().guru_id:
+            response = make_response(
+                render_template(
+                    "guru_bk/modul/pelanggaran/tambah-pelanggar.html",
+                    guru_bk=get_guru_bk(),
+                )
+            )
+            return response
+        else:
+            return abort(404)
