@@ -2206,6 +2206,7 @@ def jenis_pelanggaran():
                     "admin/master/pelanggaran/jenis_pelanggaran.html",
                     form=form,
                     sql_jenis=sql_jenis,
+                    sql_kategori=sql_kategori,
                 )
             )
             return response
@@ -2227,7 +2228,16 @@ def add_jenis_pelanggaran():
             db.session.add(insert_jenis)
             db.session.commit()
             response = make_response(redirect(url_for("admin2.jenis_pelanggaran")))
-            flash(f'Data Jenis Pelanggaran Berhasil Ditambahkan.', 'success')
+            flash(f"Data Jenis Pelanggaran Berhasil Ditambahkan.", "success")
             return response
         else:
             return abort(404)
+
+
+@admin2.get("jenis-pelanggaran/edit")
+@admin2.post("jenis-pelanggaran/edit")
+@login_required
+def edit_jenis_pelanggaran():
+    if current_user.is_authenticated:
+        if current_user.group == "admin":
+            pass
