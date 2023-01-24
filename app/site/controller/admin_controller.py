@@ -2220,24 +2220,74 @@ def add_jenis_pelanggaran():
     if current_user.is_authenticated:
         if current_user.group == "admin":
             form = FormJenisPelanggaran()
-            kategori_id = request.form.get("kategori")
-            jenis = form.jenis.data
-            poin = form.poin.data
+            if request.method == "POST":
+                kategori_id = form.kategori.data
+                jenis = form.jenis.data
+                poin = form.poin.data
+                if kategori_id != "" and jenis != "" and poin != "":
+                    insert_jenis = JenisPelanggaranModel(
+                        kategori_id=kategori_id, jenis=jenis, poin=poin
+                    )
 
-            insert_jenis = JenisPelanggaranModel(kategori_id, jenis, poin)
-            db.session.add(insert_jenis)
+                    db.session.add(insert_jenis)
+                    db.session.commit()
+                    response = make_response(
+                        redirect(url_for("admin2.jenis_pelanggaran"))
+                    )
+                    flash(f"Data Jenis Pelanggaran Berhasil Ditambahkan.", "success")
+                    return response
+                else:
+                    #     response = make_response(redirect(url_for("admin2.jenis_pelanggaran")))
+                    flash(
+                        f"Ma'af! Gagal menginput data.\\nSilah periksa kembali inputan anda.",
+                        "error",
+                    )
+                    return redirect(url_for("admin2.jenis_pelanggaran"))
+
+        else:
+            return abort(404)
+
+
+@admin2.route("jenis-pelanggaran/edit", methods=["GET", "POST"])
+@login_required
+def edit_jenis_pelanggaran():
+    if current_user.is_authenticated:
+        if current_user.group == "admin":
+            id = request.args.get("idx")
+            sql_jenis = JenisPelanggaranModel.query.filter_by(id=id).first()
+
+            kategori_id = request.form.get("kategori")
+            jenis = request.form.get("jenis")
+            poin = request.form.get("poin")
+
+            sql_jenis.kategori_pelanggaran_id = kategori_id
+            sql_jenis.jenis = jenis
+            sql_jenis.poin_pelanggaran = poin
+
+            # print(kategori_id, '----', jenis, '-----', poin)
+
             db.session.commit()
+
             response = make_response(redirect(url_for("admin2.jenis_pelanggaran")))
-            flash(f"Data Jenis Pelanggaran Berhasil Ditambahkan.", "success")
+            flash(f"Data Jenis Pelanggaran Telah Di Perbaharui.", "info")
             return response
         else:
             return abort(404)
 
 
-@admin2.get("jenis-pelanggaran/edit")
-@admin2.post("jenis-pelanggaran/edit")
+@admin2.route("jenis-pelanggaran/delete", methods=["GET", "POST"])
 @login_required
-def edit_jenis_pelanggaran():
+def delete_jenis_pelanggaran():
     if current_user.is_authenticated:
         if current_user.group == "admin":
-            pass
+            id = request.args.get("idx")
+            sql_jenis = JenisPelanggaranModel.query.filter_by(id=id).first()
+
+            db.session.delete(sql_jenis)
+            db.session.commit()
+
+            response = make_response(redirect(url_for("admin2.jenis_pelanggaran")))
+            flash(f"Data Jenis Pelanggaran Telah Di Hapus Dari Database.", "info")
+            return response
+        else:
+            return abort(404)

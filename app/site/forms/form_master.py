@@ -154,3 +154,15 @@ class FormJenisPelanggaran(FlaskForm):
     jenis = StringField(label="Jenis Pelanggaran")
     poin = IntegerField(label="Jumlah Poin")
     submit = SubmitField(label="Submit")
+
+    def validate_kategori(self, field):
+        if field.data == "":
+            raise ValidationError("*Harap pilih kategori!")
+
+    def validate_jenis(self, field):
+        if field.data == "":
+            raise ValidationError("*Inputan tidak boleh kosong!")
+
+    def validate_poin(self, field):
+        if field.data == "":
+            raise ValidationError("*Inputan tidak boleh kosong!")

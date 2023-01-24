@@ -35,3 +35,31 @@ class AbsensiModel(db.Model):
 
     def __repr__(self):
         return "{}".format(self.ket)
+
+
+class PelanggaranModel(db.Model):
+    __tablename__ = "data_pelanggaran"
+    id = sa.Column(sa.Integer, primary_key=True)
+    siswa_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey("detail_siswa.user_id", ondelete="CASCADE", onupdate="CASCADE"),
+    )
+    siswa = sql.relationship("SiswaModel", backref="siswa_melanggar")
+    jenis_pelanggaran_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(
+            "master_jenis_pelanggaran.id", onupdate="CASCADE", ondelete="CASCADE"
+        ),
+    )
+    jenis_pelanggaran = sql.relationship(
+        "JenisPelanggaranModel", backref="jenis_pelanggaran"
+    )
+    pelapor = sa.Column(sa.String(128), nullable=False)
+
+    def __init__(self, siswaId: int, jenisPelanggaranId: int, pelapor: str):
+        self.siswa_id = siswaId
+        self.jenis_pelanggaran_id = jenisPelanggaranId
+        self.pelapor = pelapor
+
+    def __repr__(self):
+        return self.pelapor
