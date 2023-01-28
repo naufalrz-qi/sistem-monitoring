@@ -29,7 +29,21 @@
                         <p>Data Siswa</p>
                     </a>
                 </li> -->
-        <li class="nav-item {{ 'menu-open' if filename=='daftar-pelanggar' or filename=='tambah-pelanggar' else '' }}">
+        <li class="nav-item">
+          <a href="{{ url_for('guru_bk.add_data_pelanggar') }}"
+            class="nav-link {{ 'active' if filename=='tambah-pelanggar' else '' }}">
+            <i class="nav-icon far fa-edit"></i>
+            <p>Input Pelanggaran Siswa</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('guru_bk.data_pelanggar') }}"
+            class="nav-link {{ 'active' if filename=='daftar-pelanggar' else '' }}">
+            <i class="nav-icon fas fa-newspaper"></i>
+            <p>Laporan Pelanggaran</p>
+          </a>
+        </li>
+        <!-- <li class="nav-item {{ 'menu-open' if filename=='daftar-pelanggar' or filename=='tambah-pelanggar' else '' }}">
           <a href="#"
             class="nav-link {{ 'active' if filename=='daftar-pelanggar' or filename=='tambah-pelanggar' else '' }}">
             <i class="nav-icon fas fa-list-alt"></i>
@@ -52,13 +66,8 @@
               </a>
             </li>
           </ul>
-        </li>
-        <!-- <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-database"></i>
-                        <p>Data Sanksi Siswa</p>
-                    </a>
-                </li> -->
+        </li> -->
+
     </nav>
     <!-- /.sidebar-menu -->
   </div>

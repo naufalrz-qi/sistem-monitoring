@@ -3,6 +3,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sql
 from sqlalchemy.orm import backref
 from app.models.master_model import *
+from datetime import datetime
 
 
 class AbsensiModel(db.Model):
@@ -55,11 +56,15 @@ class PelanggaranModel(db.Model):
         "JenisPelanggaranModel", backref="jenis_pelanggaran"
     )
     pelapor = sa.Column(sa.String(128), nullable=False)
+    note = sa.Column(sa.Text(), nullable=True)
+    tgl_report = sa.Column(sa.Date, nullable=False)
 
-    def __init__(self, siswaId: int, jenisPelanggaranId: int, pelapor: str):
+    def __init__(self, siswaId: int, jenisPelanggaranId: int, pelapor: str, note: str):
         self.siswa_id = siswaId
         self.jenis_pelanggaran_id = jenisPelanggaranId
         self.pelapor = pelapor
+        self.note = note
+        self.tgl_report = datetime.date(datetime.today())
 
     def __repr__(self):
         return self.pelapor

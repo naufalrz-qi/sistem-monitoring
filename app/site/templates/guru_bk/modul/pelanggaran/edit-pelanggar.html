@@ -2,13 +2,13 @@
 {% block head %}
 {{ super() }}
 {% endblock head %}
-{% set filename='tambah-pelanggar' %}
+{% set filename='edit-pelanggar' %}
 {% block content %}
 <div class="row">
   <div class="col col-md-5">
     <div class="card card-info card-outline">
       <div class="card-header">
-        <h5 class="card-text">Tambah Data Pelanggar</h5>
+        <h5 class="card-text">Edit Data Pelanggar</h5>
       </div>
       <div class="card-body">
         <div class="row">
@@ -16,42 +16,23 @@
             <form action="" method="post">
               {{ form.csrf_token }}
               <div class="row">
-                <div class="col-md-4">
-                  <div class="form-group">
-                    {{ form.kelas.label }}
-                    {{ form.kelas(class="custom-select form-control-border") }}
-                  </div>
-                </div>
-                <div class="col-md-8">
+                <div class="col-md-6">
                   <div class="form-group">
                     {{ form.siswa.label }}
-                    {% if form.siswa.errors %}
-                    {{ form.siswa(class="custom-select form-control-border is-invalid") }}
-                    {% for msg in form.siswa.errors %}
-                    <span class="error invalid-feedback">{{ msg }}</span>
-                    {% endfor %}
-                    {% elif form.siswa.data %}
-                    {{ form.siswa(class="custom-select form-control-border") }}
-                    {% else %}
-                    {{ form.siswa(class="custom-select form-control-border") }}
-                    {% endif %}
+                    {{ form.siswa(class="form-control form-control-sm", disabled=true) }}
                   </div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-6">
                   <div class="form-group">
                     {{ form.jenisPelanggaran.label }}
-                    {% if form.jenisPelanggaran.errors %}
-                    {{ form.jenisPelanggaran(class="custom-select form-control-border is-invalid") }}
-                    {% for msg in form.jenisPelanggaran.errors %}
-                    <span class="error invalid-feedback">{{ msg }}</span>
-                    {% endfor %}
-                    {% elif form.jenisPelanggaran.data %}
-                    {{ form.jenisPelanggaran(class="custom-select form-control-border") }}
-                    {% else %}
-                    {{ form.jenisPelanggaran(class="custom-select form-control-border") }}
-                    {% endif %}
+                    <select name="jenisPelanggaran" id="" class="form-control form-control-sm">
+                      <option value="">- Pilih -</option>
+                      {% for i in sql_jenis %}
+                      <option value="{{ i.id }}" {{ 'selected' if i.id==sql_pelanggaran.jenis_pelanggaran_id else '' }}>
+                        {{ i.jenis }}
+                      </option>
+                      {% endfor %}
+                    </select>
                   </div>
                 </div>
               </div>
@@ -63,13 +44,7 @@
                   </div>
                 </div>
               </div>
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="form-group">
-                    {{ form.pelapor(hidden=true, value=guru_bk.guru.first_name+ ' ' +guru_bk.guru.last_name) }}
-                  </div>
-                </div>
-              </div>
+
               <div class="row">
                 <div class="col-md-4">
                   <div class="form-group">

@@ -8,9 +8,99 @@
   href="{{ url_for('.static', filename='plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
 <link rel="stylesheet"
   href="{{ url_for('.static', filename='plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+
+<style>
+  .tile_count {
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+
+  .tile_count .tile_stats_count {
+    border-bottom: 1px solid #D9DEE4;
+    padding: 0 10px 0 20px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  @media (min-width: 992px) {
+    .tile_count .tile_stats_count {
+      margin-bottom: 10px;
+      border-bottom: 0;
+      padding-bottom: 10px;
+    }
+  }
+
+  .tile_count .tile_stats_count:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    height: 65px;
+    border-left: 2px solid #ADB2B5;
+    margin-top: 10px;
+  }
+
+  @media (min-width: 992px) {
+    .tile_count .tile_stats_count:first-child:before {
+      border-left: 0;
+    }
+  }
+
+  .tile_count .tile_stats_count .count {
+    font-size: 30px;
+    line-height: 47px;
+    font-weight: 600;
+  }
+
+  @media (min-width: 768px) {
+    .tile_count .tile_stats_count .count {
+      font-size: 40px;
+    }
+  }
+
+  @media (min-width: 992px) and (max-width: 1100px) {
+    .tile_count .tile_stats_count .count {
+      font-size: 30px;
+    }
+  }
+
+  .tile_count .tile_stats_count span {
+    font-size: 12px;
+  }
+
+  @media (min-width: 768px) {
+    .tile_count .tile_stats_count span {
+      font-size: 13px;
+    }
+  }
+
+  .tile_count .tile_stats_count .count_bottom i {
+    width: 12px;
+  }
+</style>
 {% endblock %}
 {% set filename='daftar-pelanggar' %}
 {% block content %}
+<div class="row tile_count">
+  {% for i, poin in sql_poin %}
+
+  <div class="col-md-2 col-sm-2 col-xs-6 tile_stats_count">
+    <span class="count_top">Poin Terbanyak Ke-{{ loop.index }} </span>
+    <div class="count">
+      <!-- <a class="pull-left border-green profile_thumb" style="color:#da8631"> -->
+      <a class="pull-left border-green profile_thumb" style="color:#FEC001">
+        <i class="fa fa-exclamation-circle"></i>&nbsp;
+      </a>
+      <a href="#">{{ poin }}</a>
+    </div>
+    <span class="count_bottom">
+      <h5 style="font-size: 10.5pt;">{{ i.siswa.first_name | title }} {{ i.siswa.last_name | title }}</h5>
+    </span>
+  </div>
+
+  {% endfor %}
+</div>
 <div class="row">
   <div class="col">
     <div class="card">
@@ -32,16 +122,35 @@
               <thead>
                 <tr>
                   <th class="text-center">No.</th>
+                  <th class="text-center">NISN</th>
                   <th class="text-center">Nama Siswa</th>
                   <th class="text-center">Kelas</th>
-                  <th class="text-center">Melanggar</th>
-                  <th class="text-center">Poin</th>
+                  <th class="text-center">Pelanggaran</th>
                   <th class="text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody>
-
-
+                {% for i in sql_pelanggar %}
+                <tr>
+                  <td class="text-center align-middle">{{ loop.index }}</td>
+                  <td class="align-middle">{{ i.siswa.user.username }}</td>
+                  <td class="align-middle">{{ i.siswa.first_name | title }} {{ i.siswa.last_name | title }}</td>
+                  <td class="text-center align-middle">{{ i.siswa.kelas.kelas }}</td>
+                  <td>{{ i.jenis_pelanggaran.jenis }}</td>
+                  <td class="text-center">
+                    <a href="{{ url_for('guru_bk.edit_data_pelanggaran', idx=i.id) }}"
+                      class="btn btn-outline-warning btn-sm">
+                      <i class="fas fa-edit"></i>
+                      <span>Edit</span>
+                    </a>
+                    <a href="{{ url_for('guru_bk.delete_data_pelanggaran', idx=i.id) }} "
+                      class="ml-1 btn btn-outline-danger btn-sm">
+                      <i class="fas fa-trash"></i>
+                      <span>Delete</span>
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
               </tbody>
             </table>
           </div>
