@@ -39,7 +39,7 @@ def login():
     sql_user = user.get_one_or_none(username=username)
 
     if not sql_user:
-        return jsonify({"msg": "username not found."}), HTTP_401_UNAUTHORIZED
+        return jsonify({"msg": "Username not found."}), HTTP_401_UNAUTHORIZED
     else:
         chk_pswd = UserModel.check_pswd(sql_user.password, password)
         if chk_pswd:
@@ -54,6 +54,7 @@ def login():
                     "username": sql_user.username,
                     "first_name": sql_siswa.first_name,
                     "last_name": sql_siswa.last_name,
+                    "kelas_id": sql_siswa.kelas_id,
                     "kelas": sql_kelas.kelas if sql_siswa.kelas_id else "-",
                     "is_active": sql_user.is_active,
                     "group": sql_user.group,
@@ -92,6 +93,9 @@ def login():
                         pic_name=sql_siswa.pic,
                         access_token=access_token,
                         refresh_token=refresh_token,
+                        kelas_id=sql_siswa.kelas_id,
+                        kelas=sql_siswa.kelas.kelas,
+                        group=sql_user.group,
                     ),
                     HTTP_200_OK,
                 )

@@ -6,7 +6,14 @@ from sqlalchemy import func
 from werkzeug.utils import secure_filename
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers import HorizontalBarsDrawer
-from flask import Blueprint, jsonify, request, send_from_directory, url_for
+from flask import (
+    Blueprint,
+    jsonify,
+    make_response,
+    request,
+    send_from_directory,
+    url_for,
+)
 from flask_jwt_extended import jwt_required
 from app.api.lib.base_model import BaseModel
 from app.api.lib.date_time import (
@@ -19,7 +26,7 @@ from app.api.lib.status_code import (
     HTTP_204_NO_CONTENT,
     HTTP_404_NOT_FOUND,
 )
-from app.models.master_model import KelasModel
+from app.models.master_model import KelasModel, MapelModel, MengajarModel, SemesterModel
 from app.models.user_details_model import SiswaModel
 from app.models.user_model import UserModel
 from app.extensions import db
@@ -169,6 +176,11 @@ def get_single(id):
                 if model.nama_ortu_or_wali
                 else None,
                 telp=model.no_telp if model.no_telp else None,
+                qr_code=url_for(
+                    ".static", filename="img/siswa/qr_code/" + model.qr_code
+                )
+                if model.qr_code
+                else None,
             ),
             HTTP_200_OK,
         )
@@ -353,3 +365,64 @@ def upload_photo():
 @siswa.get("get-siswa")
 def getSiswa():
     pass
+
+
+@siswa.get("mapel-kelas/<int:kelasId>")
+def mapel_kelas(kelasId):
+    sql_mapel = (
+        MengajarModel.query.filter_by(kelas_id=kelasId)
+        .join(MapelModel)
+        .group_by(MengajarModel.mapel_id)
+        .order_by(MapelModel.mapel.asc())
+        .all()
+    )
+    data = []
+    for i in sql_mapel:
+        data.append(
+            {
+                "id": i.mapel.id,
+                # if i.mapel.mapel == "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+                # else i.mapel.mapel,
+                "mapel": i.mapel.mapel,
+                "nama_guru": f"{i.guru.first_name} {i.guru.last_name}",
+            }
+        )
+    response = make_response(jsonify(data))
+
+    return response, HTTP_200_OK
+
+
+@siswa.get("jadwal-belajar")
+def getJadwalByHari():
+    kelasId = request.args.get("kelasId")
+    hariId = request.args.get("hariId")
+    sql_semester = (
+        db.session.query(SemesterModel).filter(SemesterModel.is_active == "1").scalar()
+    )
+    sql_mengajar = (
+        db.session.query(MengajarModel)
+        .filter(MengajarModel.kelas_id == kelasId)
+        .filter(MengajarModel.semester_id == sql_semester.id)
+        .filter(MengajarModel.hari_id == hariId)
+    )
+
+    data = []
+    for i in sql_mengajar:
+        data.append(
+            {
+                "id": i.id,
+                "hari": i.hari.hari.title(),
+                "mapel": i.mapel.mapel.title(),
+                "jamMulai": i.jam_mulai,
+                "jamSelesai": i.jam_selesai,
+                "jamKe": i.jam_ke,
+            }
+        )
+
+    return (
+        jsonify(
+            status="success",
+            data=data,
+        ),
+        HTTP_200_OK,
+    )

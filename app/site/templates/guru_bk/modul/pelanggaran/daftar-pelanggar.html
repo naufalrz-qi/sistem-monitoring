@@ -105,7 +105,7 @@
   <div class="col">
     <div class="card">
       <div class="card-header">
-        <h5 class="card-title">DATA PELANGGAR</h5>
+        <h5 class="card-title">RIWAYAT PELANGGARAN</h5>
       </div>
       <div class="card-body">
         <div class="row">
@@ -130,7 +130,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for i in sql_pelanggar %}
+                {% for i, poin in sql_pelanggar %}
                 <tr>
                   <td class="text-center align-middle">{{ loop.index }}</td>
                   <td class="align-middle">{{ i.siswa.user.username }}</td>
@@ -139,14 +139,15 @@
                   <td>{{ i.jenis_pelanggaran.jenis }}</td>
                   <td class="text-center">
                     <a href="{{ url_for('guru_bk.edit_data_pelanggaran', idx=i.id) }}"
-                      class="btn btn-outline-warning btn-sm">
+                      class="btn btn-outline-warning btn-xs" data-toggle="tooltip" data-placement="right" title="Edit">
                       <i class="fas fa-edit"></i>
-                      <span>Edit</span>
+                      <!-- <span>Edit</span> -->
                     </a>
                     <a href="{{ url_for('guru_bk.delete_data_pelanggaran', idx=i.id) }} "
-                      class="ml-1 btn btn-outline-danger btn-sm">
+                      class="ml-1 btn btn-outline-danger btn-xs" data-toggle="tooltip" data-placement="right"
+                      title="Delete">
                       <i class="fas fa-trash"></i>
-                      <span>Delete</span>
+                      <!-- <span>Delete</span> -->
                     </a>
                   </td>
                 </tr>
@@ -181,6 +182,8 @@
     $('#tabel').DataTable({
       processing: true
     });
+
+    $('[data-toggle="tooltip"]').tooltip()
 
   });
 </script>

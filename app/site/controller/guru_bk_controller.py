@@ -47,10 +47,21 @@ def index():
 def data_pelanggar():
     if current_user.is_authenticated:
         if current_user.id == get_guru_bk().guru_id:
+            # sql_pelanggar = (
+            #     db.session.query(PelanggaranModel)
+            #     .order_by(PelanggaranModel.id.desc())
+            #     .all()
+            # )
             sql_pelanggar = (
-                db.session.query(PelanggaranModel)
-                .order_by(PelanggaranModel.id.desc())
-                .all()
+                db.session.query(
+                    PelanggaranModel,
+                    func.sum(JenisPelanggaranModel.poin_pelanggaran),
+                )
+                .join(JenisPelanggaranModel)
+                .join(SiswaModel)
+                .group_by(PelanggaranModel.siswa_id)
+                .order_by(func.sum(JenisPelanggaranModel.poin_pelanggaran.desc))
+                # .limit(6)
             )
             # $terbanyak = mysqli_query($connect, "SELECT detail_poin.nis, SUM(pelanggaran.poin) AS poin, siswa.nama_siswa FROM detail_poin JOIN pelanggaran ON detail_poin.id_pelanggaran=pelanggaran.id_pelanggaran JOIN siswa ON detail_poin.nis=siswa.nis GROUP BY detail_poin.nis ORDER BY SUM(pelanggaran.poin) DESC LIMIT 6");
 

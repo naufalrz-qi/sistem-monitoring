@@ -5,6 +5,8 @@ from sqlalchemy.orm import backref
 from .user_details_model import *
 from typing import Any, Optional
 
+from .user_details_model import GuruModel
+
 
 class KelasModel(db.Model):
     __tablename__ = "master_kelas"
