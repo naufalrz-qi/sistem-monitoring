@@ -209,7 +209,7 @@ class Hari(object):
 
         data = []
         for hari in model:
-            data.append({"id": hari.id, "hari": hari.hari})
+            data.append({"id": hari.id, "hari": hari.hari.title()})
 
         return jsonify(data=data), HTTP_200_OK
 
