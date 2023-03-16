@@ -181,6 +181,11 @@ def get_single(id):
                 )
                 if model.qr_code
                 else None,
+                profilPicture=url_for(
+                    "siswa.static", filename="img/siswa/foto/" + model.pic
+                )
+                if model.pic
+                else None,
             ),
             HTTP_200_OK,
         )

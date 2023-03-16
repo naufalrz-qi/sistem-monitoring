@@ -58,6 +58,12 @@ def login():
                     "kelas": sql_kelas.kelas if sql_siswa.kelas_id else "-",
                     "is_active": sql_user.is_active,
                     "group": sql_user.group,
+                    # "profilePicture": url_for(
+                    #     ".static", filename=f"img/siswa/foto/{sql_siswa.pic}"
+                    # )
+                    # if sql_siswa.pic
+                    # else None,
+                    # "qr_code": sql_siswa.qr_code if sql_siswa.qr_code else None,
                 }
 
                 access_token = create_access_token(identity=user_identity)
@@ -85,7 +91,7 @@ def login():
                         )
                         if sql_siswa.qr_code
                         else None,
-                        picture=url_for(
+                        profilPicture=url_for(
                             "siswa.static", filename="img/siswa/foto/" + sql_siswa.pic
                         )
                         if sql_siswa.pic
