@@ -158,7 +158,7 @@ def get_single(id):
 
     if request.method == "GET":
         if not model:
-            return jsonify(msg="Data not found."), HTTP_404_NOT_FOUND
+            return jsonify(msg="Data user tidak ditemukan."), HTTP_404_NOT_FOUND
         return (
             jsonify(
                 id=model.user.id,
@@ -338,7 +338,16 @@ def generate_qc():
 
         base.edit()
 
-        return jsonify(msg="generate qr code success"), HTTP_200_OK
+        return (
+            jsonify(
+                id=model.user.id,
+                qr_code=url_for(
+                    ".static",
+                    filename="img/siswa/qr_code/" + model.qr_code,
+                ),
+            ),
+            HTTP_200_OK,
+        )
 
 
 # upload photos
